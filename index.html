@@ -3,108 +3,249 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Obsidian Bastian — Family Home</title>
-  <meta name="description" content="Welcome aboard the Obsidian Bastian — family homepage for events, ship info, and celebrations." />
+  <title>Obsidian Bastian — Family Ship</title>
+  <meta name="description" content="Obsidian Bastian — family homepage for events, ship info, and celebrations." />
   <style>
+    /* Space-age theme using onboardcomputer color palette, carbon-fiber background */
     :root{
-      --bg:#071227; --card:#0f1a2a; --accent:#6be0a1; --accent2:#7cc4ff; --muted:#9fb3c6;
-      font-system: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      --bg: #000000;               /* base black background */
+      --card: #0f1724;             /* card background (from onboardcomputer) */
+      --glass: rgba(255,255,255,0.03);
+      --accent: #56b6ff;           /* onboardcomputer accent */
+      --accent-2: #6be0a1;         /* complementary accent */
+      --muted: #9aa7b3;            /* onboardcomputer muted */
+      --text: #e6eef6;
+      --radius: 12px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+      color-scheme: dark;
     }
+
     *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,system-ui, -apple-system, "Segoe UI", Roboto; background:linear-gradient(180deg,#031022 0%, #061428 100%); color:#eaf6f3; line-height:1.5}
-    .container{max-width:1100px;margin:28px auto;padding:22px}
-    header{display:flex;align-items:center;justify-content:space-between;gap:16px}
-    .brand{display:flex;align-items:center;gap:12px}
-    .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;color:#052022}
-    h1{margin:0;font-size:1.5rem}
-    nav a{color:var(--accent2); text-decoration:none; margin-left:14px}
-    .hero{margin-top:18px;padding:20px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); border:1px solid rgba(255,255,255,0.03)}
-    .hero p{margin:8px 0 0 0;color:var(--muted)}
+    body{
+      margin:0;
+      font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      color:var(--text);
+      background-color:var(--bg);
+      min-height:100vh;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
+      position:relative;
+      overflow-x:hidden;
+    }
+
+    /* carbon-fiber weave pattern (subtle) + faint star accents */
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      /* carbon-fiber style using layered diagonal gradients */
+      background-image:
+        linear-gradient(45deg, rgba(255,255,255,0.02) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.02) 75%, rgba(255,255,255,0.02) 100%),
+        linear-gradient(-45deg, rgba(255,255,255,0.02) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.02) 75%, rgba(255,255,255,0.02) 100%),
+        radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.03), transparent 30%),
+        radial-gradient(1px 1px at 70% 60%, rgba(255,255,255,0.02), transparent 30%);
+      background-size: 14px 14px, 14px 14px, 160px 160px, 200px 200px;
+      background-position: 0 0, 7px 7px, 0 0, 0 0;
+      mix-blend-mode: overlay;
+      pointer-events:none;
+      opacity:0.45;
+      z-index:0;
+    }
+
+    .wrap{max-width:1100px;margin:28px auto;padding:28px;border-radius:var(--radius);backdrop-filter:blur(4px);position:relative;z-index:1}
+    header{
+      display:flex;align-items:center;justify-content:space-between;gap:16px;
+      padding:14px 18px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.012), transparent);
+      border:1px solid rgba(255,255,255,0.03);
+    }
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{
+      width:64px;height:64px;border-radius:12px;
+      background:linear-gradient(135deg,var(--accent-2),var(--accent));
+      display:flex;align-items:center;justify-content:center;font-weight:800;color:#02121a;font-size:18px;box-shadow:0 6px 18px rgba(2,6,23,0.7);
+      flex-shrink:0;
+    }
+    h1{margin:0;font-size:1.25rem}
+    .subtitle{color:var(--muted);font-size:0.95rem;margin-top:4px}
+    nav{display:flex;align-items:center;gap:12px}
+    nav a{color:var(--accent);text-decoration:none;font-weight:600;padding:8px 10px;border-radius:8px}
+    nav a.secondary{background:transparent;border:1px solid rgba(255,255,255,0.02);color:var(--text)}
+    .hero{
+      margin-top:18px;padding:24px;border-radius:var(--radius);background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+      border:1px solid rgba(255,255,255,0.03);display:flex;gap:20px;align-items:center;
+    }
+    .hero-left{flex:1}
+    .hero-right{width:220px;text-align:right}
+    .tag{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);color:var(--muted);font-weight:600;font-size:0.85rem}
+    .lead{margin:12px 0;color:var(--muted)}
+    .btn{
+      display:inline-block;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent-2),var(--accent));
+      color:#02121a;text-decoration:none;font-weight:700;margin-right:8px;
+      box-shadow:0 8px 24px rgba(86,182,255,0.06);
+    }
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--accent)}
     .cards{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-top:18px}
-    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:16px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
-    .events .event{padding:12px;border-radius:8px;background:rgba(11,18,30,0.4);margin-bottom:12px}
+    .card{padding:16px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.005));border:1px solid rgba(255,255,255,0.03)}
+    h2{margin-top:0}
+    .muted{color:var(--muted)}
+    .events .event{margin-bottom:14px;padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border:1px solid rgba(255,255,255,0.02)}
     .event h4{margin:0 0 6px 0}
-    .muted{color:var(--muted);font-size:0.95rem}
-    .btn{display:inline-block;padding:8px 12px;border-radius:8px;background:var(--accent);color:#042024;text-decoration:none;font-weight:600}
-    footer{margin-top:20px;color:var(--muted);font-size:0.9rem;text-align:center}
-    @media (max-width:900px){.cards{grid-template-columns:1fr}}
+    .meta{font-size:0.92rem;color:var(--muted);margin-bottom:8px}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+    .photo{
+      height:160px;border-radius:10px;overflow:hidden;background:var(--card);border:1px dashed rgba(255,255,255,0.04);
+      display:flex;align-items:center;justify-content:center;color:var(--muted);position:relative;
+    }
+    .photo img{width:100%;height:100%;object-fit:cover;display:block;opacity:0}
+    .photo.loaded img{opacity:1;transition:opacity .35s ease}
+    .photo .placeholder{
+      position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:0.95rem;padding:8px;text-align:center;color:var(--muted);
+      background: linear-gradient(180deg, rgba(0,0,0,0.15), transparent);
+    }
+    .photo figcaption{margin-top:8px;font-size:0.9rem;color:var(--muted);text-align:center}
+
+    footer{margin-top:20px;color:var(--muted);font-size:0.9rem;text-align:center;padding-bottom:18px}
+
+    @media (max-width:980px){
+      .cards{grid-template-columns:1fr}
+      .hero{flex-direction:column;align-items:flex-start}
+      .hero-right{text-align:left;width:100%}
+      .photo-grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (max-width:560px){
+      .photo-grid{grid-template-columns:1fr}
+      .logo{width:52px;height:52px}
+    }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="wrap">
     <header>
       <div class="brand">
         <div class="logo">OB</div>
         <div>
           <h1>Obsidian Bastian</h1>
-          <div class="muted">Family ship — welcome aboard</div>
+          <div class="subtitle">Family ship — welcome aboard</div>
         </div>
       </div>
+
       <nav>
-        <a href="onboardcomputer.html">Onboard Computer</a>
+        <a href="onboardcomputer.html" class="secondary">Onboard Computer</a>
         <a href="#about">About</a>
-        <a href="#events">Events</a>
+        <a href="#events" class="secondary">Events</a>
       </nav>
     </header>
 
-    <section class="hero card">
-      <h2>Welcome to the Obsidian Bastian</h2>
-      <p class="muted">This is the family homepage for our imaginary spaceship. Use this page to share event details, announcements, photos, and important ship info with family members.</p>
-      <p style="margin-top:12px;">
-        <a class="btn" href="#events">See upcoming events</a>
-        <a class="btn" href="onboardcomputer.html" style="background:transparent;border:1px solid rgba(255,255,255,0.06;color:var(--accent2);margin-left:8px">View Onboard Computer</a>
-      </p>
+    <section class="hero">
+      <div class="hero-left">
+        <div class="tag">Welcome Aboard</div>
+        <h2 style="margin:10px 0 6px 0">Obsidian Bastian — Family Home</h2>
+        <p class="lead">A spacecraft for celebrations, family announcements, and missions of fun. This site is the public hub where family members can find event details and view ship media.</p>
+
+        <p style="margin-top:12px">
+          <a class="btn" href="#events">View upcoming events</a>
+          <!-- Join button removed per request; QR code is on the invite -->
+        </p>
+      </div>
+
+      <div class="hero-right">
+        <div class="card" style="padding:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));border:1px solid rgba(255,255,255,0.03);">
+          <div style="font-weight:700;color:var(--accent)">Next Event</div>
+          <div class="meta">Bastian's Birthday</div>
+          <div class="muted">2026‑01‑18 • 15:00 — 18:00 (virtual)</div>
+        </div>
+      </div>
     </section>
 
     <div class="cards">
       <main class="card">
         <section id="about">
-          <h3>About the Ship</h3>
-          <p class="muted">Obsidian Bastian is an imaginary family spacecraft where we celebrate milestones, host parties, and keep a log of memories. Add descriptions here about the ship's mission, crew (family members), and rules of the ship.</p>
-          <ul>
-            <li><strong>Mission:</strong> Celebrate, connect, and create memories together.</li>
-            <li><strong>Crew:</strong> Family members and guests (list names or roles here).</li>
-            <li><strong>Where we meet:</strong> This site for announcements; physical events in the real world.</li>
-          </ul>
+          <h2>About the Ship</h2>
+          <p class="muted">The Obsidian Bastian is our imaginative family spacecraft — a place for celebrations, shared stories, and events. Use this site to publish details about gatherings, post photos, and link to private logs in the Onboard Computer.</p>
+
+          <div style="margin-top:12px" class="grid-2">
+            <div>
+              <h4 style="margin-bottom:6px">Mission</h4>
+              <p class="muted">Celebrate family milestones, coordinate events, and keep warm logs of memories.</p>
+            </div>
+            <div>
+              <h4 style="margin-bottom:6px">Crew</h4>
+              <p class="muted">Captain Parent, Navigator, Engineer, and our Junior Crew (family and friends).</p>
+            </div>
+          </div>
+
+          <hr style="margin:16px 0;border:none;border-top:1px solid rgba(255,255,255,0.02)">
+
+          <section id="events" class="events">
+            <h3>Upcoming Events</h3>
+
+            <div class="event">
+              <h4>Bastian's Birthday (Virtual)</h4>
+              <div class="meta">Date: 2026‑01‑18 | Time: 15:00 — 18:00</div>
+              <p class="muted">This is a virtual Zoom celebration — no RSVP required. Guests should bring their "badges" to board the ship (costumes, printed badges, or just show up ready to have fun!). Use the QR code on the invite to join the meeting when it starts.</p>
+            </div>
+
+            <div class="event">
+              <h4>Family Movie Night — Starlight Screening</h4>
+              <div class="meta">Date: 2026‑02‑14 | Time: 19:00</div>
+              <p class="muted">Bring cozy snacks. We'll vote on the movie in family chat — feel free to suggest titles in advance.</p>
+            </div>
+
+            <p class="muted">Want a calendar feed (iCal) or a subscribe button? I can add an export so family members can add events directly to their calendars.</p>
+          </section>
         </section>
 
-        <section id="events" class="events" style="margin-top:16px">
-          <h3>Upcoming Events</h3>
+        <section style="margin-top:16px">
+          <h3 style="margin-bottom:8px">Photo Gallery</h3>
+          <p class="muted">Add your futuristic ship photos in the repository at /images/ship-1.jpg, /images/ship-2.jpg, /images/ship-3.jpg — they'll automatically appear here. You can use other filenames, just update the src attributes below.</p>
 
-          <!-- Example birthday event - edit as needed -->
-          <div class="event">
-            <h4>Birthday Party — Bastian (Example)</h4>
-            <div class="muted">Date: 2026-01-18 | Time: 15:00 — 18:00</div>
-            <p>Location: The Galactic Garden (your real venue). Please bring your party hat and a small token for the treasure chest activity.</p>
-            <p><strong>RSVP:</strong> <a href="mailto:party@family.example?subject=RSVP%20Bastian%20Birthday">party@family.example</a> or call <span class="muted">+1 (555) 123-4567</span></p>
-            <p><strong>Notes:</strong> Allergies, dietary needs, and whether you'll bring kids. Add additional info here.</p>
+          <div class="photo-grid" aria-hidden="false">
+            <figure>
+              <div class="photo">
+                <img src="images/ship-1.jpg" alt="Ship photo 1">
+                <div class="placeholder">Add images/ship-1.jpg to the repo to show a photo here</div>
+              </div>
+              <figcaption>Command Deck — replace with your image title</figcaption>
+            </figure>
+
+            <figure>
+              <div class="photo">
+                <img src="images/ship-2.jpg" alt="Ship photo 2">
+                <div class="placeholder">Add images/ship-2.jpg to the repo to show a photo here</div>
+              </div>
+              <figcaption>Observation Dome — replace with your caption</figcaption>
+            </figure>
+
+            <figure>
+              <div class="photo">
+                <img src="images/ship-3.jpg" alt="Ship photo 3">
+                <div class="placeholder">Add images/ship-3.jpg to the repo to show a photo here</div>
+              </div>
+              <figcaption>Exterior — replace with your caption</figcaption>
+            </figure>
           </div>
-
-          <!-- Template for more events -->
-          <div class="event">
-            <h4>Event title here</h4>
-            <div class="muted">Date: YYYY-MM-DD | Time: HH:MM</div>
-            <p>Short description and details, plus RSVP link and any attachments or instructions.</p>
-          </div>
-
-          <p class="muted">Tip: To add more events, duplicate one of the .event blocks and edit the content. If you'd like a calendar view or subscription (iCal), I can add that.</p>
         </section>
       </main>
 
       <aside class="card">
-        <h4>Quick Info</h4>
-        <p class="muted"><strong>Host:</strong> Captain Parent</p>
-        <p class="muted"><strong>Contact:</strong> <a href="mailto:captain@family.example">captain@family.example</a></p>
+        <h3>Event Info</h3>
+        <p class="muted">This is a virtual event. When it's time to board, use the QR code from the invitation to join the meeting. There are no physical items to bring—just your badge and good vibes.</p>
 
-        <h4 style="margin-top:14px">Useful Links</h4>
-        <ul style="padding-left:14px;margin:6px 0">
+        <hr style="margin:16px 0;border:none;border-top:1px solid rgba(255,255,255,0.02)">
+
+        <h4>Quick Links</h4>
+        <ul style="padding-left:18px;margin:6px 0;color:var(--muted)">
           <li><a href="onboardcomputer.html">Onboard Computer (internal)</a></li>
-          <li><a href="#events">Events & RSVP</a></li>
+          <li><a href="#events">Events & Info</a></li>
           <li><a href="#about">About the Ship</a></li>
         </ul>
 
-        <h4 style="margin-top:14px">Want images?</h4>
-        <p class="muted">You can add a photo gallery here or embed an album link (Google Photos / Flickr / Imgur). I can add a simple gallery section if you provide image links.</p>
+        <div style="margin-top:12px">
+          <h4 style="margin-bottom:6px">Need other changes?</h4>
+          <p class="muted">I can add a lightbox for the gallery, an editable events.json to manage events via the repo, or commit this change and open a PR for you.</p>
+        </div>
       </aside>
     </div>
 
@@ -112,5 +253,20 @@
       <div>© Family Fleet — Obsidian Bastian • <span class="muted">Public homepage — share with family</span></div>
     </footer>
   </div>
+
+  <!-- small helper script to show images when they load -->
+  <script>
+    document.querySelectorAll('.photo').forEach(container => {
+      const img = container.querySelector('img');
+      const ph = container.querySelector('.placeholder');
+      if(!img) return;
+      function markLoaded(){
+        container.classList.add('loaded');
+        if(ph) ph.style.display = 'none';
+      }
+      img.addEventListener('load', markLoaded);
+      if(img.complete && img.naturalWidth !== 0) markLoaded();
+    });
+  </script>
 </body>
 </html>
