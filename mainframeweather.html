@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Mainframe Weather — Planetary Atmospherics</title>
+  <title>Planetary Atmospherics</title>
   <style>
     :root{
       --bg:#0b0f1a; --card:#0f1724; --muted:#9aa6c0; --accent:#6ee7b7;
@@ -43,12 +43,12 @@
   <div class="wrap">
     <header>
       <div>
-        <h1>Mainframe Weather — Planetary Atmospherics</h1>
-        <div class="small">Random solar system and planet generator with atmospheric conditions and habitability check.</div>
+        <h1>aPlanetary Atmospherics</h1>
+        <div class="small">Solar system and planet explorer with atmospheric conditions and habitability check.</div>
       </div>
       <div class="controls">
         <div class="toggle">
-          <label><input id="earthToggle" type="checkbox"> Local Earth Conditions</label>
+          <label><input id="earthToggle" type="checkbox"> Current Earth Conditions</label>
         </div>
 
         <!-- Unit toggle -->
@@ -56,9 +56,9 @@
           <label><input id="unitToggle" type="checkbox"> Show °C</label>
         </div>
 
-        <button id="shuffle">Randomize</button>
+        <button id="shuffle">Random Planet</button>
         <button id="findHabitable">Find Habitable</button>
-        <button id="copyJson">Copy JSON</button>
+        <button id="copyJson">Copy Data</button>
       </div>
     </header>
 
@@ -141,7 +141,7 @@
     </div>
 
     <div class="footer">
-      Tip: toggle "Local Earth Conditions" to inspect a stable, livable report for comparison. Use "Show °C" to view temperatures in Celsius.
+      Tip: toggle "Current Earth Conditions" to inspect a stable, livable report for comparison. Use "Show °C" to view temperatures in Celsius.
     </div>
   </div>
 
@@ -450,7 +450,7 @@
 
     el.phenomena.textContent = planet.phenomena.join('; ');
     el.location.textContent = `≈ Sector ${makeCoordinate()} • System ${planet.systemName} • Star class ${star.cls}${star.sub}${star.lum}`;
-    el.diagnostics.textContent = `Generated ${new Date().toISOString()} • Seedless PRNG`;
+    el.diagnostics.textContent = `Generated ${new Date().toISOString()}`;
 
     // JSON includes both tempF and tempC so copy always has both
     const pretty = JSON.stringify({star,planet}, null, 2);
