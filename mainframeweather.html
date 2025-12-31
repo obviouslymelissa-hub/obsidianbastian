@@ -57,6 +57,7 @@
         </div>
 
         <button id="shuffle">Randomize</button>
+        <button id="findHabitable">Find Habitable</button>
         <button id="copyJson">Copy JSON</button>
       </div>
     </header>
@@ -118,7 +119,7 @@
         </div>
 
         <div class="card" style="margin-top:12px">
-          <div class="label"><h2>Notable Weather & Phenomena</h2></div>
+          <div class="label">Notable Weather & Phenomena</div>
           <div id="phenomena" class="small" style="margin-top:8px">—</div>
         </div>
       </div>
@@ -140,8 +141,7 @@
     </div>
 
     <div class="footer">
-      Tip: toggle "Local Earth Conditions" to inspect a stable, livable report for comparison.
-      <br>Use "Show °C" to view temperatures in Celsius.
+      Tip: toggle "Local Earth Conditions" to inspect a stable, livable report for comparison. Use "Show °C" to view temperatures in Celsius.
     </div>
   </div>
 
@@ -189,12 +189,15 @@
     earthToggle: qs('#earthToggle'),
     copyJson: qs('#copyJson'),
     unitToggle: qs('#unitToggle'),
+    findHabitable: qs('#findHabitable'),
   };
 
   // Keep last dataset to allow re-render when switching units
   let lastDataset = null;
   // displayUnit: 'F' (default) or 'C'
   let displayUnit = 'F';
+  // Searching state
+  let searching = false;
 
   // Random generators
   function makeSystemName(){
@@ -328,8 +331,7 @@
   }
 
   function evaluateHabitability({tempF, tempC, pressure, comp, gravity, pType}){
-    // Heuristic uses Fahrenheit bounds internally (as requested previously)
-    // comfortable temperature between -4°F and 122°F (~ -20°C .. 50°C)
+    // Heuristic uses Fahrenheit bounds internally
     let score = 0;
     if(pType==='Terrestrial' || pType==='Super-Earth' || pType==='Ocean World') score += 1;
     if(tempF >= -4 && tempF <= 122) score += 2;
@@ -390,17 +392,13 @@
 
   // Convert any temperature mentions in habitability reasons to display unit
   function convertReasonsToDisplayUnit(reasons, unit){
-    // Recognize numbers followed by °F or °C and convert them
     return reasons.map(r => {
       return r.replace(/(-?\d+(\.\d+)?)°([FC])/g, (m, num, dec, u) => {
         const n = parseFloat(num);
         if(unit === 'F'){
-          // target F
           if(u === 'F') return `${n}°F`;
-          // u === 'C'
           return `${toF(n)}°F`;
         } else {
-          // target C
           if(u === 'C') return `${n}°C`;
           return `${toC(n)}°C`;
         }
@@ -479,6 +477,68 @@
     render({star,planet});
   }
 
+  // Find habitable implementation (asynchronous to avoid freezing UI)
+  async function findHabitable(){
+    if(searching) return;
+    searching = true;
+
+    // Save current states to restore later
+    const prevEarth = el.earthToggle.checked;
+    const prevUnitToggle = el.unitToggle.checked;
+    // Disable earthToggle during search to avoid collision
+    el.earthToggle.checked = false;
+
+    // Disable controls while searching
+    el.shuffle.disabled = true;
+    el.findHabitable.disabled = true;
+    el.copyJson.disabled = true;
+    el.unitToggle.disabled = true;
+    el.earthToggle.disabled = true;
+
+    const maxAttempts = 5000;
+    const chunkSize = 100; // process in chunks then yield
+    let attempts = 0;
+    el.diagnostics.textContent = `Searching for habitable planet...`;
+
+    while(attempts < maxAttempts){
+      for(let i=0;i<chunkSize && attempts < maxAttempts;i++){
+        attempts++;
+        const systemName = makeSystemName();
+        const star = makeStar();
+        const planet = makePlanet(systemName, star);
+        if(planet.habitability.habitable){
+          render({star,planet});
+          el.diagnostics.textContent = `Found habitable after ${attempts} attempts • ${new Date().toISOString()}`;
+          // restore toggles & controls
+          el.shuffle.disabled = false;
+          el.findHabitable.disabled = false;
+          el.copyJson.disabled = false;
+          el.unitToggle.disabled = false;
+          el.earthToggle.disabled = false;
+          el.earthToggle.checked = prevEarth;
+          searching = false;
+          return;
+        }
+      }
+      // update diagnostics and yield to the UI
+      el.diagnostics.textContent = `Searching for habitable planet... attempts: ${attempts}`;
+      // short pause to keep UI responsive
+      // eslint-disable-next-line no-await-in-loop
+      await new Promise(r => setTimeout(r, 0));
+    }
+
+    // If we reach here, no habitable planet found within attempt limit
+    el.diagnostics.textContent = `No habitable planet found after ${attempts} attempts. Try increasing maxAttempts.`;
+    // restore toggles & controls
+    el.shuffle.disabled = false;
+    el.findHabitable.disabled = false;
+    el.copyJson.disabled = false;
+    el.unitToggle.disabled = false;
+    el.earthToggle.disabled = false;
+    el.earthToggle.checked = prevEarth;
+    searching = false;
+  }
+
   // Copy JSON
   el.copyJson.addEventListener('click', ()=>{
     navigator.clipboard?.writeText(el.json.textContent || '')
@@ -488,6 +548,7 @@
 
   el.shuffle.addEventListener('click', ()=> randomize());
   el.earthToggle.addEventListener('change', ()=> randomize());
+  el.findHabitable.addEventListener('click', ()=> findHabitable());
 
   // Unit toggle listener — re-render using saved lastDataset
   el.unitToggle.addEventListener('change', ()=>{
