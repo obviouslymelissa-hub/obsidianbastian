@@ -37,6 +37,37 @@
       color: var(--accent);
       letter-spacing: 2px;
     }
+    nav {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+    nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    nav a {
+      color: var(--text-main);
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+      font-size: 0.95rem;
+    }
+    nav a:hover {
+      background: var(--border);
+      color: var(--accent);
+    }
+    nav a[aria-current="page"] {
+      background: var(--accent);
+      color: var(--bg-dark);
+      font-weight: 600;
+    }
     main {
       max-width: 600px;
       margin: 2rem auto;
@@ -120,6 +151,14 @@
 <body>
   <header>
     <h1>Diagnostics — Obsidian Bastian</h1>
+    <nav aria-label="Main navigation">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="onboardcomputer.html">Onboard Computer</a></li>
+        <li><a href="mainframeweather.html">Mainframe Weather</a></li>
+        <li><a href="diagnostics.html" aria-current="page">Diagnostics</a></li>
+      </ul>
+    </nav>
   </header>
   <main>
     <div class="diagnostics-select">

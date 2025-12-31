@@ -32,6 +32,11 @@
     .kbd-list{display:flex;flex-direction:column;gap:6px;font-size:13px}
     .kbd{display:inline-block;background:#08121a;border:1px solid rgba(255,255,255,0.02);padding:6px 8px;border-radius:6px;color:var(--muted);font-family:monospace}
     a.link{color:var(--accent);text-decoration:none}
+    nav{padding:12px 20px;background:rgba(255,255,255,0.01);border-bottom:1px solid rgba(255,255,255,0.03)}
+    nav ul{list-style:none;padding:0;margin:0;display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
+    nav a{color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:6px;transition:all 0.2s;font-size:14px}
+    nav a:hover{background:rgba(255,255,255,0.03);color:var(--accent)}
+    nav a[aria-current="page"]{background:linear-gradient(90deg,#114b3b,#427f62);color:white;font-weight:600}
     @media (max-width:900px){main{grid-template-columns:1fr;}.sidebar{order:2}}
   </style>
 </head>
@@ -45,6 +50,14 @@
     <button id="btn-toggle-gauges" class="primary">Toggle Gauges (G)</button>
   </div>
 </header>
+<nav aria-label="Main navigation">
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="onboardcomputer.html" aria-current="page">Onboard Computer</a></li>
+    <li><a href="mainframeweather.html">Mainframe Weather</a></li>
+    <li><a href="diagnostics.html">Diagnostics</a></li>
+  </ul>
+</nav>
 <main>
   <div class="left">
     <section class="gauges" id="gauges">

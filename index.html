@@ -43,6 +43,37 @@
       color: var(--text-muted);
       font-weight: 400;
     }
+    nav {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+    nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    nav a {
+      color: var(--text-main);
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+      font-size: 0.95rem;
+    }
+    nav a:hover {
+      background: var(--border);
+      color: var(--accent);
+    }
+    nav a[aria-current="page"] {
+      background: var(--accent);
+      color: var(--bg-dark);
+      font-weight: 600;
+    }
     .dashboard {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
@@ -164,6 +195,14 @@
   <header>
     <h1>Obsidian Bastian</h1>
     <h2>Family Ship Control UI</h2>
+    <nav aria-label="Main navigation">
+      <ul>
+        <li><a href="index.html" aria-current="page">Home</a></li>
+        <li><a href="onboardcomputer.html">Onboard Computer</a></li>
+        <li><a href="mainframeweather.html">Mainframe Weather</a></li>
+        <li><a href="diagnostics.html">Diagnostics</a></li>
+      </ul>
+    </nav>
   </header>
   <main class="dashboard">
     <!-- Quick Actions Panel -->
