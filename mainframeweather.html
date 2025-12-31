@@ -1,1 +1,474 @@
-placeholder
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mainframe Weather — Planetary Atmospherics</title>
+  <style>
+    :root{
+      --bg:#0b0f1a; --card:#0f1724; --muted:#9aa6c0; --accent:#6ee7b7;
+      --danger:#ff7b7b; --glass: rgba(255,255,255,0.03);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#041024 0%, #071025 60%);color:#e6eef8;}
+    .wrap{max-width:980px;margin:36px auto;padding:24px;}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    h1{font-size:20px;margin:0}
+    .controls{display:flex;gap:8px;align-items:center}
+    button{background:var(--accent);color:#042023;border:0;padding:8px 12px;border-radius:8px;font-weight:600;cursor:pointer}
+    .toggle{display:flex;align-items:center;gap:8px;font-size:14px}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:16px;margin-top:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
+    .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .item{padding:10px;background:var(--glass);border-radius:8px}
+    .label{font-size:12px;color:var(--muted);margin-bottom:6px}
+    .big{font-size:18px;font-weight:700}
+    .composition{margin-top:10px;display:flex;flex-direction:column;gap:6px}
+    .comp-row{display:flex;justify-content:space-between;font-size:13px}
+    .bar{height:10px;background:rgba(255,255,255,0.06);border-radius:8px;overflow:hidden;margin-top:6px}
+    .bar > i{display:block;height:100%;background:linear-gradient(90deg,#6ee7b7,#60a5fa);width:0%}
+    .rightcol{display:flex;flex-direction:column;gap:12px}
+    .json{white-space:pre-wrap;background:#041427;padding:12px;border-radius:8px;color:#bfe6ff;font-size:13px;max-height:420px;overflow:auto}
+    .footer{margin-top:18px;color:var(--muted);font-size:13px}
+    .pill{display:inline-block;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.03);font-weight:600}
+    .good{color:var(--accent);font-weight:700}
+    .bad{color:var(--danger);font-weight:700}
+    .small{font-size:12px;color:var(--muted)}
+    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Mainframe Weather — Planetary Atmospherics</h1>
+        <div class="small">Random solar system and planet generator with atmospheric conditions and habitability check.</div>
+      </div>
+      <div class="controls">
+        <div class="toggle">
+          <label><input id="earthToggle" type="checkbox"> Local Earth Conditions</label>
+        </div>
+        <button id="shuffle">Randomize</button>
+        <button id="copyJson">Copy JSON</button>
+      </div>
+    </header>
+
+    <div class="grid">
+      <div>
+        <div class="card">
+          <div class="row" style="justify-content:space-between;align-items:flex-start">
+            <div>
+              <div class="label">System</div>
+              <div class="big" id="systemName">—</div>
+              <div class="small" id="starInfo">Star: —</div>
+            </div>
+            <div style="text-align:right">
+              <div class="label">Planet</div>
+              <div class="big" id="planetName">—</div>
+              <div class="small" id="planetSummary">—</div>
+            </div>
+          </div>
+
+          <hr style="margin:14px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)">
+
+          <div class="stats">
+            <div class="item">
+              <div class="label">Orbital Radius</div>
+              <div id="orbital" class="big">—</div>
+            </div>
+            <div class="item">
+              <div class="label">Surface Gravity</div>
+              <div id="gravity" class="big">—</div>
+            </div>
+            <div class="item">
+              <div class="label">Mean Temperature</div>
+              <div id="temperature" class="big">—</div>
+            </div>
+            <div class="item">
+              <div class="label">Surface Pressure</div>
+              <div id="pressure" class="big">—</div>
+            </div>
+            <div class="item">
+              <div class="label">Wind (peak)</div>
+              <div id="wind" class="big">—</div>
+            </div>
+            <div class="item">
+              <div class="label">Cloud Coverage</div>
+              <div id="clouds" class="big">—</div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px">
+            <div class="label">Atmospheric Composition</div>
+            <div id="composition" class="composition"></div>
+          </div>
+
+          <div style="margin-top:12px;display:flex;gap:12px;align-items:center">
+            <div class="pill" id="habitabilityPill">—</div>
+            <div class="small" id="habitabilityReason">—</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <div class="label">Notable Weather & Phenomena</div>
+          <div id="phenomena" class="small" style="margin-top:8px">—</div>
+        </div>
+      </div>
+
+      <aside class="rightcol">
+        <div class="card">
+          <div class="label">System Location</div>
+          <div id="location" style="margin-top:8px" class="small">—</div>
+          <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)">
+          <div class="label">Diagnostics</div>
+          <div class="small" id="diagnostics" style="margin-top:8px">—</div>
+        </div>
+
+        <div class="card">
+          <div class="label">Raw Data (JSON)</div>
+          <div id="json" class="json">—</div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="footer">
+      Tip: toggle "Local Earth Conditions" to inspect a stable, livable report for comparison.
+    </div>
+  </div>
+
+<script>
+(function(){
+  // Utility
+  const qs = s => document.querySelector(s);
+  const rand = (min,max) => Math.random() * (max-min) + min;
+  const randint = (min,max) => Math.floor(rand(min,max+1));
+  const choice = arr => arr[Math.floor(Math.random()*arr.length)];
+  const pct = (v,dec=1) => (Math.round(v*10**dec)/10**dec) + '%';
+
+  // Templates & pools
+  const starClasses = ['O','B','A','F','G','K','M'];
+  const luminosity = ['I','II','III','IV','V'];
+  const starTypes = ["Hypergiant","Blue giant","White star","Yellow dwarf","Orange dwarf","Red dwarf","Red dwarf"];
+  const planetTypes = ['Terrestrial','Super-Earth','Sub-Neptune','Ice World','Gas Giant','Ocean World','Rocky','Desert','Lava'];
+  const phenomenaPool = [
+    "Global dust storms", "Auroral curtains", "Methane rain", "Silicate particulates in atmosphere",
+    "Supersonic jet streams", "Persistent lightning storms", "High-altitude hydrocarbons haze",
+    "Cryovolcanic plumes", "Magnetospheric radiation belts", "Dense smog and photochemical haze",
+    "Seasonal polar caps", "Thick sulfuric clouds", "Transient water vapor plumes"
+  ];
+
+  // DOM
+  const el = {
+    systemName: qs('#systemName'),
+    starInfo: qs('#starInfo'),
+    planetName: qs('#planetName'),
+    planetSummary: qs('#planetSummary'),
+    orbital: qs('#orbital'),
+    gravity: qs('#gravity'),
+    temperature: qs('#temperature'),
+    pressure: qs('#pressure'),
+    wind: qs('#wind'),
+    clouds: qs('#clouds'),
+    composition: qs('#composition'),
+    habitabilityPill: qs('#habitabilityPill'),
+    habitabilityReason: qs('#habitabilityReason'),
+    phenomena: qs('#phenomena'),
+    location: qs('#location'),
+    diagnostics: qs('#diagnostics'),
+    json: qs('#json'),
+    shuffle: qs('#shuffle'),
+    earthToggle: qs('#earthToggle'),
+    copyJson: qs('#copyJson'),
+  };
+
+  // Random generators
+  function makeSystemName(){
+    // e.g. "TAR-7XH" or "Kepler-452"
+    if(Math.random() < 0.25){
+      return choice(['Kepler','TRAPPIST','Gliese','HD','KIC']) + '-' + randint(10,9999);
+    }
+    const a = String.fromCharCode(65 + randint(0,25));
+    const b = String.fromCharCode(65 + randint(0,25));
+    const digits = randint(10,999);
+    return `${a}${b}-${digits}`;
+  }
+
+  function makeStar(){
+    const cls = choice(starClasses);
+    const sub = randint(0,9);
+    const lum = choice(luminosity);
+    const name = `${cls}${sub}${lum}`;
+    const type = (() => {
+      if (cls==='O' || cls==='B') return 'Massive luminous';
+      if (cls==='A' || cls==='F') return 'Hot luminous';
+      if (cls==='G') return 'Yellow dwarf (G-type)';
+      if (cls==='K') return 'Orange dwarf (K-type)';
+      return 'Red dwarf (M-type)';
+    })();
+    // approximate luminosity scaling for habitable zone rough calc
+    const luminosityFactor = ({O:50000,B:1000,A:20,F:6,G:1,K:0.4,M:0.04})[cls] || 1;
+    return {name, type, cls, sub, lum, luminosityFactor};
+  }
+
+  function makePlanet(systemName, star){
+    // Determine orbit index and radius in AU (very rough)
+    const index = randint(1,12);
+    // warp: inner small radii for inner planets, giants further out
+    const base = Math.pow(1.5, index-1) * 0.35;
+    const orbital = +(base * (0.7 + Math.random()*0.6)).toFixed(2);
+    const sizeCategory = Math.random();
+    let radiusEarth, massEarth, pType;
+    if(sizeCategory < 0.25){
+      pType = 'Terrestrial'; radiusEarth = +(rand(0.3,1.2).toFixed(2)); massEarth = +(Math.pow(radiusEarth,3) * (0.7 + Math.random()*1.3)).toFixed(2);
+    } else if(sizeCategory < 0.45){
+      pType = 'Super-Earth'; radiusEarth = +(rand(1.3,2.4).toFixed(2)); massEarth = +(rand(2,10).toFixed(2));
+    } else if(sizeCategory < 0.7){
+      pType = 'Sub-Neptune'; radiusEarth = +(rand(2.5,4.0).toFixed(2)); massEarth = +(rand(10,40).toFixed(2));
+    } else {
+      pType = 'Gas Giant'; radiusEarth = +(rand(4.0,11.0).toFixed(2)); massEarth = +(rand(50,600).toFixed(0));
+    }
+    // gravity ~ mass/radius^2 (Earth=1)
+    const gravity = +(massEarth / (radiusEarth*radiusEarth)).toFixed(2);
+
+    // approximate equilibrium temperature based on star luminosity factor & orbital radius
+    // T ~ 278K * (L^0.25) / sqrt(a) , simplified with our factor
+    let tempK = 278 * Math.pow(star.luminosityFactor, 0.25) / Math.sqrt(Math.max(orbital,0.2));
+    // add randomness and greenhouse effects
+    tempK = tempK * (0.6 + Math.random()*1.8);
+    const tempC = +(tempK - 273.15).toFixed(1);
+
+    // Pressure: broader distribution: thin <0.1 bar, Earth ~1, thick up to 200
+    let pressure = +(Math.pow(Math.random(), 2) * 150).toFixed(2); // skew to low
+    if(pType === 'Terrestrial' && Math.random() < 0.6) pressure = +(pressure * 0.02 + 0.6).toFixed(2); // bring terrestrial closer to habitable
+    if(pType.includes('Gas')) pressure = +(rand(50,300).toFixed(2));
+
+    // composition: pick major gases depending on type
+    const comp = buildComposition(pType, tempC);
+
+    // clouds, winds, phenomena
+    const clouds = +(Math.min(100, Math.max(0, (comp.some(g=>g.gas==='H2O')? randint(10,90) : randint(0,95)) ))).toFixed(0);
+    const wind = (pType.includes('Gas') ? randint(100,1200) : randint(0,250));
+    const phenomena = generatePhenomena(pType, tempC, pressure, comp);
+
+    const habitability = evaluateHabitability({tempC, pressure, comp, gravity, pType});
+
+    const planetLetter = String.fromCharCode(98 + Math.min(25, index)); // 'b'.. 'z'
+    const planetCode = `${systemName.split('-')[0]}-${String(index).padStart(2,'0')}${planetLetter}`;
+
+    return {
+      systemName,
+      planetCode,
+      index,
+      orbitalAU: orbital,
+      radiusEarth,
+      massEarth,
+      gravity,
+      tempC,
+      pressureBar: +pressure,
+      composition: comp,
+      cloudsPercent: clouds,
+      windKph: wind,
+      type: pType,
+      phenomena,
+      habitability
+    };
+  }
+
+  function buildComposition(pType, tempC){
+    // Start with a dominant gas
+    const comps = [];
+    if(pType.includes('Gas')){
+      comps.push({gas:'H2',pct: +(rand(60,92)).toFixed(1)});
+      comps.push({gas:'He',pct: +(rand(6,30)).toFixed(1)});
+      if(Math.random() < 0.4) comps.push({gas:'CH4',pct: +(rand(0.1,4)).toFixed(2)});
+    } else {
+      // Terrestrial/sub types: pick main gases including N2, CO2, O2, H2O vapor, noble
+      let n2 = +(rand(30,90)).toFixed(1);
+      let o2 = +(rand(0,30)).toFixed(1);
+      let co2 = +(rand(0,10)).toFixed(2);
+      // bias for habitable-like planets
+      if(Math.abs(tempC - 15) < 40 && Math.random() < 0.5){
+        n2 = +(rand(60,80)).toFixed(1);
+        o2 = +(rand(10,25)).toFixed(1);
+        co2 = +(rand(0.01,0.8)).toFixed(2);
+      }
+      comps.push({gas:'N2',pct:n2});
+      if(o2>0.05) comps.push({gas:'O2',pct:o2});
+      if(co2>0.01) comps.push({gas:'CO2',pct:co2});
+      // trace gases
+      if(Math.random() < 0.4) comps.push({gas:'Ar',pct: +(rand(0.1,1.2)).toFixed(2)});
+      if(Math.random() < 0.35) comps.push({gas:'CH4',pct: +(rand(0,2)).toFixed(2)});
+      if(Math.random() < 0.35) comps.push({gas:'H2O',pct: +(rand(0,6)).toFixed(2)});
+      if(Math.random() < 0.12) comps.push({gas:'SO2',pct: +(rand(0,4)).toFixed(2)});
+    }
+    // Normalize to 100% for display
+    let sum = comps.reduce((s,c)=>s+Number(c.pct),0);
+    // If gas giant and sum far less than 100 add helium/hydrogen
+    if(sum < 30 && pType.includes('Gas')) {
+      // already H2/He, but normalize
+      sum = comps.reduce((s,c)=>s+Number(c.pct),0);
+    }
+    // Normalize percentages
+    comps.forEach(c => { c.pct = +(100 * c.pct / sum).toFixed(2); });
+    // Merge tiny traces
+    return comps.sort((a,b)=>b.pct - a.pct);
+  }
+
+  function generatePhenomena(type, tempC, pressure, composition){
+    const pool = [];
+    if(type.includes('Gas')){
+      pool.push("High-altitude banded storms");
+      pool.push("Strong magnetospheric radio emissions");
+    } else {
+      if(composition.some(g=>g.gas==='CH4' && g.pct>1)) pool.push("Hydrocarbon haze and orange skies");
+      if(composition.some(g=>g.gas==='SO2')) pool.push("Acidic cloud layers and sulfuric aerosols");
+      if(Math.abs(tempC) < 100 && Math.random() < 0.5) pool.push("Seasonal storms and weather fronts");
+      if(pressure > 50) pool.push("Supercritical atmospheric phenomena");
+      if(Math.random() < 0.2) pool.push(choice(phenomenaPool));
+    }
+    // always include at least one
+    if(pool.length === 0) pool.push(choice(phenomenaPool));
+    return pool;
+  }
+
+  function evaluateHabitability({tempC, pressure, comp, gravity, pType}){
+    // Simple heuristic:
+    // temperature between -20 and 50 C, pressure between 0.4 and 3 bar, oxygen 18-25%, low toxic gases (<5% SO2/CH4 signif)
+    let score = 0;
+    if(pType==='Terrestrial' || pType==='Super-Earth' || pType==='Ocean World') score += 1;
+    if(tempC >= -20 && tempC <= 50) score += 2;
+    if(pressure >= 0.4 && pressure <= 5) score += 2;
+    const o2 = (comp.find(c=>c.gas==='O2')||{pct:0}).pct;
+    if(o2 >= 18 && o2 <= 25) score += 2;
+    const toxic = (comp.find(c=>c.gas==='SO2')||{pct:0}).pct + (comp.find(c=>c.gas==='CH4')||{pct:0}).pct*0.2;
+    if(toxic < 5) score += 1;
+    if(gravity >= 0.5 && gravity <= 2.5) score += 1;
+
+    const reasons = [];
+    if(score >= 7) reasons.push("Conditions compatible with surface life and human habitability (within rough heuristic).");
+    else {
+      if(!(pType==='Terrestrial' || pType==='Super-Earth' || pType==='Ocean World')) reasons.push("Planet type unlikely for terrestrial habitability.");
+      if(!(tempC >= -20 && tempC <= 50)) reasons.push(`Temperature (${tempC}°C) outside comfortable range.`);
+      if(!(pressure >= 0.4 && pressure <= 5)) reasons.push(`Pressure (${pressure} bar) outside habitable window.`);
+      if(!(o2 >= 18 && o2 <= 25)) reasons.push("Oxygen concentration not suitable for Earth-like respiration.");
+      if(toxic >= 5) reasons.push("Toxic trace gases may be hazardous.");
+      if(!(gravity >= 0.5 && gravity <= 2.5)) reasons.push("Gravity outside comfortable human tolerance.");
+    }
+
+    return {
+      score,
+      habitable: score >= 7,
+      reasons
+    };
+  }
+
+  function setEarth(){
+    // Hard-coded Earth-like values
+    const systemName = 'Sol';
+    const star = {name:'Sun (G2V)', type:'G2V', luminosityFactor:1};
+    const planet = {
+      systemName,
+      planetCode: 'Sol-01b',
+      index: 3,
+      orbitalAU: 1.00,
+      radiusEarth: 1.0,
+      massEarth: 1.0,
+      gravity: 1.0,
+      tempC: 15.0,
+      pressureBar: 1.013,
+      composition: [
+        {gas:'N2',pct:78.08},
+        {gas:'O2',pct:20.95},
+        {gas:'Ar',pct:0.93},
+        {gas:'CO2',pct:0.04},
+        {gas:'CH4',pct:0.00018}
+      ],
+      cloudsPercent: 60,
+      windKph: 110,
+      type: 'Terrestrial',
+      phenomena: ['Stable climate; seasonal variations; aurora in polar regions'],
+      habitability: {score:10, habitable:true, reasons:['Local conditions are stable and livable (reference Earth).']}
+    };
+    return {star, planet};
+  }
+
+  function render(dataset){
+    const star = dataset.star;
+    const planet = dataset.planet;
+    el.systemName.textContent = dataset.planet.systemName || dataset.starName || '—';
+    el.starInfo.textContent = `${star.name} • ${star.type || '='}`;
+    el.planetName.textContent = planet.planetCode;
+    el.planetSummary.textContent = `${planet.type} • ${planet.radiusEarth} R⊕ • ${planet.massEarth} M⊕`;
+    el.orbital.textContent = `${planet.orbitalAU} AU (index ${planet.index})`;
+    el.gravity.textContent = `${planet.gravity} g`;
+    el.temperature.textContent = `${planet.tempC} °C`;
+    el.pressure.textContent = `${planet.pressureBar} bar`;
+    el.wind.textContent = `${planet.windKph} km/h`;
+    el.clouds.textContent = `${planet.cloudsPercent} %`;
+
+    // Composition UI
+    el.composition.innerHTML = '';
+    planet.composition.slice(0,8).forEach(comp=>{
+      const row = document.createElement('div');
+      row.className = 'comp-row';
+      row.innerHTML = `<div>${comp.gas}</div><div>${comp.pct}%</div>`;
+      const barWrap = document.createElement('div');
+      barWrap.className = 'bar';
+      const bar = document.createElement('i');
+      bar.style.width = Math.max(2, Math.min(100, comp.pct)) + '%';
+      barWrap.appendChild(bar);
+      el.composition.appendChild(row);
+      el.composition.appendChild(barWrap);
+    });
+
+    // Habitability
+    el.habitabilityPill.textContent = planet.habitability.habitable ? 'LIVABLE' : 'UNSUITABLE';
+    el.habitabilityPill.className = 'pill ' + (planet.habitability.habitable ? 'good' : 'bad');
+    el.habitabilityReason.textContent = (planet.habitability.habitable ? planet.habitability.reasons.join(' ') : planet.habitability.reasons.slice(0,3).join(' '));
+
+    el.phenomena.textContent = planet.phenomena.join('; ');
+    el.location.textContent = `≈ Sector ${makeCoordinate()} • System ${planet.systemName} • Star class ${star.cls}${star.sub}${star.lum}`;
+    el.diagnostics.textContent = `Generated ${new Date().toISOString()} • Seedless PRNG`;
+
+    const pretty = JSON.stringify({star,planet}, null, 2);
+    el.json.textContent = pretty;
+  }
+
+  function makeCoordinate(){
+    const x = randint(-1200,1200);
+    const y = randint(-1200,1200);
+    const z = randint(-1200,1200);
+    return `${x}, ${y}, ${z}`;
+  }
+
+  // Main actions
+  function randomize(){
+    if(el.earthToggle.checked){
+      // Show Earth instead
+      const {star,planet} = setEarth();
+      render({star,planet});
+      return;
+    }
+    const systemName = makeSystemName();
+    const star = makeStar();
+    const planet = makePlanet(systemName, star);
+    render({star,planet});
+  }
+
+  // Copy JSON
+  el.copyJson.addEventListener('click', ()=>{
+    navigator.clipboard?.writeText(el.json.textContent || '')
+      .then(()=> alert('JSON copied to clipboard'))
+      .catch(()=> alert('Unable to copy'));
+  });
+
+  el.shuffle.addEventListener('click', ()=> randomize());
+  el.earthToggle.addEventListener('change', ()=> randomize());
+
+  // Initial generation
+  randomize();
+
+})();
+</script>
+</body>
+</html>
