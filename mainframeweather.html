@@ -10,6 +10,9 @@
 
   <!-- Chart.js CDN (lightweight and easy to use) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- Add a time adapter for Chart.js time scale (recommended) -->
+  <script src="https://cdn.jsdelivr.net/npm/luxon@3/build/global/luxon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@2/dist/chartjs-adapter-luxon.min.js"></script>
 
   <style>
     :root{
@@ -377,7 +380,18 @@
     const contentionCtx = document.getElementById('contentionChart').getContext('2d');
     const contentionChart = new Chart(contentionCtx, {
       type:'bar',
-      data:{labels: series.contention.map(d=>d.x), datasets:[{label:'Contention Score', data: series.contention, backgroundColor:'rgba(255,150,80,0.18)', borderColor:'rgba(255,150,80,0.8)', borderWidth:1}]},
+      data:{
+        labels: series.contention.map(d=>d.x),
+        datasets:[
+          {
+            label:'Contention Score',
+            data: series.contention,
+            backgroundColor:'rgba(255,150,80,0.18)',
+            borderColor:'rgba(255,150,80,0.8)',
+            borderWidth:1
+          }
+        ]
+      },
       options:{animation:false, parsing:false, scales:{x:{type:'time', ticks:{display:false}}, y:{beginAtZero:true, max:100}}, plugins:{legend:{display:false}}}
     });
 
