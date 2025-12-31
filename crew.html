@@ -1,1 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Obsidian Bastian — Crew</title>
+  <style>
+    :root {
+      --bg-dark: #181c24;
+      --bg-panel: #23283a;
+      --accent: #4fd1c5;
+      --text-main: #e2e8f0;
+      --text-muted: #a0aec0;
+      --border: #2d3748;
+      --card-gradient: linear-gradient(180deg, rgba(79,209,197,0.04), rgba(0,0,0,0.02));
+      --font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+      --radius: 12px;
+    }
 
+    /* Page basics (matching index theme) */
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    header {
+      background: var(--bg-panel);
+      padding: 1.4rem 1.6rem;
+      border-bottom: 2px solid var(--accent);
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.9rem;
+      color: var(--accent);
+      letter-spacing: 1.5px;
+    }
+    header p {
+      margin: 0.35rem 0 0 0;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .nav-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .back-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      border: 1px solid transparent;
+      padding: 0.45rem 0.75rem;
+      border-radius: 8px;
+      background: transparent;
+      transition: all .12s ease;
+    }
+    .back-link:hover {
+      color: var(--text-main);
+      border-color: var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+
+    /* Crew grid/cards */
+    .crew-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .crew-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.2rem;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background-image: var(--card-gradient);
+    }
+
+    .role-header {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+    }
+    .role-title {
+      color: var(--accent);
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: 0.6px;
+      margin: 0;
+    }
+    .role-name {
+      color: var(--text-main);
+      font-size: 0.98rem;
+      margin: 0;
+      opacity: 0.95;
+    }
+    .role-badge {
+      margin-left: auto;
+      font-size: 0.75rem;
+      color: var(--bg-dark);
+      background: var(--accent);
+      padding: 0.25rem 0.5rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .role-desc {
+      margin-top: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      font-size: 0.95rem;
+    }
+
+    .muted-small {
+      margin-top: 0.9rem;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 420px) {
+      header h1 { font-size: 1.6rem; }
+      .role-title { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Obsidian Bastian</h1>
+    <p>Command Hub — Crew Roster</p>
+  </header>
+
+  <main class="container" role="main" aria-labelledby="crew-heading">
+    <div class="nav-row">
+      <a class="back-link" href="index.html" aria-label="Back to dashboard">← Back to Command Hub</a>
+      <div class="muted-small">No photos — names and roles only</div>
+    </div>
+
+    <h2 id="crew-heading" style="color:var(--text-muted); margin:0 0 1rem 0; font-weight:600;">
+      Current Crew
+    </h2>
+
+    <section class="crew-grid" aria-label="Crew list">
+      <!-- Captain -->
+      <article class="crew-card" aria-labelledby="captain-name">
+        <div class="role-header">
+          <div>
+            <div class="role-title">Captain</div>
+            <div id="captain-name" class="role-name">Meridian Vale</div>
+          </div>
+          <div class="role-badge" aria-hidden="true">Lead</div>
+        </div>
+        <p class="role-desc">
+          The Captain is responsible for final command decisions, mission planning, and crew welfare.
+          Meridian coordinates operations, sets course, and handles high-level communications with allied stations.
+        </p>
+      </article>
+
+      <!-- Co-Captain -->
+      <article class="crew-card" aria-labelledby="cocaptain-name">
+        <div class="role-header">
+          <div>
+            <div class="role-title">Co-Captain</div>
+            <div id="cocaptain-name" class="role-name">Orion Kade</div>
+          </div>
+          <div class="role-badge" aria-hidden="true">2nd</div>
+        </div>
+        <p class="role-desc">
+          The Co-Captain supports the Captain, leads tactical teams when required, and assumes command during contingencies.
+          Orion manages bridge operations and tactical readiness.
+        </p>
+      </article>
+
+      <!-- Mechanic -->
+      <article class="crew-card" aria-labelledby="mechanic-name">
+        <div class="role-header">
+          <div>
+            <div class="role-title">Mechanic</div>
+            <div id="mechanic-name" class="role-name">Juno Pike</div>
+          </div>
+          <div class="role-badge" aria-hidden="true">Engineer</div>
+        </div>
+        <p class="role-desc">
+          The Mechanic is responsible for maintenance, repairs, and systems integrity.
+          Juno keeps engines, power systems and critical hardware running under all conditions.
+        </p>
+      </article>
+
+      <!-- General -->
+      <article class="crew-card" aria-labelledby="general-name">
+        <div class="role-header">
+          <div>
+            <div class="role-title">General</div>
+            <div id="general-name" class="role-name">Lira Solace</div>
+          </div>
+          <div class="role-badge" aria-hidden="true">Officer</div>
+        </div>
+        <p class="role-desc">
+          The General handles logistics, coordination with ground teams, and resource allocation.
+          Lira oversees personnel assignments and ensures smooth internal operations.
+        </p>
+      </article>
+    </section>
+
+    <p class="muted-small" style="margin-top:1.25rem;">
+      Tip: Replace the sample names and descriptions with your crew's actual names & bios. If you'd like, I can add data attributes for JSON import or wire this to a simple JS file for easier updates.
+    </p>
+  </main>
+</body>
+</html>
