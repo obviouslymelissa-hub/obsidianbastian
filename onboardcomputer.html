@@ -7,9 +7,14 @@
   <style>
     :root{--bg:#0b1220;--panel:#0f1724;--accent:#7bd389;--muted:#9aa6b2;--danger:#ff7b7b}
     html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:linear-gradient(180deg,#071017 0%, #0b1220 60%);color:#e6eef3}
-    header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:rgba(255,255,255,0.02);backdrop-filter: blur(4px);border-bottom:1px solid rgba(255,255,255,0.03)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:rgba(255,255,255,0.02);backdrop-filter: blur(4px);border-bottom:1px solid rgba(255,255,255,0.03);flex-wrap:wrap}
     header h1{margin:0;font-size:18px;letter-spacing:0.6px}
     header .controls{display:flex;gap:8px}
+    nav{flex-basis:100%;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.05)}
+    nav ul{list-style:none;padding:0;margin:0;display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap}
+    nav a{color:#9aa6b2;text-decoration:none;font-size:13px;transition:color 0.2s}
+    nav a:hover{color:#7bd389}
+    nav a.active{color:#7bd389;font-weight:600}
     button{background:var(--panel);border:1px solid rgba(255,255,255,0.03);color:var(--muted);padding:8px 10px;border-radius:6px;cursor:pointer}
     button.primary{background:linear-gradient(90deg,#114b3b,#427f62);color:white;border:none}
     main{display:grid;grid-template-columns:1fr 360px;gap:18px;padding:18px}
@@ -44,6 +49,14 @@
     <button id="btn-weather">Mainframe Weather (M)</button>
     <button id="btn-toggle-gauges" class="primary">Toggle Gauges (G)</button>
   </div>
+  <nav aria-label="Main navigation">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="onboardcomputer.html" class="active" aria-current="page">Onboard Computer</a></li>
+      <li><a href="mainframeweather.html">Mainframe Weather</a></li>
+      <li><a href="diagnostics.html">Diagnostics</a></li>
+    </ul>
+  </nav>
 </header>
 <main>
   <div class="left">

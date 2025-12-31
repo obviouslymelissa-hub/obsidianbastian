@@ -5,12 +5,32 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Mainframe Weather — Obsidian Bastian</title>
   <style>
-    body{background:#071217;color:#d7eef0;font-family:Inter,system-ui,Arial;padding:24px}
+    body{background:#071217;color:#d7eef0;font-family:Inter,system-ui,Arial;margin:0;padding:0}
+    header{background:rgba(255,255,255,0.02);padding:18px 24px;border-bottom:1px solid rgba(255,255,255,0.03);text-align:center}
+    header h1{margin:0;font-size:1.6rem;letter-spacing:1px}
+    nav{margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.05)}
+    nav ul{list-style:none;padding:0;margin:0;display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap}
+    nav a{color:#9aa6b2;text-decoration:none;font-size:13px;transition:color 0.2s}
+    nav a:hover{color:#66a0ff}
+    nav a.active{color:#66a0ff;font-weight:600}
+    main{padding:24px}
     .card{background:rgba(255,255,255,0.02);padding:18px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
     a{color:#66a0ff}
   </style>
 </head>
 <body>
+  <header>
+    <h1>Mainframe Weather — Obsidian Bastian</h1>
+    <nav aria-label="Main navigation">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="onboardcomputer.html">Onboard Computer</a></li>
+        <li><a href="mainframeweather.html" class="active" aria-current="page">Mainframe Weather</a></li>
+        <li><a href="diagnostics.html">Diagnostics</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
   <h1>Mainframe Weather</h1>
   <div class="card">
     <p>This page is a placeholder for mainframe weather — a conceptual dashboard for load, latency, and contention over time.</p>
@@ -22,5 +42,6 @@
     </ul>
     <p><a href="index.html">← Return to Mission UI</a></p>
   </div>
+  </main>
 </body>
 </html>
