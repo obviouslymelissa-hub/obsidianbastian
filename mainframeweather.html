@@ -5,12 +5,24 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Mainframe Weather — Obsidian Bastian</title>
   <style>
-    body{background:#071217;color:#d7eef0;font-family:Inter,system-ui,Arial;padding:24px}
+    body{background:#071217;color:#d7eef0;font-family:Inter,system-ui,Arial;padding:0;margin:0}
     .card{background:rgba(255,255,255,0.02);padding:18px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
     a{color:#66a0ff}
+    nav{background:rgba(255,255,255,0.02);backdrop-filter:blur(4px);padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.03);display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    nav a{color:#9aa6b2;text-decoration:none;padding:8px 14px;border-radius:6px;transition:background 0.2s,color 0.2s}
+    nav a:hover{background:#0f1724;color:#e6eef3}
+    nav a.active{background:#0f1724;color:#e6eef3}
+    .content{padding:24px}
   </style>
 </head>
 <body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="onboardcomputer.html">Onboard Computer</a>
+    <a href="mainframeweather.html" class="active">Mainframe Weather</a>
+    <a href="diagnostics.html">Diagnostics</a>
+  </nav>
+  <div class="content">
   <h1>Mainframe Weather</h1>
   <div class="card">
     <p>This page is a placeholder for mainframe weather — a conceptual dashboard for load, latency, and contention over time.</p>
@@ -21,6 +33,7 @@
       <li>Service-level impact annotations</li>
     </ul>
     <p><a href="index.html">← Return to Mission UI</a></p>
+  </div>
   </div>
 </body>
 </html>

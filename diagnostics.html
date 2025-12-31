@@ -115,12 +115,42 @@
       text-decoration: none;
       font-size: 1rem;
     }
+    nav {
+      background: var(--bg-panel);
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    nav a {
+      color: var(--text-main);
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      transition: background 0.2s, color 0.2s;
+    }
+    nav a:hover {
+      background: var(--accent);
+      color: var(--bg-dark);
+    }
+    nav a.active {
+      background: var(--accent);
+      color: var(--bg-dark);
+    }
   </style>
 </head>
 <body>
   <header>
     <h1>Diagnostics — Obsidian Bastian</h1>
   </header>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="onboardcomputer.html">Onboard Computer</a>
+    <a href="mainframeweather.html">Mainframe Weather</a>
+    <a href="diagnostics.html" class="active">Diagnostics</a>
+  </nav>
   <main>
     <div class="diagnostics-select">
       <button data-area="Life Support">Life Support</button>
