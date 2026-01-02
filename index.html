@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Obsidian Bastian — Command Hub</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
     :root {
       --bg-dark: #181c24;
@@ -12,244 +12,354 @@
       --text-main: #e2e8f0;
       --text-muted: #a0aec0;
       --border: #2d3748;
-      --danger: #e53e3e;
-      --success: #38a169;
-      --warning: #ecc94b;
+      --tile-radius: 10px;
       --font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
     }
-    body {
-      background: var(--bg-dark);
-      color: var(--text-main);
-      font-family: var(--font-family);
-      margin: 0;
-      padding: 0;
-    }
+
+    /* Page basics */
+    html,body{height:100%;margin:0;font-family:var(--font-family);background:var(--bg-dark);color:var(--text-main)}
+    /* Header with ship image placeholder */
     header {
-      background: var(--bg-panel);
-      padding: 1.5rem 2rem;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
       border-bottom: 2px solid var(--accent);
-      text-align: center;
+      padding: 18px;
     }
-    header h1 {
-      margin: 0;
-      font-size: 2.2rem;
-      letter-spacing: 2px;
-      color: var(--accent);
+    .header-inner {
+      max-width:1200px;
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      gap:18px;
+      justify-content:center;
+      padding:6px 12px;
     }
-    header h2 {
-      margin: 0.5rem 0 0 0;
-      font-size: 1.2rem;
-      color: var(--text-muted);
-      font-weight: 400;
+    .ship-img {
+      width:96px;
+      height:96px;
+      border-radius:12px;
+      object-fit:cover;
+      border: 1px solid rgba(255,255,255,0.04);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+      background: linear-gradient(180deg, rgba(79,209,197,0.06), rgba(255,255,255,0.01));
+      flex:0 0 96px;
+      animation: headerFloat 6s ease-in-out infinite;
     }
-    .dashboard {
+    @keyframes headerFloat {
+      0% { transform: translateY(-4px); }
+      50% { transform: translateY(4px); }
+      100% { transform: translateY(-4px); }
+    }
+    .header-text { text-align:left; }
+    .header-text h1 { margin:0; font-size:1.6rem; color:var(--accent); letter-spacing:1.6px; }
+    .header-text p { margin:6px 0 0 0; color:var(--text-muted); font-size:0.95rem; }
+
+    /* Container layout: left (large) + right (side) */
+    .container {
+      max-width:1200px;
+      margin:20px auto;
+      padding:0 18px 48px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-      gap: 2rem;
-      padding: 2rem;
-      max-width: 1200px;
-      margin: auto;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
     }
+
+    /* Full-width About panel at top (kept for compatibility, hide duplicate title) */
+    .about {
+      grid-column: 1 / -1;
+      background: linear-gradient(180deg, rgba(79,209,197,0.03), rgba(255,255,255,0.01));
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.45);
+      display:flex;
+      gap:18px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .about .about-text { max-width: 72%; }
+    .about h3 { margin:0 0 6px 0;color:var(--accent);font-size:1.15rem }
+    .about p { margin:0;color:var(--text-muted);line-height:1.45 }
+    .about .about-actions { display:flex; gap:10px; align-items:center }
+    .about a.btn { text-decoration:none; }
+
+    /* Panels */
     .panel {
       background: var(--bg-panel);
-      border-radius: 12px;
-      box-shadow: 0 2px 8px #0003;
-      padding: 1.5rem;
       border: 1px solid var(--border);
-      min-height: 220px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.35);
     }
-    .panel h3 {
-      margin-top: 0;
-      color: var(--accent);
-      font-size: 1.3rem;
-      margin-bottom: 1rem;
-      letter-spacing: 1px;
+    .panel h3 { margin:0 0 10px 0;color:var(--accent);font-size:1.15rem }
+
+    /* Systems dock (left column) */
+    .systems-dock {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
     }
-    .status-list, .event-list, .gallery-list, .shortcut-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
+    .tile {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      border:1px solid var(--border);
+      border-radius: var(--tile-radius);
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      min-height:96px;
+      transform-origin:center;
+      transition: transform .16s ease, box-shadow .16s ease;
+      will-change: transform;
+      opacity: 0; /* start hidden for entrance animation */
     }
-    .status-list li {
-      margin-bottom: 0.7rem;
-      font-size: 1rem;
+
+    /* Main (Onboard Computer) tile spans the two columns */
+    .tile.main {
+      grid-column: 1 / -1;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 16px;
+      padding: 18px;
+      min-height:140px;
     }
-    .status-success { color: var(--success); }
-    .status-warning { color: var(--warning); }
-    .status-danger { color: var(--danger); }
-    .quick-actions {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
+    .tile-head { display:flex; gap:12px; align-items:center }
+    .tile-icon {
+      width:48px;height:48px;border-radius:10px;background:rgba(79,209,197,0.06);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--accent)
     }
-    .quick-actions button {
-      background: var(--accent);
-      color: var(--bg-dark);
-      border: none;
-      border-radius: 6px;
-      padding: 0.7rem 1.2rem;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background 0.2s;
+    .tile-title { font-weight:700; font-size:1rem }
+    .tile-desc { color:var(--text-muted); font-size:0.9rem; margin-top:4px }
+
+    .tile-actions { display:flex; gap:8px; align-items:center }
+    .btn {
+      background:var(--accent); color:var(--bg-panel); padding:8px 12px; border-radius:8px; text-decoration:none; font-weight:700; border:none; cursor:pointer;
     }
-    .quick-actions button:hover {
-      background: #38b2ac;
+    .btn.ghost { background:transparent;color:var(--text-main); border:1px solid var(--border); padding:7px 10px; font-weight:600 }
+
+    /* Hover/active effects for tiles */
+    .tile:hover { transform: translateY(-6px) scale(1.03); box-shadow: 0 10px 30px rgba(0,0,0,0.45); }
+
+    /* subtle entrance animation (staggered) */
+    @keyframes floatUp { from { opacity: 0; transform: translateY(10px) scale(.996); } to { opacity:1; transform: none; } }
+    .systems-dock .tile { animation: floatUp .36s ease both; }
+    .systems-dock .tile:nth-child(1) { animation-delay: 0.02s; }
+    .systems-dock .tile:nth-child(2) { animation-delay: 0.08s; }
+    .systems-dock .tile:nth-child(3) { animation-delay: 0.14s; }
+    .systems-dock .tile:nth-child(4) { animation-delay: 0.20s; }
+    .systems-dock .tile:nth-child(5) { animation-delay: 0.26s; }
+    .systems-dock .tile:nth-child(6) { animation-delay: 0.32s; }
+    .systems-dock .tile:nth-child(7) { animation-delay: 0.38s; }
+
+    /* Right column stack */
+    .side-stack { display:flex; flex-direction:column; gap:12px }
+    .small-list { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:10px }
+    .small-item { display:flex; gap:10px; align-items:flex-start }
+    .thumb { width:56px;height:36px;border-radius:6px;background:rgba(255,255,255,0.02); object-fit:cover; }
+
+    /* Footer */
+    footer { text-align:center;color:var(--text-muted);padding:24px 0 40px;border-top:1px solid var(--border);margin-top:18px }
+
+    /* Responsiveness */
+    @media (max-width:1000px){
+      .container { grid-template-columns: 1fr; padding-bottom:28px }
+      .systems-dock { grid-template-columns: repeat(2, 1fr) }
+      .tile.main { grid-column: 1 / -1; flex-direction:column; align-items:flex-start }
+      .about { flex-direction:column; align-items:flex-start; gap:12px }
+      .about .about-text { max-width:100% }
+      .header-inner { justify-content:flex-start; }
+      .header-text { text-align:left }
     }
-    /* Button-like link used for diagnostics */
-    .link-button {
-      display: inline-block;
-      background: var(--accent);
-      color: var(--bg-dark);
-      border-radius: 6px;
-      padding: 0.6rem 1rem;
-      text-decoration: none;
-      font-weight: 600;
-      margin-top: 1rem;
-      transition: background 0.2s;
-    }
-    .link-button:hover { background: #38b2ac; }
-    .event-list li {
-      margin-bottom: 1.2rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .event-title {
-      font-weight: bold;
-      color: var(--accent);
-      font-size: 1.1rem;
-    }
-    .event-date {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-    }
-    .event-status {
-      font-size: 0.95rem;
-      margin-left: 0.5rem;
-    }
-    .gallery-list {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    .gallery-item {
-      background: #1a202c;
-      border-radius: 8px;
-      padding: 0.5rem;
-      width: 120px;
-      text-align: center;
-      color: var(--text-muted);
-      box-shadow: 0 1px 4px #0002;
-    }
-    .gallery-item img {
-      width: 100px;
-      height: 60px;
-      object-fit: cover;
-      border-radius: 6px;
-      margin-bottom: 0.5rem;
-      background: #2d3748;
-    }
-    .shortcut-list li {
-      margin-bottom: 0.5rem;
-      font-size: 1rem;
-    }
-    footer {
-      text-align: center;
-      color: var(--text-muted);
-      padding: 1.5rem 0 0.5rem 0;
-      font-size: 0.95rem;
-      border-top: 1px solid var(--border);
-      margin-top: 2rem;
-    }
-    @media (max-width: 700px) {
-      .dashboard {
-        grid-template-columns: 1fr;
-        padding: 1rem;
-      }
+    @media (max-width:600px){
+      .systems-dock { grid-template-columns: 1fr }
+      .ship-img { width:72px; height:72px; flex:0 0 72px; }
+      .header-inner { gap:12px; padding:6px; }
+      .header-text h1 { font-size:1.25rem; }
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>Obsidian Bastian Command Hub</h1>
-    <h2>Centralized access for all crew operations and ship systems</h2>
+    <div class="header-inner" role="banner" aria-label="Obsidian Bastian header">
+      <!-- Replace the placeholder image at /images/ship-header.jpg with your ship photo -->
+      <img class="ship-img" src="/images/ship-header.jpg" alt="Obsidian Bastian ship image placeholder">
+      <div class="header-text">
+        <h1>Obsidian Bastian Command Hub</h1>
+        <p>Centralized access for all crew operations and ship systems — hover tiles to reveal actions.</p>
+      </div>
+    </div>
   </header>
-  <main class="dashboard">
-    <!-- Quick Actions Panel -->
-    <section class="panel">
-      <h3>Quick Actions</h3>
-      <div class="quick-actions">
-        <a href="onboardcomputer.html"><button>Onboard Computer</button></a>
-        <a href="starmap.html"><button>Current Position</button></a>
-        <a href="crew.html"><button>Crew</button></a>
+
+  <main class="container" aria-live="polite">
+    <!-- ABOUT: full-width, top -->
+    <section class="about" role="region" aria-labelledby="about-title">
+      <div class="about-text">
+        <h3 id="about-title">About the Obsidian Bastian</h3>
+        <p>
+          The Obsidian Bastian is a family-run exploration cruiser optimized for long-range missions,
+          crew comfort, and modular repairs. This ship hosts mission controls, a mainframe for telemetry,
+          and a compact engineering bay—managed by the onboard computer.
+        </p>
       </div>
-      <div style="font-size:0.95rem;color:var(--text-muted);">
-        Quick links for space travel.
-      </div>
-    </section>
-    <!-- Ship Status Panel -->
-    <section class="panel">
-      <h3>Ship Status</h3>
-      <ul class="status-list">
-        <li class="status-success">Systems: All nominal</li>
-        <li>Communications: <span class="status-warning">Standby</span></li>
-        <li>Error Log: <span class="status-success">No critical errors</span></li>
-      </ul>
-      <div>
-        <a href="diagnostics.html" class="link-button" role="button" aria-label="Open diagnostics page">Access Onboard Computer</a>
+      <div class="about-actions">
+        <a class="btn" href="crew.html" aria-label="About and Crew">About &amp; Crew</a>
+        <a class="btn ghost" href="onboardcomputer.html" aria-label="Open Onboard Computer">Open Console</a>
       </div>
     </section>
-    <!-- Upcoming Events Panel -->
-    <section class="panel">
-      <h3>Upcoming Events</h3>
-      <ul class="event-list">
-        <li>
-          <span class="event-title">Captain Carter's Birthday Celebration</span><br>
-          <span class="event-title">& Mechanic Nima's Birthday</span><br>
-          <span class="event-date">2026-01-22 • 17:30</span>
-          <span class="event-status status-success">Scheduled</span><br>
-          <button style="margin-top:0.5rem;">Authorized Personnel Only</button>
-        </li>
-      </ul>
-    </section>
-    <!-- Photo Gallery Panel -->
-    <section class="panel">
-      <h3>Photo Gallery</h3>
-      <div class="gallery-list">
-        <div class="gallery-item">
-          <img src="/images/ship-1.jpg" alt="Command Deck">
-          <div>Command Deck</div>
-          <button style="margin-top:0.5rem;">Upload/Replace</button>
+
+    <!-- LEFT: Systems Dock (larger column) -->
+    <section class="panel" aria-labelledby="systems-title">
+      <h3 id="systems-title">Systems Dock</h3>
+
+      <div class="systems-dock" role="list">
+        <!-- Onboard Computer (prominent main tile spanning left column width) -->
+        <div class="tile main" role="listitem" aria-label="Onboard Computer">
+          <div style="display:flex;gap:14px;align-items:center;">
+            <div class="tile-icon" aria-hidden="true">💻</div>
+            <div>
+              <div class="tile-title">Onboard Computer</div>
+              <div class="tile-desc">Primary control interface — main console, diagnostics, and mission controls.</div>
+            </div>
+          </div>
+          <div class="tile-actions">
+            <a class="btn" href="onboardcomputer.html" aria-label="Open Onboard Computer">Open</a>
+            <a class="btn ghost" href="diagnostics.html" aria-label="Run Diagnostics">Diagnostics</a>
+          </div>
         </div>
-        <div class="gallery-item">
-          <img src="/images/ship-2.jpg" alt="Observation Dome">
-          <div>Observation Dome</div>
-          <button style="margin-top:0.5rem;">Upload/Replace</button>
+
+        <!-- New order: Mainframe, Atmospherics, Navigation, Communications, Inventory, Diagnostics -->
+        <div class="tile" role="listitem">
+          <div class="tile-head">
+            <div class="tile-icon" aria-hidden="true">🖥️</div>
+            <div>
+              <div class="tile-title">Mainframe</div>
+              <div class="tile-desc">Health metrics and charts.</div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;margin-top:8px">
+            <a class="btn" href="mainframe-health.html">Open</a>
+          </div>
         </div>
-        <div class="gallery-item">
-          <img src="/images/ship-3.jpg" alt="Exterior">
-          <div>Exterior</div>
-          <button style="margin-top:0.5rem;">Upload/Replace</button>
+
+        <div class="tile" role="listitem">
+          <div class="tile-head">
+            <div class="tile-icon" aria-hidden="true">☁️</div>
+            <div>
+              <div class="tile-title">Atmospherics</div>
+              <div class="tile-desc">Planetary weather and composition.</div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;margin-top:8px">
+            <a class="btn" href="mainframeweather.html">Open</a>
+          </div>
+        </div>
+
+        <div class="tile" role="listitem">
+          <div class="tile-head">
+            <div class="tile-icon" aria-hidden="true">🧭</div>
+            <div>
+              <div class="tile-title">Navigation</div>
+              <div class="tile-desc">Maps, routes and travel controls.</div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;margin-top:8px">
+            <a class="btn" href="navigationconsole.html">Open</a>
+          </div>
+        </div>
+
+        <div class="tile" role="listitem">
+          <div class="tile-head">
+            <div class="tile-icon" aria-hidden="true">📡</div>
+            <div>
+              <div class="tile-title">Communications</div>
+              <div class="tile-desc">Message streams and channel controls.</div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;margin-top:8px">
+            <a class="btn" href="communications.html">Open</a>
+          </div>
+        </div>
+
+        <div class="tile" role="listitem">
+          <div class="tile-head">
+            <div class="tile-icon" aria-hidden="true">📦</div>
+            <div>
+              <div class="tile-title">Inventory</div>
+              <div class="tile-desc">Parts, supplies and orders.</div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;margin-top:8px">
+            <a class="btn" href="partsinventory.html">Open</a>
+          </div>
+        </div>
+
+        <div class="tile" role="listitem">
+          <div class="tile-head">
+            <div class="tile-icon" aria-hidden="true">🛠</div>
+            <div>
+              <div class="tile-title">Diagnostics</div>
+              <div class="tile-desc">Deep checks, logs and repairs.</div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;margin-top:8px">
+            <a class="btn" href="diagnostics.html">Open</a>
+          </div>
         </div>
       </div>
     </section>
-    <!-- Keyboard Shortcuts Panel -->
-    <section class="panel">
-      <h3>Keyboard Shortcuts</h3>
-      <ul class="shortcut-list">
-        <li><strong>E</strong>: Events</li>
-        <li><strong>G</strong>: Gallery</li>
-        <li><strong>A</strong>: About</li>
-        <li><strong>Q</strong>: Quick Actions</li>
-      </ul>
-      <div style="font-size:0.95rem;color:var(--text-muted);margin-top:1rem;">
-        Use shortcuts for fast navigation.
+
+    <!-- RIGHT: Side column with Notifications + Events and compact panels -->
+    <aside>
+      <div class="side-stack">
+        <!-- Notifications + Events (combined) -->
+        <div class="panel" aria-labelledby="alerts-title">
+          <h3 id="alerts-title">Notifications &amp; Events</h3>
+
+          <ul class="small-list" aria-live="polite" style="margin-bottom:12px">
+            <li class="small-item">
+              <div style="flex:1">
+                <strong style="color:var(--accent)">No critical alerts</strong>
+                <div style="color:var(--text-muted);font-size:0.9rem">All mission-critical systems stable.</div>
+              </div>
+            </li>
+
+            <li class="small-item">
+              <div style="flex:1">
+                <strong>Communications</strong>
+                <div style="color:var(--text-muted);font-size:0.9rem">Channel: Standby</div>
+              </div>
+            </li>
+          </ul>
+
+          <h4 style="margin:0 0 8px 0;color:var(--text-main)">Upcoming Events</h4>
+          <ul class="small-list">
+            <li class="small-item">
+              <div style="flex:1">
+                <strong>Captain Carter's Birthday</strong>
+                <div style="color:var(--text-muted);font-size:0.9rem">2026-01-22 • 17:30 — Authorized Personnel Only</div>
+              </div>
+            </li>
+            <li class="small-item">
+              <div style="flex:1">
+                <strong>Mechanic Nima's Birthday</strong>
+                <div style="color:var(--text-muted);font-size:0.9rem">2026-01-22 • 17:30</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Photo gallery compact -->
+        <div class="panel" aria-labelledby="gallery-title">
+          <h3 id="gallery-title">Photo Gallery</h3>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <img class="thumb" src="/images/ship-1.jpg" alt="Command Deck">
+            <img class="thumb" src="/images/ship-2.jpg" alt="Observation Dome">
+            <img class="thumb" src="/images/ship-3.jpg" alt="Exterior">
+          </div>
+        </div>
       </div>
-    </section>
+    </aside>
   </main>
+
   <footer>
     © Family Fleet — Obsidian Bastian • Public homepage
   </footer>
