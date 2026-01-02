@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -107,6 +106,29 @@
     .diagnostics-fix-btn:hover {
       background: #2f855a;
     }
+    .recommendations {
+      margin-top: 1.25rem;
+      background: #0f1724;
+      border: 1px solid rgba(79,209,197,0.12);
+      padding: 1rem;
+      border-radius: 8px;
+      color: var(--text-main);
+    }
+    .recommendations h3 {
+      margin: 0 0 0.5rem 0;
+      color: var(--accent);
+      font-size: 1.05rem;
+      text-align: center;
+    }
+    .recommendation-list {
+      margin: 0;
+      padding-left: 1.2rem;
+      color: var(--text-muted);
+      font-size: 0.98rem;
+    }
+    .recommendation-list li {
+      margin-bottom: 0.4rem;
+    }
     .return-link {
       display: block;
       text-align: center;
@@ -115,6 +137,11 @@
       text-decoration: none;
       font-size: 1rem;
     }
+    /* small screens */
+    @media (max-width: 480px) {
+      .diagnostics-select button { padding: 0.5rem 0.8rem; font-size: .95rem; }
+      main { padding: 1rem; margin: 1rem; }
+    }
   </style>
 </head>
 <body>
@@ -122,16 +149,24 @@
     <h1>Diagnostics — Obsidian Bastian</h1>
   </header>
   <main>
-    <div class="diagnostics-select">
+    <div class="diagnostics-select" role="tablist" aria-label="Subsystems">
       <button data-area="Life Support">Life Support</button>
       <button data-area="Power">Power</button>
       <button data-area="Shields">Shields</button>
       <button data-area="Navigation">Navigation</button>
       <button data-area="Communications">Communications</button>
     </div>
+
     <div class="diagnostics-area" id="diagnosticsArea">Select a subsystem to diagnose.</div>
-    <div class="diagnostics-error" id="diagnosticsError"></div>
-    <div class="diagnostics-status" id="diagnosticsStatus"></div>
+    <div class="diagnostics-error" id="diagnosticsError" aria-live="polite"></div>
+    <div class="diagnostics-status" id="diagnosticsStatus" aria-live="polite"></div>
+
+    <!-- New recommended actions section -->
+    <div class="recommendations" id="recommendationsSection" style="display:none;" aria-live="polite">
+      <h3>Recommended Actions</h3>
+      <ul class="recommendation-list" id="recommendationList"></ul>
+    </div>
+
     <button class="diagnostics-fix-btn" id="fixBtn" style="display:none;">Attempt Fix</button>
     <a href="index.html" class="return-link">← Return to Mission UI</a>
   </main>
@@ -170,15 +205,150 @@
       ]
     };
 
+    // Mapping from specific error messages to recommended actions
+    const recommendations = {
+      // Life Support
+      "O2 sensor readings inconsistent.": [
+        "Run O2 sensor calibration routine.",
+        "Inspect sensor connectors and cabling for damage.",
+        "If calibration fails, replace the O2 sensor and re-test.",
+        "Verify atmospheric readings after maintenance."
+      ],
+      "Pressure anomaly detected in habitat module.": [
+        "Isolate the affected habitat module if possible.",
+        "Verify pressure sensor outputs and cross-check with redundant sensors.",
+        "Inspect seals, valves, and pressure relief systems.",
+        "If pressure drops, enact emergency protocols and notify crew."
+      ],
+      "CO2 scrubber cycling irregularly.": [
+        "Check scrubber filter status and replace if saturated.",
+        "Verify scrubber power supply and control signals.",
+        "Run scrubber self-test and monitor for normal cycling.",
+        "Schedule maintenance if irregularities persist."
+      ],
+      "Life support nominal (no issues detected).": [
+        "No action required — subsystem nominal. Continue routine monitoring."
+      ],
+
+      // Power
+      "Power relay fluctuating.": [
+        "Inspect relay connections and mounting.",
+        "Cycle the relay through a controlled test.",
+        "Replace the relay if instability continues.",
+        "Check upstream control signals and load conditions."
+      ],
+      "Battery charge below expected threshold.": [
+        "Run a battery health diagnostic.",
+        "Switch non-critical loads to auxiliary or reduce demand.",
+        "Attempt a controlled recharge cycle and monitor temperature.",
+        "Plan replacement if capacity has degraded beyond safe margins."
+      ],
+      "Auxiliary generator offline.": [
+        "Attempt a remote restart of the generator.",
+        "Check fuel/auxiliary resource levels and ignition systems.",
+        "If remote restart fails, dispatch maintenance or switch load to primary."
+      ],
+      "Power system nominal (no issues detected).": [
+        "No action required — subsystem nominal. Continue routine monitoring."
+      ],
+
+      // Shields
+      "Shield integrity at 92%.": [
+        "Monitor integrity trend for further decline.",
+        "Redistribute power to shield emitters if allowed.",
+        "Inspect for recent impacts or external stress to the hull.",
+        "Schedule a full shield diagnostic sweep."
+      ],
+      "Minor field distortion detected.": [
+        "Run field calibration routine.",
+        "Inspect emitter arrays and field coupling hardware.",
+        "Reduce non-essential external loads until field stabilizes."
+      ],
+      "Shield generator cooling required.": [
+        "Increase coolant flow or check coolant pump status.",
+        "Inspect cooling lines and heat exchangers for blockages.",
+        "Reduce shield output temporarily until cooling is restored."
+      ],
+      "Shields nominal (no issues detected).": [
+        "No action required — subsystem nominal. Continue routine monitoring."
+      ],
+
+      // Navigation
+      "Gyro calibration drift.": [
+        "Run gyro recalibration and alignment routine.",
+        "Verify gyro mounting and shock isolation.",
+        "Replace gyro module if drift persists after recalibration."
+      ],
+      "Star tracker intermittent.": [
+        "Check star tracker optics for contamination; clean if required.",
+        "Verify tracker power and data connections.",
+        "Restart tracker electronics/software and monitor performance."
+      ],
+      "Navigation computer lag detected.": [
+        "Restart the navigation computer subsystem in a controlled manner.",
+        "Check CPU load, active processes, and available memory.",
+        "Update firmware/software if a known issue is present."
+      ],
+      "Navigation nominal (no issues detected).": [
+        "No action required — subsystem nominal. Continue routine monitoring."
+      ],
+
+      // Communications
+      "Signal attenuation detected.": [
+        "Verify line-of-sight and check for obstructions.",
+        "Check transmitter power and antenna feed lines for damage.",
+        "Run signal amplification/booster diagnostics and adjust gain."
+      ],
+      "Antenna alignment off by 0.3°.": [
+        "Run automatic fine-alignment procedure for the antenna.",
+        "If auto-align fails, perform manual alignment using telemetry.",
+        "Inspect antenna motors and encoders for wear."
+      ],
+      "Message queue backlog.": [
+        "Prioritize and clear non-critical messages.",
+        "Check routing rules and available bandwidth allocation.",
+        "If backlog persists, increase processing resources or throttle low-priority traffic."
+      ],
+      "Communications nominal (no issues detected).": [
+        "No action required — subsystem nominal. Continue routine monitoring."
+      ]
+    };
+
     const areaButtons = document.querySelectorAll('.diagnostics-select button');
     const diagnosticsArea = document.getElementById('diagnosticsArea');
     const diagnosticsError = document.getElementById('diagnosticsError');
     const diagnosticsStatus = document.getElementById('diagnosticsStatus');
     const fixBtn = document.getElementById('fixBtn');
+    const recommendationsSection = document.getElementById('recommendationsSection');
+    const recommendationList = document.getElementById('recommendationList');
 
     let selectedArea = null;
     let currentError = null;
     let issueResolved = false;
+
+    // Prevent duplicate escalation recommendations being appended repeatedly
+    let escalationAdded = false;
+
+    function showRecommendationsFor(errorText) {
+      // If no error text, hide section
+      if (!errorText) {
+        recommendationsSection.style.display = 'none';
+        return;
+      }
+
+      const recs = recommendations[errorText] || null;
+
+      if (recs && recs.length > 0) {
+        recommendationList.innerHTML = recs.map(r => `<li>${r}</li>`).join('');
+        recommendationsSection.style.display = 'block';
+        // reset escalation flag for a fresh selection
+        escalationAdded = false;
+      } else {
+        recommendationList.innerHTML = `<li>No specific recommended actions available. Run full diagnostics.</li>`;
+        recommendationsSection.style.display = 'block';
+        escalationAdded = false;
+      }
+    }
 
     areaButtons.forEach(btn => {
       btn.addEventListener('click', () => {
@@ -193,7 +363,21 @@
         diagnosticsError.textContent = currentError;
         diagnosticsStatus.textContent = '';
         issueResolved = false;
-        fixBtn.style.display = (currentError.includes('nominal')) ? 'none' : 'block';
+
+        // reset escalation flag so new error can receive escalation once if needed
+        escalationAdded = false;
+
+        // If nominal, hide fix button and show nominal styling/message
+        if (currentError.includes('nominal')) {
+          fixBtn.style.display = 'none';
+          diagnosticsError.style.color = 'var(--accent)';
+        } else {
+          fixBtn.style.display = 'block';
+          diagnosticsError.style.color = 'var(--danger)';
+        }
+
+        // Show recommended actions for the selected error
+        showRecommendationsFor(currentError);
       });
     });
 
@@ -202,11 +386,30 @@
       if (Math.random() < 0.5) {
         diagnosticsStatus.textContent = "Issue persists. Further diagnostics required.";
         diagnosticsStatus.style.color = "var(--danger)";
+
+        // Append escalation recommendations but only once per diagnostic result
+        if (!escalationAdded) {
+          const escalation = [
+            "Document observed behavior and recent logs.",
+            "Run extended diagnostics and capture telemetry.",
+            "Escalate to engineering if on-site maintenance is required."
+          ];
+          // append escalation as additional list items
+          recommendationList.innerHTML = recommendationList.innerHTML + escalation.map(r => `<li>${r}</li>`).join('');
+          escalationAdded = true;
+        }
       } else {
         diagnosticsStatus.textContent = "Issue resolved. Subsystem nominal.";
         diagnosticsStatus.style.color = "var(--success)";
         fixBtn.style.display = 'none';
         diagnosticsError.textContent = '';
+        // Update recommendations to indicate resolution and monitoring steps
+        recommendationList.innerHTML = `<li>Issue appears resolved. Monitor subsystem for recurrence over the next 24 hours.</li>
+                                        <li>Log the repair attempt and any actions taken.</li>`;
+        // After resolution we still show the recommendations section (monitoring + log)
+        recommendationsSection.style.display = 'block';
+        // reset escalation flag for future checks
+        escalationAdded = false;
       }
     });
   </script>
