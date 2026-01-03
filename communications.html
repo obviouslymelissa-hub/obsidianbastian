@@ -22,6 +22,26 @@
       color: #cfe7e0;
       padding: 18px;
     }
+
+    /* Top bar: title on the left, back link on the right */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .back-link {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.01);
+      border: 1px solid rgba(255,255,255,0.02);
+    }
+    .back-link:hover { filter: brightness(1.1); }
+
     .shell {
       max-width: 980px;
       margin: 0 auto;
@@ -35,7 +55,8 @@
       padding: 14px;
       border-radius: 10px;
     }
-    h1 { margin: 0 0 10px 0; font-size: 18px; }
+    /* larger header to match other pages */
+    h1 { margin: 0 0 10px 0; font-size: 24px; font-weight:700; }
     .status-row { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
     .indicator {
       display:flex;
@@ -108,10 +129,11 @@
   </style>
 </head>
 <body>
-  <div style="padding: 18px 18px 0 18px;">
-    <a href="https://obviouslymelissa-hub.github.io/obsidianbastian/index.html" style="color: var(--accent); text-decoration: none;">← Back to Command Hub</a>
-  </div>
-  <h1>Ship Communications</h1>
+  <header class="topbar" role="banner" aria-label="Page header">
+    <h1>Ship Communications</h1>
+    <a class="back-link" href="https://obviouslymelissa-hub.github.io/obsidianbastian/index.html" aria-label="Back to Command Hub">← Back to Command Hub</a>
+  </header>
+
   <div class="shell">
     <aside class="panel" aria-labelledby="status-heading">
       <h2 id="status-heading">Communications Status</h2>
