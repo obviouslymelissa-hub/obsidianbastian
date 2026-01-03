@@ -6,24 +6,47 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
     :root {
-      --bg-dark: #181c24;
-      --bg-panel: #23283a;
+      --bg-dark: #0f1318;
+      --bg-panel: #151821;
       --accent: #4fd1c5;
-      --text-main: #e2e8f0;
-      --text-muted: #a0aec0;
-      --border: #2d3748;
+      --accent-2: #7ef0df;
+      --text-main: #e6eef2;
+      --text-muted: #9fb2bf;
+      --border: #22272f;
       --tile-radius: 10px;
       --font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+      --header-height: 120px;
     }
 
     /* Page basics */
     html,body{height:100%;margin:0;font-family:var(--font-family);background:var(--bg-dark);color:var(--text-main)}
     /* Header with ship image placeholder */
     header {
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
-      border-bottom: 2px solid var(--accent);
+      /* layered background for depth */
+      background:
+        radial-gradient(600px 120px at 10% 30%, rgba(127,240,223,0.06), transparent 8%),
+        radial-gradient(500px 100px at 90% 60%, rgba(79,209,197,0.04), transparent 6%),
+        linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
+      border-bottom: 2px solid rgba(79,209,197,0.12);
       padding: 18px;
+      position:relative;
+      overflow:visible;
     }
+    /* soft animated glow behind header */
+    header::before{
+      content:"";
+      position:absolute;
+      inset:auto 8% -40px 8%;
+      height:160px;
+      z-index:0;
+      background: radial-gradient(closest-side, rgba(79,209,197,0.06), transparent 45%);
+      filter: blur(28px);
+      transform: translateY(8px);
+      pointer-events:none;
+      opacity:0.9;
+      transition:opacity .4s ease;
+    }
+
     .header-inner {
       max-width:1200px;
       margin:0 auto;
@@ -32,28 +55,96 @@
       gap:18px;
       justify-content:center;
       padding:6px 12px;
+      position:relative;
+      z-index:1;
+      height: var(--header-height);
     }
-    .ship-img {
+
+    /* Emblem + ship frame */
+    .emblem {
+      width:76px;
+      height:76px;
+      flex:0 0 76px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:14px;
+      background: linear-gradient(135deg, rgba(127,240,223,0.06), rgba(79,209,197,0.02));
+      border:1px solid rgba(127,240,223,0.08);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 30px rgba(79,209,197,0.02) inset;
+    }
+    .emblem svg { width:56px;height:56px;display:block; }
+
+    .ship-img-wrap {
       width:96px;
       height:96px;
-      border-radius:12px;
-      object-fit:cover;
+      border-radius:16px;
+      background: linear-gradient(180deg, rgba(79,209,197,0.04), rgba(255,255,255,0.01));
       border: 1px solid rgba(255,255,255,0.04);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
-      background: linear-gradient(180deg, rgba(79,209,197,0.06), rgba(255,255,255,0.01));
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 18px rgba(79,209,197,0.04) inset;
+      overflow:hidden;
+      transform-style:preserve-3d;
+      perspective:800px;
       flex:0 0 96px;
-      animation: headerFloat 6s ease-in-out infinite;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition: transform .18s linear;
+      position:relative;
     }
-    @keyframes headerFloat {
-      0% { transform: translateY(-4px); }
-      50% { transform: translateY(4px); }
-      100% { transform: translateY(-4px); }
+    .ship-img {
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      transform-origin:center;
+      transition: transform .28s cubic-bezier(.2,.9,.2,1);
     }
-    .header-text { text-align:left; }
-    .header-text h1 { margin:0; font-size:1.6rem; color:var(--accent); letter-spacing:1.6px; }
-    .header-text p { margin:6px 0 0 0; color:var(--text-muted); font-size:0.95rem; }
 
-    /* Container layout: left (large) + right (side) */
+    /* subtle floating motion */
+    @keyframes headerFloat {
+      0% { transform: translateY(-3px); }
+      50% { transform: translateY(3px); }
+      100% { transform: translateY(-3px); }
+    }
+    .ship-img-wrap.floating { animation: headerFloat 6s ease-in-out infinite; }
+
+    .header-text { text-align:left; }
+    .header-text h1 {
+      margin:0;
+      font-size:1.6rem;
+      color:var(--text-main);
+      letter-spacing:1.6px;
+      font-weight:800;
+      display:inline-block;
+      position:relative;
+      line-height:1;
+    }
+    /* sheen effect on title */
+    .header-text h1::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+      transform: translateX(-110%);
+      transition: transform .9s ease;
+      pointer-events:none;
+      mix-blend-mode:screen;
+    }
+    .header-text h1.sheen::before{
+      transform: translateX(110%);
+    }
+    .header-text p { margin:6px 0 0 0; color:var(--text-muted); font-size:0.95rem; max-width:520px }
+
+    /* CTA styling tweaks */
+    .about-actions a.btn { font-weight:800; letter-spacing:0.6px; }
+    .about-actions a.btn.ghost {
+      border:1px solid rgba(255,255,255,0.04);
+      color:var(--text-main);
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+    }
+
+    /* Panels (unchanged) */
     .container {
       max-width:1200px;
       margin:20px auto;
@@ -62,8 +153,6 @@
       grid-template-columns: 2fr 1fr;
       gap: 20px;
     }
-
-    /* Full-width About panel at top (kept for compatibility, hide duplicate title) */
     .about {
       grid-column: 1 / -1;
       background: linear-gradient(180deg, rgba(79,209,197,0.03), rgba(255,255,255,0.01));
@@ -79,10 +168,18 @@
     .about .about-text { max-width: 72%; }
     .about h3 { margin:0 0 6px 0;color:var(--accent);font-size:1.15rem }
     .about p { margin:0;color:var(--text-muted);line-height:1.45 }
+
+    /* New formatting styles for the about content */
+    .about-dl { margin:8px 0 12px 0; display:flex; gap:18px; flex-wrap:wrap; align-items:flex-start; }
+    .about-dl dt { font-weight:700; color:var(--text-main); font-size:0.92rem; text-transform:uppercase; letter-spacing:0.9px; }
+    .about-dl dd { margin:0; color:var(--text-muted); font-size:0.95rem; }
+    .core-list { list-style: none; padding:0; margin:12px 0 0 0; display:block; }
+    .core-list li { margin:10px 0; }
+    .core-list strong { color:var(--accent); display:inline-block; min-width:140px; }
+
     .about .about-actions { display:flex; gap:10px; align-items:center }
     .about a.btn { text-decoration:none; }
 
-    /* Panels */
     .panel {
       background: var(--bg-panel);
       border: 1px solid var(--border);
@@ -92,7 +189,7 @@
     }
     .panel h3 { margin:0 0 10px 0;color:var(--accent);font-size:1.15rem }
 
-    /* Systems dock (left column) */
+    /* Rest of original CSS preserved (tiles, gallery, lightbox, responsiveness) */
     .systems-dock {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -110,10 +207,8 @@
       transform-origin:center;
       transition: transform .16s ease, box-shadow .16s ease;
       will-change: transform;
-      opacity: 0; /* start hidden for entrance animation */
+      opacity: 0;
     }
-
-    /* Main (Onboard Computer) tile spans the two columns */
     .tile.main {
       grid-column: 1 / -1;
       display:flex;
@@ -136,10 +231,8 @@
     }
     .btn.ghost { background:transparent;color:var(--text-main); border:1px solid var(--border); padding:7px 10px; font-weight:600 }
 
-    /* Hover/active effects for tiles */
     .tile:hover { transform: translateY(-6px) scale(1.03); box-shadow: 0 10px 30px rgba(0,0,0,0.45); }
 
-    /* subtle entrance animation (staggered) */
     @keyframes floatUp { from { opacity: 0; transform: translateY(10px) scale(.996); } to { opacity:1; transform: none; } }
     .systems-dock .tile { animation: floatUp .36s ease both; }
     .systems-dock .tile:nth-child(1) { animation-delay: 0.02s; }
@@ -151,15 +244,12 @@
     .systems-dock .tile:nth-child(7) { animation-delay: 0.38s; }
     .systems-dock .tile:nth-child(8) { animation-delay: 0.44s; }
 
-    /* Right column stack */
     .side-stack { display:flex; flex-direction:column; gap:12px }
     .small-list { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:10px }
     .small-item { display:flex; gap:10px; align-items:flex-start }
 
-    /* Default small thumb used in lists */
     .thumb { width:56px;height:36px;border-radius:6px;background:rgba(255,255,255,0.02); object-fit:cover; }
 
-    /* Gallery wrapper and thumbnails (larger) */
     .gallery-grid {
       display:flex;
       gap:12px;
@@ -184,7 +274,6 @@
       .gallery-grid .thumb { width:240px; height:156px; }
     }
 
-    /* Lightbox / slideshow */
     .lightbox {
       position:fixed;
       inset:0;
@@ -236,7 +325,6 @@
 
     .lb-close:focus, .lb-prev:focus, .lb-next:focus { outline:2px solid rgba(79,209,197,0.28); border-radius:8px; }
 
-    /* Footer */
     footer { text-align:center;color:var(--text-muted);padding:24px 0 40px;border-top:1px solid var(--border);margin-top:18px }
 
     /* Responsiveness */
@@ -249,6 +337,7 @@
       .header-inner { justify-content:flex-start; }
       .header-text { text-align:left }
       .gallery-grid .thumb { width:160px; height:104px; }
+      header::before { display:none; }
     }
     @media (max-width:600px){
       .systems-dock { grid-template-columns: 1fr }
@@ -257,17 +346,46 @@
       .header-text h1 { font-size:1.25rem; }
       .gallery-grid { justify-content:center; }
       .gallery-grid .thumb { width:140px; height:90px; }
+      .emblem { display:none; }
+      .ship-img-wrap { width:72px; height:72px; border-radius:12px; flex:0 0 72px; }
+      .header-inner { height:84px; }
+    }
+
+    /* Respect reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+      .ship-img-wrap.floating { animation: none; }
+      .header-text h1::before { transition:none; transform:none; display:none; }
+      .ship-img-wrap, .ship-img { transition: none; }
     }
   </style>
 </head>
 <body>
   <header>
     <div class="header-inner" role="banner" aria-label="Obsidian Bastian header">
+      <!-- Inline emblem for stronger brand presence -->
+      <div class="emblem" aria-hidden="true" title="Obsidian Bastian emblem">
+        <!-- Simple ship emblem (SVG) -->
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1">
+              <stop offset="0" stop-color="#7ef0df" stop-opacity="0.9"/>
+              <stop offset="1" stop-color="#4fd1c5" stop-opacity="0.9"/>
+            </linearGradient>
+          </defs>
+          <rect width="64" height="64" rx="10" fill="url(#g1)" opacity="0.08"/>
+          <path d="M32 6L38 24L56 28L38 32L32 50L26 32L8 28L26 24L32 6Z" fill="#7ef0df" opacity="0.9"/>
+          <circle cx="32" cy="32" r="6" fill="#0f1318" />
+        </svg>
+      </div>
+
       <!-- Replace the placeholder image at /images/ship-header.jpg with your ship photo -->
-      <img class="ship-img" src="https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-header.jpg" alt="Obsidian Bastian ship image placeholder">
+      <div class="ship-img-wrap floating" id="shipWrap" aria-hidden="false">
+        <img class="ship-img" id="shipImg" src="https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-header.jpg" alt="Obsidian Bastian ship image placeholder">
+      </div>
+
       <div class="header-text">
-        <h1>Obsidian Bastian Command Hub</h1>
-        <p>Centralized access for all crew operations and ship systems — hover tiles to reveal actions.</p>
+        <h1 id="siteTitle">Obsidian Bastian Command Hub</h1>
+        <p id="siteTag">Centralized access for all crew operations and ship systems — hover tiles to reveal actions.</p>
       </div>
     </div>
   </header>
@@ -277,10 +395,42 @@
     <section class="about" role="region" aria-labelledby="about-title">
       <div class="about-text">
         <h3 id="about-title">About the Obsidian Bastian</h3>
+
+        <dl class="about-dl" aria-hidden="false">
+          <div>
+            <dt>Designation</dt>
+            <dd>Exploration Cruiser</dd>
+          </div>
+          <div>
+            <dt>Registry</dt>
+            <dd>Active Service Vessel</dd>
+          </div>
+          <div>
+            <dt>Status</dt>
+            <dd>Ready for exploration, research, and defense operations</dd>
+          </div>
+          <div>
+            <dt>Authority</dt>
+            <dd>Command-certified · Mission-capable · Fleet-aligned</dd>
+          </div>
+        </dl>
+
         <p>
-          The Obsidian Bastian is a family-run exploration cruiser optimized for long-range missions,
-          crew comfort, and modular repairs. This ship hosts mission controls, a mainframe for telemetry,
-          and a compact engineering bay—managed by the onboard computer.
+          The Obsidian Bastian is a long-range cruiser engineered for sustained deployment, operational resilience, and defensive readiness.
+          Its systems are optimized for extended missions, combining strategic command facilities with reinforced crew accommodations.
+        </p>
+
+        <h4 style="margin:12px 0 6px 0;color:var(--text-main)">Core assets include:</h4>
+        <ul class="core-list" aria-label="Core assets">
+          <li><strong>Mission Control:</strong> Navigation, tactical oversight, and command relay.</li>
+          <li><strong>Mainframe:</strong> Telemetry, communications, and data integrity.</li>
+          <li><strong>Engineering Bay:</strong> Compact, modular repair hub for rapid response.</li>
+          <li><strong>Onboard Computer:</strong> Continuous monitoring and system regulation.</li>
+          <li><strong>Defense Systems:</strong> Integrated laser arrays and shielding protocols, ensuring combat readiness alongside exploration duties.</li>
+        </ul>
+
+        <p style="margin-top:12px;">
+          Oversight is managed by the onboard computer, maintaining efficiency and readiness at all times.
         </p>
       </div>
       <div class="about-actions">
@@ -473,6 +623,65 @@
   <footer>
     © Family Fleet — Obsidian Bastian • Public homepage
   </footer>
+
+  <!-- Header interactivity: parallax + sheen (lightweight, respects reduced motion) -->
+  <script>
+    (function () {
+      const shipWrap = document.getElementById('shipWrap');
+      const shipImg = document.getElementById('shipImg');
+      const siteTitle = document.getElementById('siteTitle');
+
+      // Respect user preference for reduced motion and touch devices
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+
+      if (!reduce && !isTouch && shipWrap && shipImg) {
+        // Parallax strength
+        const maxRotate = 6; // degrees
+        const maxTranslate = 6; // px
+
+        function onMove(e) {
+          const rect = shipWrap.getBoundingClientRect();
+          const cx = rect.left + rect.width / 2;
+          const cy = rect.top + rect.height / 2;
+          const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+          const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+          const dx = (clientX - cx) / rect.width;
+          const dy = (clientY - cy) / rect.height;
+
+          const rotY = dx * maxRotate;
+          const rotX = -dy * maxRotate;
+          const tx = dx * maxTranslate;
+          const ty = dy * maxTranslate;
+
+          shipWrap.style.transform = `translate3d(${tx}px, ${ty}px, 0) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+          shipImg.style.transform = `scale(1.02) translate3d(${tx * -0.35}px, ${ty * -0.35}px, 0)`;
+        }
+
+        function onLeave() {
+          shipWrap.style.transform = '';
+          shipImg.style.transform = '';
+        }
+
+        const headerInner = document.querySelector('.header-inner');
+        headerInner.addEventListener('mousemove', onMove);
+        headerInner.addEventListener('mouseleave', onLeave);
+        headerInner.addEventListener('touchmove', onMove, { passive: true });
+        headerInner.addEventListener('touchend', onLeave);
+      }
+
+      // Sheen animation periodically triggered on title (subtle)
+      if (!reduce && siteTitle) {
+        const triggerSheen = () => {
+          siteTitle.classList.add('sheen');
+          setTimeout(() => siteTitle.classList.remove('sheen'), 900);
+        };
+        // initial small delay and occasional repeats
+        setTimeout(triggerSheen, 700);
+        setInterval(triggerSheen, 8000);
+      }
+    })();
+  </script>
 
   <script>
     (function(){
