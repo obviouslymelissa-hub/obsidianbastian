@@ -88,44 +88,62 @@
       border-radius: var(--radius);
       padding: 1.2rem;
       box-shadow: 0 6px 18px rgba(0,0,0,0.35);
-      min-height: 140px;
+      min-height: 160px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       background-image: var(--card-gradient);
     }
 
+    /* New stacked header: image on top, then title & name prominent */
     .role-header {
       display: flex;
-      align-items: baseline;
-      gap: 0.75rem;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      text-align: center;
     }
+
+    .crew-photo {
+      width: 96px;
+      height: 96px;
+      object-fit: cover;
+      border-radius: 12px;
+      background: rgba(0,0,0,0.06);
+      border: 1px solid rgba(255,255,255,0.03);
+      flex-shrink: 0;
+    }
+
     .role-title {
       color: var(--accent);
-      font-size: 1.05rem;
-      font-weight: 600;
+      font-size: 1.12rem;
+      font-weight: 700;
       letter-spacing: 0.6px;
       margin: 0;
     }
+
     .role-name {
       color: var(--text-main);
-      font-size: 0.98rem;
+      font-size: 1.06rem;
       margin: 0;
-      opacity: 0.95;
+      opacity: 0.98;
+      font-weight: 600;
     }
+
     .role-badge {
-      margin-left: auto;
-      font-size: 0.75rem;
+      margin-top: 0.35rem;
+      font-size: 0.72rem;
       color: var(--bg-dark);
       background: var(--accent);
-      padding: 0.25rem 0.5rem;
+      padding: 0.22rem 0.5rem;
       border-radius: 999px;
       text-transform: uppercase;
       letter-spacing: 1px;
+      display: inline-block;
     }
 
     .role-desc {
-      margin-top: 0.8rem;
+      margin-top: 0.85rem;
       color: var(--text-muted);
       line-height: 1.45;
       font-size: 0.95rem;
@@ -137,10 +155,15 @@
       color: var(--text-muted);
     }
 
-    /* Responsive tweaks */
+    /* Make header more compact on small screens */
     @media (max-width: 420px) {
-      header h1 { font-size: 1.6rem; }
+      .crew-photo {
+        width: 72px;
+        height: 72px;
+      }
       .role-title { font-size: 1rem; }
+      .role-name { font-size: 1rem; }
+      header h1 { font-size: 1.6rem; }
     }
   </style>
 </head>
@@ -153,7 +176,7 @@
   <main class="container" role="main" aria-labelledby="crew-heading">
     <div class="nav-row">
       <a class="back-link" href="https://obviouslymelissa-hub.github.io/obsidianbastian/index.html">← Back to Command Hub</a>
-      <div class="muted-small">No photos — names and roles only</div>
+      <div class="muted-small">Photos added — names and roles with headshots</div>
     </div>
 
     <h2 id="crew-heading" style="color:var(--text-muted); margin:0 0 1rem 0; font-weight:600;">
@@ -162,68 +185,104 @@
 
     <section class="crew-grid" aria-label="Crew list">
       <!-- Captain -->
-      <article class="crew-card" aria-labelledby="captain-name">
+      <article class="crew-card" aria-labelledby="captain-name" data-img="images/captain.jpg">
         <div class="role-header">
-          <div>
-            <div class="role-title">Captain</div>
-            <div id="captain-name" class="role-name">Meridian Vale</div>
-          </div>
-          <div class="role-badge" aria-hidden="true">Lead</div>
+          <picture>
+            <img src="images/captain.jpg" alt="Carter — Captain" width="96" height="96" loading="lazy" class="crew-photo">
+          </picture>
+          <div class="role-title">Captain</div>
+          <div id="captain-name" class="role-name">Carter</div>
+          <span class="role-badge" aria-hidden="true">Lead</span>
         </div>
         <p class="role-desc">
           The Captain is responsible for final command decisions, mission planning, and crew welfare.
-          Meridian coordinates operations, sets course, and handles high-level communications with allied stations.
+          Carter coordinates operations, sets course, and handles high-level communications with allied stations.
         </p>
       </article>
 
       <!-- Co-Captain -->
-      <article class="crew-card" aria-labelledby="cocaptain-name">
+      <article class="crew-card" aria-labelledby="cocaptain-name" data-img="images/cocaptain.jpg">
         <div class="role-header">
-          <div>
-            <div class="role-title">Co-Captain</div>
-            <div id="cocaptain-name" class="role-name">Orion Kade</div>
-          </div>
-          <div class="role-badge" aria-hidden="true">2nd</div>
+          <picture>
+            <img src="images/cocaptain.jpg" alt="Pep Pep — Co-Captain" width="96" height="96" loading="lazy" class="crew-photo">
+          </picture>
+          <div class="role-title">Co-Captain</div>
+          <div id="cocaptain-name" class="role-name">Pep Pep</div>
+          <span class="role-badge" aria-hidden="true">2nd</span>
         </div>
         <p class="role-desc">
           The Co-Captain supports the Captain, leads tactical teams when required, and assumes command during contingencies.
-          Orion manages bridge operations and tactical readiness.
+          Pep Pep manages bridge operations and tactical readiness.
         </p>
       </article>
 
       <!-- Mechanic -->
-      <article class="crew-card" aria-labelledby="mechanic-name">
+      <article class="crew-card" aria-labelledby="mechanic-name" data-img="images/mechanic.jpg">
         <div class="role-header">
-          <div>
-            <div class="role-title">Mechanic</div>
-            <div id="mechanic-name" class="role-name">Juno Pike</div>
-          </div>
-          <div class="role-badge" aria-hidden="true">Engineer</div>
+          <picture>
+            <img src="images/mechanic.jpg" alt="Nima — Mechanic" width="96" height="96" loading="lazy" class="crew-photo">
+          </picture>
+          <div class="role-title">Mechanic</div>
+          <div id="mechanic-name" class="role-name">Nima</div>
+          <span class="role-badge" aria-hidden="true">Engineer</span>
         </div>
         <p class="role-desc">
           The Mechanic is responsible for maintenance, repairs, and systems integrity.
-          Juno keeps engines, power systems and critical hardware running under all conditions.
+          Nima keeps engines, power systems and critical hardware running under all conditions.
         </p>
       </article>
 
       <!-- General -->
-      <article class="crew-card" aria-labelledby="general-name">
+      <article class="crew-card" aria-labelledby="general-name" data-img="images/general.jpg">
         <div class="role-header">
-          <div>
-            <div class="role-title">General</div>
-            <div id="general-name" class="role-name">Lira Solace</div>
-          </div>
-          <div class="role-badge" aria-hidden="true">Officer</div>
+          <picture>
+            <img src="images/general.jpg" alt="Melissa — General" width="96" height="96" loading="lazy" class="crew-photo">
+          </picture>
+          <div class="role-title">General</div>
+          <div id="general-name" class="role-name">Melissa</div>
+          <span class="role-badge" aria-hidden="true">Officer</span>
         </div>
         <p class="role-desc">
           The General handles logistics, coordination with ground teams, and resource allocation.
-          Lira oversees personnel assignments and ensures smooth internal operations.
+          Melissa oversees personnel assignments and ensures smooth internal operations.
         </p>
       </article>
+
+      <!-- Passenger -->
+      <article class="crew-card" aria-labelledby="passenger-name" data-img="images/passenger.jpg">
+        <div class="role-header">
+          <picture>
+            <img src="images/passenger.jpg" alt="Shane — Passenger" width="96" height="96" loading="lazy" class="crew-photo">
+          </picture>
+          <div class="role-title">Passenger</div>
+          <div id="passenger-name" class="role-name">Shane</div>
+          <span class="role-badge" aria-hidden="true">Permanent</span>
+        </div>
+        <p class="role-desc">
+          Passengers are non-crew travelers aboard the vessel. Shane is a permanent passenger aboard the Obsidian Bastian.
+        </p>
+      </article>
+
+      <!-- Visitor -->
+      <article class="crew-card" aria-labelledby="visitor-name" data-img="images/visitor.jpg">
+        <div class="role-header">
+          <picture>
+            <img src="images/visitor.jpg" alt="Visiting personnel — Visitor" width="96" height="96" loading="lazy" class="crew-photo">
+          </picture>
+          <div class="role-title">Visitor</div>
+          <div id="visitor-name" class="role-name">Varies</div>
+          <span class="role-badge" aria-hidden="true">Visitor</span>
+        </div>
+        <p class="role-desc">
+          Visitors are short-term personnel who may be aboard for consultations, research, or diplomatic reasons.
+          Visitor names vary depending on the mission; update this card when a new visitor is present.
+        </p>
+      </article>
+
     </section>
 
     <p class="muted-small" style="margin-top:1.25rem;">
-      Tip: Replace the sample names and descriptions with your crew's actual names & bios. If you'd like, I can add data attributes for JSON import or wire this to a simple JS file for easier updates.
+      Tip: Replace the sample names and descriptions with your crew's actual names & bios. If you'd like, I can add responsive srcset entries or wire this up to a JSON loader to make updates easier.
     </p>
   </main>
 </body>
