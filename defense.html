@@ -1,1 +1,733 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Ship Defense — Obsidian Bastian</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{
+      --bg:#061021;
+      --panel:#0b1a2b;
+      --accent:#2dd4bf;
+      --danger:#ff3b30;
+      --warn:#ff9f1c;
+      --good:#2ecc71;
+      --muted:#98a6b3;
+    }
+    html,body{height:100%;margin:0;background:radial-gradient(circle at 60% 20%, #071324 0%, var(--bg) 45%); color:#e6f0f5; font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;}
+    .app{
+      display:grid;
+      grid-template-columns: 420px 1fr;
+      gap:18px;
+      padding:20px;
+      height:100%;
+      box-sizing:border-box;
+    }
 
+    /* Left controls panel */
+    .panel{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.03);
+      border-radius:12px;
+      padding:16px;
+      box-shadow: 0 6px 18px rgba(2,8,23,0.6);
+    }
+    .title{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      margin-bottom:12px;
+    }
+    .title h1{font-size:18px;margin:0}
+    .status-dot{
+      width:14px;height:14px;border-radius:999px;border:2px solid rgba(255,255,255,0.06);
+    }
+    .controls{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+    .row{display:flex;gap:8px;align-items:center}
+    button, .segmented button{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.04);
+      color:inherit;padding:8px 12px;border-radius:8px;cursor:pointer;
+      font-weight:600;
+    }
+    .segmented{display:flex;gap:6px;background:rgba(255,255,255,0.01);padding:6px;border-radius:8px;}
+    .segmented button.active{box-shadow:0 6px 24px rgba(45,212,191,0.12);border-color:rgba(45,212,191,0.2)}
+    .meter{background:rgba(255,255,255,0.04);border-radius:10px;height:18px;position:relative;overflow:hidden;flex:1}
+    .meter > i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,var(--accent),#1fb6a5);width:50%}
+    .meter-label{font-size:12px;color:var(--muted);margin-left:8px;min-width:56px;text-align:right}
+    .log{background:rgba(255,255,255,0.02);border-radius:8px;padding:8px;height:120px;overflow:auto;font-size:13px;color:#cfeff0}
+    .small{font-size:12px;color:var(--muted)}
+    .danger { color: var(--danger); font-weight:700; }
+    .warn { color: var(--warn); font-weight:700; }
+
+    /* Canvas area */
+    .view{
+      display:flex;flex-direction:column;height:100%;
+      gap:12px;
+    }
+    .viewport{
+      background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.08));
+      border-radius:12px;padding:12px;border:1px solid rgba(255,255,255,0.02);flex:1;
+      position:relative;overflow:hidden;
+    }
+    canvas{width:100%;height:100%;display:block;border-radius:8px;background:transparent}
+    .hud{
+      display:flex;gap:12px;align-items:center;justify-content:space-between;margin-top:8px;
+    }
+    .hint{font-size:13px;color:var(--muted)}
+
+    /* simple responsive */
+    @media (max-width:940px){
+      .app{grid-template-columns:1fr;grid-auto-rows:auto}
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <section class="panel" aria-labelledby="defenseTitle">
+      <div class="title">
+        <div style="flex:1">
+          <h1 id="defenseTitle">Defense Console</h1>
+          <div class="small">Monitor threats, fire lasers, and maintain shields</div>
+        </div>
+        <div style="text-align:right">
+          <div id="alertDot" class="status-dot" title="Alert level"></div>
+        </div>
+      </div>
+
+      <div class="controls" role="region" aria-label="Controls">
+        <div class="row segmented" role="tablist" aria-label="Alert level">
+          <button id="alertGreen" class="active" role="tab" aria-selected="true">Green</button>
+          <button id="alertYellow" role="tab">Yellow</button>
+          <button id="alertRed" role="tab">Red</button>
+        </div>
+
+        <div class="row">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <button id="fireBtn" title="Fire main laser">Fire Laser</button>
+            <label style="display:flex;align-items:center;gap:8px;"><input id="autoFire" type="checkbox"> Auto-target</label>
+          </div>
+        </div>
+
+        <div>
+          <div class="small">Shields</div>
+          <div style="display:flex;align-items:center;margin-top:6px">
+            <div class="meter" aria-hidden="true"><i id="shieldFill" style="width:100%"></i></div>
+            <div class="meter-label" id="shieldLabel">100%</div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="repairBtn">Repair (+25)</button>
+            <button id="startAutoRepair">Auto Repair</button>
+          </div>
+          <div class="small" style="margin-top:6px"><span id="repairStatus">Ready</span></div>
+        </div>
+
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="small">Threat Log</div>
+            <div class="small">Targets: <span id="targetCount">0</span></div>
+          </div>
+          <div class="log" id="log" aria-live="polite"></div>
+        </div>
+
+        <div style="margin-top:6px;display:flex;gap:8px;align-items:center">
+          <button id="scanBtn" title="Scan for objects">Scan for Objects</button>
+          <div class="small" id="scanResult" aria-live="polite">Stability: active — debris will stabilize after a few seconds</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view">
+      <div class="viewport panel" role="application" aria-label="Tactical display">
+        <canvas id="canvas" width="1200" height="700"></canvas>
+      </div>
+
+      <div class="hud">
+        <div class="hint">Click a piece of debris to target it directly. Lasers cost energy — simulated here for demos.</div>
+        <div class="small">Simulation running — delta-based movement</div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Defense console simulation (shield-overlay + threat-window)
+    // Main systems and constants
+    const MAX_SHIELDS = 100;
+    const SHIP_Y_RATIO = 0.92; // ship near bottom
+    const LASER_DAMAGE = 34;
+    const REPAIR_AMOUNT = 25;
+    const REPAIR_COOLDOWN_MS = 4500;
+    const JUNK_BASE_SPAWN_MS = 2200; // base spawn interval
+    const JUNK_SPEED_MIN = 20;
+    const JUNK_SPEED_MAX = 80;
+    const STABILITY_TIMEOUT_MS = 5000; // after this many ms each spawned junk will "stabilize"
+    const STABILITY_DRIFT_SPEED = 6; // slow drift when stabilized
+    const SHIELD_RADIUS = 78; // visual and collision radius for shield
+    const SPAWN_WINDOW_MS = 10000; // threat window length before auto-pausing
+
+    // State
+    let alertLevel = 'green'; // 'green'|'yellow'|'red'
+    let shields = MAX_SHIELDS;
+    let lastRepairAt = 0;
+    let autoRepair = false;
+    let autoFire = false;
+    let running = true;
+    let spawnPaused = false; // when true, no new debris will spawn
+    let stabilityEnabled = true; // when true, debris will slow/stop heading toward ship after STABILITY_TIMEOUT_MS
+
+    // Threat-window timers
+    let spawnWindowTimer = null;
+    let spawnWindowCountdownTimer = null;
+    let spawnWindowExpiresAt = 0;
+
+    // Canvas setup
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d', { alpha: true });
+    function resizeCanvas() {
+      const ratio = window.devicePixelRatio || 1;
+      canvas.width = canvas.clientWidth * ratio;
+      canvas.height = canvas.clientHeight * ratio;
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // DOM refs
+    const alertDot = document.getElementById('alertDot');
+    const shieldFill = document.getElementById('shieldFill');
+    const shieldLabel = document.getElementById('shieldLabel');
+    const logEl = document.getElementById('log');
+    const targetCountEl = document.getElementById('targetCount');
+    const fireBtn = document.getElementById('fireBtn');
+    const repairBtn = document.getElementById('repairBtn');
+    const startAutoRepairBtn = document.getElementById('startAutoRepair');
+    const autoFireChk = document.getElementById('autoFire');
+    const alertGreen = document.getElementById('alertGreen');
+    const alertYellow = document.getElementById('alertYellow');
+    const alertRed = document.getElementById('alertRed');
+    const repairStatus = document.getElementById('repairStatus');
+    const scanBtn = document.getElementById('scanBtn');
+    const scanResult = document.getElementById('scanResult');
+
+    // Objects in simulation
+    let junkList = []; // {id,x,y,r,spd,health,angle,spawnAt,stable}
+    let beams = []; // laser beams {x1,y1,x2,y2, t}
+    let selectedTarget = null;
+    let nextJunkId = 1;
+    let lastSpawn = performance.now();
+    let spawnInterval = JUNK_BASE_SPAWN_MS;
+
+    // Utility random
+    function rand(min, max){ return Math.random()*(max-min)+min; }
+    function log(msg, cls='') {
+      const line = document.createElement('div');
+      if (cls) line.className = cls;
+      line.textContent = `[${(new Date()).toLocaleTimeString()}] ${msg}`;
+      logEl.prepend(line);
+      while (logEl.childElementCount > 200) logEl.removeChild(logEl.lastChild);
+    }
+
+    // Alert level functions
+    function setAlert(level){
+      alertLevel = level;
+      [alertGreen, alertYellow, alertRed].forEach(b=>b.classList.remove('active'));
+      if(level==='green') alertGreen.classList.add('active');
+      if(level==='yellow') alertYellow.classList.add('active');
+      if(level==='red') alertRed.classList.add('active');
+
+      if(level==='green'){ alertDot.style.background= 'linear-gradient(180deg,var(--good),#15c368)'; spawnInterval = JUNK_BASE_SPAWN_MS * 1.8; }
+      if(level==='yellow'){ alertDot.style.background= 'linear-gradient(180deg,var(--warn),#ffb24a)'; spawnInterval = JUNK_BASE_SPAWN_MS; }
+      if(level==='red'){ alertDot.style.background= 'linear-gradient(180deg,var(--danger),#ff6150)'; spawnInterval = JUNK_BASE_SPAWN_MS * 0.5; }
+
+      log(`Alert set to ${level.toUpperCase()}`, level==='red' ? 'danger' : (level==='yellow' ? 'warn' : ''));
+      // When entering red alert open a limited threat window
+      if(level === 'red') startThreatWindow();
+    }
+
+    // Threat window control: allow threats for SPAWN_WINDOW_MS then pause automatically
+    function startThreatWindow(){
+      // clear any existing timers
+      if(spawnWindowTimer) clearTimeout(spawnWindowTimer);
+      if(spawnWindowCountdownTimer) clearInterval(spawnWindowCountdownTimer);
+      spawnPaused = false;
+      spawnWindowExpiresAt = performance.now() + SPAWN_WINDOW_MS;
+      scanResult.textContent = `Threats active — will stop in ${Math.ceil(SPAWN_WINDOW_MS/1000)}s`;
+      const updateCountdown = () => {
+        const msLeft = Math.max(0, spawnWindowExpiresAt - performance.now());
+        scanResult.textContent = msLeft > 0 ? `Threats active — will stop in ${Math.ceil(msLeft/1000)}s` : 'Threats will stop shortly';
+      };
+      updateCountdown();
+      spawnWindowCountdownTimer = setInterval(updateCountdown, 600);
+
+      spawnWindowTimer = setTimeout(() => {
+        spawnPaused = true;
+        scanResult.textContent = 'Threats paused — stability maintained';
+        log('Threat window ended — new threats paused.');
+        clearInterval(spawnWindowCountdownTimer);
+        spawnWindowCountdownTimer = null;
+        spawnWindowTimer = null;
+      }, SPAWN_WINDOW_MS);
+      log(`Threat window enabled for ${Math.round(SPAWN_WINDOW_MS/1000)}s.`);
+    }
+
+    function stopThreatWindowImmediately(){
+      if(spawnWindowTimer) clearTimeout(spawnWindowTimer);
+      if(spawnWindowCountdownTimer) clearInterval(spawnWindowCountdownTimer);
+      spawnWindowTimer = spawnWindowCountdownTimer = null;
+      spawnPaused = true;
+      scanResult.textContent = 'Threats paused — stability maintained';
+    }
+
+    // Spawn junk
+    function spawnJunk(){
+      if(spawnPaused) return;
+      const cw = canvas.clientWidth;
+      const spawnX = rand(40, cw-40);
+      const r = rand(8, 34);
+      const angle = rand(0.9*Math.PI, 1.1*Math.PI); // downwards-ish
+      const spd = rand(JUNK_SPEED_MIN, JUNK_SPEED_MAX) * (alertLevel==='red' ? 1.6 : (alertLevel==='yellow' ? 1.1 : 0.8));
+      const health = Math.ceil(r/8) * 15;
+      const id = nextJunkId++;
+      const now = performance.now();
+      junkList.push({id, x:spawnX, y:-r-10, r, spd, health, angle, spawnAt: now, stable: false});
+      targetCountEl.textContent = junkList.length;
+      log(`Incoming debris #${id} (r:${Math.round(r)}, spd:${Math.round(spd)})`);
+    }
+
+    // Laser fire action
+    function fireLaser(target){
+      const cw = canvas.clientWidth, ch = canvas.clientHeight;
+      const shipX = cw/2, shipY = ch * SHIP_Y_RATIO;
+      if(!target){
+        const tx = cw/2, ty = 20;
+        beams.push({x1:shipX,y1:shipY,x2:tx,y2:ty, t:0});
+      } else {
+        beams.push({x1:shipX,y1:shipY,x2:target.x,y2:target.y, t:0, targetId: target.id});
+      }
+      if(target){
+        target.health -= LASER_DAMAGE;
+        log(`Laser hit debris #${target.id} for ${LASER_DAMAGE} damage. Remaining ${Math.max(0,target.health)}`);
+        if(target.health <= 0){
+          log(`Debris #${target.id} disintegrated.`);
+          junkList = junkList.filter(j=>j.id!==target.id);
+          selectedTarget = null;
+        }
+        targetCountEl.textContent = junkList.length;
+      } else {
+        log('Laser fired (no target).');
+      }
+    }
+
+    // Repair shields
+    function repairShields(){
+      const now = performance.now();
+      if(now - lastRepairAt < REPAIR_COOLDOWN_MS){
+        log('Repair on cooldown.', 'warn');
+        return;
+      }
+      const before = shields;
+      shields = Math.min(MAX_SHIELDS, shields + REPAIR_AMOUNT);
+      lastRepairAt = now;
+      updateShieldUI();
+      log(`Shields repaired ${shields-before} -> ${shields}`);
+    }
+
+    // Auto repair loop
+    function autoRepairLoop(delta){
+      if(!autoRepair) return;
+      if(shields < 70 && performance.now() - lastRepairAt > REPAIR_COOLDOWN_MS){
+        repairShields();
+      }
+    }
+
+    // Update UI for shields
+    function updateShieldUI(){
+      const pct = Math.round((shields / MAX_SHIELDS) * 100);
+      shieldFill.style.width = pct + '%';
+      shieldLabel.textContent = pct + '%';
+      if(pct < 30) shieldFill.style.background = 'linear-gradient(90deg,var(--danger),#ff6b6b)';
+      else if(pct < 60) shieldFill.style.background = 'linear-gradient(90deg,var(--warn),#ffb56f)';
+      else shieldFill.style.background = 'linear-gradient(90deg,var(--accent),#1fb6a5)';
+      repairStatus.textContent = performance.now() - lastRepairAt < REPAIR_COOLDOWN_MS ? 'Cooldown' : 'Ready';
+    }
+
+    // Collision / reach ship handling (includes shield interception)
+    function handleJunkTravel(j, delta, now){
+      const cw = canvas.clientWidth, ch = canvas.clientHeight;
+      const shipX = cw / 2, shipY = ch * SHIP_Y_RATIO;
+
+      // If stability enabled and the junk has existed long enough, mark it stable
+      if(stabilityEnabled && !j.stable && now - j.spawnAt >= STABILITY_TIMEOUT_MS){
+        j.stable = true;
+        j.driftAngle = rand(0, Math.PI*2);
+        log(`Debris #${j.id} stabilised (no longer heading directly at ship)`);
+      }
+
+      if(!j.stable){
+        // normal movement toward ship
+        j.y += (j.spd * delta / 1000);
+        j.x += Math.sin(j.angle) * (j.spd * delta / 700);
+
+        // check shield intersection first (sphere collision)
+        const dx = j.x - shipX, dy = j.y - shipY;
+        const dist = Math.hypot(dx, dy);
+        if(dist <= SHIELD_RADIUS + j.r){
+          // Intersected shield region
+          if(shields > 0){
+            const dmg = Math.round(j.r * 2) + Math.floor(rand(0,12));
+            // shield absorbs impact; shields reduced and debris removed
+            const absorbed = Math.min(shields, dmg);
+            shields = Math.max(0, shields - absorbed);
+            updateShieldUI();
+            log(`Debris #${j.id} intercepted by shields — Shields -${absorbed} = ${shields}`, 'warn');
+            // remove debris
+            junkList = junkList.filter(x=>x.id !== j.id);
+            targetCountEl.textContent = junkList.length;
+            return;
+          } else {
+            // shields depleted: fall through to ship impact logic below
+          }
+        }
+
+        // if it reached ship lower boundary (no shield or missed shield)
+        if(j.y + j.r >= shipY){
+          const dmg = Math.round(j.r * 2) + Math.floor(rand(0,12));
+          shields = Math.max(0, shields - dmg);
+          updateShieldUI();
+          log(`Debris #${j.id} impacted ship — Shields -${dmg} = ${shields}`, 'danger');
+          junkList = junkList.filter(x=>x.id !== j.id);
+          targetCountEl.textContent = junkList.length;
+        }
+
+      } else {
+        // stabilized junk: gentle drift, will not impact the ship
+        j.x += Math.cos(j.driftAngle + j.id) * (STABILITY_DRIFT_SPEED * delta / 1000);
+        j.y += Math.sin(j.driftAngle + j.id) * (STABILITY_DRIFT_SPEED * delta / 1500);
+        // keep it within screen - bounce slightly
+        if(j.x < j.r) j.x = j.r + 4;
+        if(j.x > cw - j.r) j.x = cw - j.r - 4;
+        if(j.y < -50) j.y = -50 + j.r;
+      }
+    }
+
+    // Draw loop
+    let lastFrame = performance.now();
+    function frame(now){
+      const delta = now - lastFrame;
+      lastFrame = now;
+      resizeCanvasIfNeeded();
+      // spawn logic (new threats only when not paused)
+      if(!spawnPaused && now - lastSpawn > spawnInterval){
+        const spawnCount = (alertLevel === 'red' ? 2 : (alertLevel === 'yellow' ? 1 : 0.4));
+        for(let i=0;i < Math.floor(spawnCount); i++) spawnJunk();
+        if(Math.random() < (spawnCount - Math.floor(spawnCount))) spawnJunk();
+        lastSpawn = now;
+      }
+
+      // update junk positions
+      junkList.slice().forEach(j=>handleJunkTravel(j, delta, now)); // slice to avoid mutation during iteration
+
+      // simple auto-fire (only fires on active/non-stable debris)
+      if(autoFire && alertLevel === 'red' && junkList.length){
+        const active = junkList.filter(j=>!j.stable);
+        if(active.length){
+          const target = active.reduce((a,b)=> (b.y > a.y ? b : a), active[0]);
+          if(target && Math.random() < 0.015 * (alertLevel==='red'?3:1)) {
+            fireLaser(target);
+          }
+        }
+      }
+
+      // beams lifecycle
+      beams.forEach(b=>b.t += delta);
+      beams = beams.filter(b=>b.t < 360);
+
+      // auto repair
+      autoRepairLoop(delta);
+
+      // draw
+      drawAll(now);
+
+      // loop
+      if(running) requestAnimationFrame(frame);
+    }
+
+    function resizeCanvasIfNeeded(){
+      const ratio = window.devicePixelRatio || 1;
+      const w = canvas.clientWidth * ratio;
+      const h = canvas.clientHeight * ratio;
+      if(canvas.width !== w || canvas.height !== h){
+        canvas.width = w;
+        canvas.height = h;
+        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      }
+    }
+
+    function drawShip(cx, cy, scale=1){
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.fillStyle = '#bfeff2';
+      ctx.beginPath();
+      ctx.moveTo(0, -18*scale);
+      ctx.lineTo(12*scale, 18*scale);
+      ctx.lineTo(-12*scale, 18*scale);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawShieldOverlay(shipX, shipY){
+      // Draw ring showing shield radius and fill depending on shield strength
+      const pct = shields / MAX_SHIELDS;
+      ctx.save();
+      // soft fill
+      ctx.fillStyle = `rgba(45,212,191,${0.06 * pct + 0.02})`;
+      ctx.beginPath();
+      ctx.arc(shipX, shipY, SHIELD_RADIUS, 0, Math.PI*2);
+      ctx.fill();
+
+      // colored ring
+      if(pct > 0.5) ctx.strokeStyle = 'rgba(45,212,191,0.95)';
+      else if(pct > 0.25) ctx.strokeStyle = 'rgba(255,184,77,0.95)';
+      else ctx.strokeStyle = 'rgba(255,90,90,0.95)';
+      ctx.lineWidth = 3;
+      ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.arc(shipX, shipY, SHIELD_RADIUS + 2, 0, Math.PI*2);
+      ctx.stroke();
+
+      // dashed inner threshold when shields are low to show vulnerability
+      if(pct < 0.35){
+        ctx.strokeStyle = 'rgba(255,90,90,0.6)';
+        ctx.lineWidth = 1.2;
+        ctx.setLineDash([6,6]);
+        ctx.beginPath();
+        ctx.arc(shipX, shipY, SHIELD_RADIUS - 18, 0, Math.PI*2);
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+
+    function drawAll(now){
+      const cw = canvas.clientWidth, ch = canvas.clientHeight;
+      ctx.clearRect(0,0,cw,ch);
+      drawStars();
+
+      const shipX = cw/2, shipY = ch * SHIP_Y_RATIO;
+
+      // draw junk
+      junkList.forEach(j=>{
+        ctx.save();
+        // determine whether this junk is within shield radius (visual cue)
+        const dx = j.x - shipX, dy = j.y - shipY;
+        const dist = Math.hypot(dx, dy);
+        const insideShield = (dist <= SHIELD_RADIUS + j.r);
+
+        const grd = ctx.createLinearGradient(j.x - j.r, j.y - j.r, j.x + j.r, j.y + j.r);
+        // color change if inside shield or stabilized
+        if(j.stable) {
+          grd.addColorStop(0, '#8ea0a6');
+          grd.addColorStop(1, '#6d7a80');
+        } else if(insideShield){
+          grd.addColorStop(0, '#9ef0ff');
+          grd.addColorStop(1, '#6fe0d0');
+        } else {
+          grd.addColorStop(0, '#9aa6b3');
+          grd.addColorStop(1, '#6b7280');
+        }
+
+        ctx.fillStyle = grd;
+        ctx.beginPath();
+        ctx.arc(j.x, j.y, j.r, 0, Math.PI*2);
+        ctx.fill();
+
+        if(j.health < (j.r*2)){
+          ctx.strokeStyle = 'rgba(255,120,120,0.9)';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+
+        ctx.fillStyle = 'rgba(0,0,0,0.6)';
+        ctx.font = '10px Inter, system-ui';
+        ctx.fillText(`#${j.id}`, j.x - j.r + 4, j.y - j.r - 6);
+
+        if(selectedTarget && selectedTarget.id === j.id){
+          ctx.strokeStyle = 'rgba(45,212,191,0.9)';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(j.x, j.y, j.r + 6, 0, Math.PI*2);
+          ctx.stroke();
+        }
+
+        if(j.stable){
+          ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.arc(j.x, j.y, j.r + 10, 0, Math.PI*2);
+          ctx.stroke();
+        }
+
+        // subtle indicator when inside shield
+        if(insideShield && !j.stable){
+          ctx.fillStyle = 'rgba(255,255,255,0.06)';
+          ctx.beginPath();
+          ctx.arc(j.x, j.y, j.r + 4, 0, Math.PI*2);
+          ctx.fill();
+        }
+
+        ctx.restore();
+      });
+
+      // draw beams
+      beams.forEach(b=>{
+        ctx.save();
+        const alpha = 1 - (b.t / 360);
+        ctx.strokeStyle = `rgba(45,212,191,${0.9*alpha})`;
+        ctx.lineWidth = 2 + (2 * alpha);
+        ctx.beginPath();
+        ctx.moveTo(b.x1, b.y1);
+        ctx.lineTo(b.x2, b.y2);
+        ctx.stroke();
+        ctx.fillStyle = `rgba(255,255,255,${0.9*alpha})`;
+        ctx.beginPath();
+        ctx.arc(b.x2, b.y2, 4 * alpha + 1, 0, Math.PI*2);
+        ctx.fill();
+        ctx.restore();
+      });
+
+      // draw ship and shield overlay
+      drawShip(shipX, shipY, 1.2);
+      drawShieldOverlay(shipX, shipY);
+
+      // warning tint when red alert
+      if(alertLevel === 'red'){
+        ctx.save();
+        ctx.fillStyle = 'rgba(255,60,60,0.02)';
+        ctx.fillRect(0,0,cw,ch);
+        ctx.restore();
+      }
+    }
+
+    function drawStars(){
+      const cw = canvas.clientWidth, ch = canvas.clientHeight;
+      ctx.save();
+      ctx.fillStyle = '#061021';
+      ctx.fillRect(0,0,cw,ch);
+      ctx.fillStyle = 'rgba(255,255,255,0.06)';
+      for(let i=0;i<80;i++){
+        const x = (i * 137.5) % cw;
+        const y = (i * 53.7) % ch;
+        ctx.fillRect(x, y, 1, 1);
+      }
+      ctx.restore();
+    }
+
+    // Input handlers
+    canvas.addEventListener('click', (ev)=>{
+      const rect = canvas.getBoundingClientRect();
+      const x = (ev.clientX - rect.left);
+      const y = (ev.clientY - rect.top);
+      const hit = junkList.reduce((best, j) => {
+        const d = Math.hypot(j.x - x, j.y - y);
+        if(d <= j.r + 8 && (!best || d < best.d)) return {j, d};
+        return best;
+      }, null);
+      if(hit){
+        selectedTarget = hit.j;
+        log(`Targeting debris #${hit.j.id}`);
+      } else {
+        selectedTarget = null;
+      }
+    });
+
+    fireBtn.addEventListener('click', ()=> {
+      if(selectedTarget) fireLaser(selectedTarget);
+      else fireLaser(null);
+    });
+
+    autoFireChk.addEventListener('change', (e)=> autoFire = e.target.checked);
+
+    repairBtn.addEventListener('click', repairShields);
+    startAutoRepairBtn.addEventListener('click', () => {
+      autoRepair = !autoRepair;
+      startAutoRepairBtn.textContent = autoRepair ? 'Auto Repair: ON' : 'Auto Repair';
+      log(`Auto repair ${autoRepair ? 'enabled' : 'disabled'}.`);
+    });
+
+    alertGreen.addEventListener('click', ()=>{ setAlert('green'); stopThreatWindowImmediately(); });
+    alertYellow.addEventListener('click', ()=>{ setAlert('yellow'); stopThreatWindowImmediately(); });
+    alertRed.addEventListener('click', ()=> setAlert('red'));
+
+    // Scan for objects: either report no threats or start a threat window
+    scanBtn.addEventListener('click', async ()=>{
+      scanBtn.disabled = true;
+      scanResult.textContent = 'Scanning...';
+      log('Scanning for objects...');
+      await new Promise(r => setTimeout(r, 1600)); // pretend scan delay
+      // simple probabilistic scan outcome; you can change odds or base on alert
+      const foundThreats = Math.random() < 0.46; // 46% chance threats present
+      if(!foundThreats){
+        spawnPaused = true;
+        // remove any active debris
+        junkList = [];
+        targetCountEl.textContent = 0;
+        scanResult.textContent = 'No threats detected — stability maintained';
+        setAlert('green');
+        stopThreatWindowImmediately();
+        log('Scan complete: No threats detected. Threats paused.');
+      } else {
+        // resume threats for a limited window
+        setAlert('red');
+        startThreatWindow();
+        lastSpawn = performance.now() - (spawnInterval * 0.6);
+        log('Scan complete: Threats detected. Threat window started.', 'danger');
+      }
+      setTimeout(()=>{ scanBtn.disabled = false; }, 800);
+    });
+
+    // initial UI state
+    setAlert('green');
+    updateShieldUI();
+
+    // periodic world effects: degrade shields under sustained red alert
+    setInterval(()=>{
+      if(alertLevel === 'red' && Math.random() < 0.22){
+        const dmg = Math.ceil(rand(1,4));
+        shields = Math.max(0, shields - dmg);
+        updateShieldUI();
+        log(`Radiation flare damaged shields -${dmg}`, 'warn');
+      }
+    }, 4000);
+
+    // visual update for repair cooldown indicator
+    setInterval(updateShieldUI, 600);
+
+    // Start animation
+    requestAnimationFrame(frame);
+
+    // Graceful pause/resume when page is hidden
+    document.addEventListener('visibilitychange', ()=>{
+      if(document.hidden){ running = false; } else { running = true; lastFrame = performance.now(); requestAnimationFrame(frame); }
+    });
+
+    // Expose basic API for integration
+    window.defenseConsole = {
+      setAlert,
+      spawnJunk,
+      fireLaser,
+      getStatus: ()=>({alertLevel, shields, targets: junkList.length, threatsPaused: spawnPaused}),
+      scanForObjects: () => scanBtn.click(),
+      setStabilityEnabled: (v) => { stabilityEnabled = !!v; scanResult.textContent = stabilityEnabled ? 'Stability: active — debris will stabilize' : 'Stability: disabled'; }
+    };
+
+    // initial demo spawn
+    spawnJunk();
+    spawnJunk();
+    spawnJunk();
+
+    // Short user guidance
+    log('Console initialised. Shield overlay visible — debris intersecting the shield will be intercepted if shields remain. Threat windows auto-pause after a short period (configurable). Use "Scan for Objects" to re-check.');
+  </script>
+</body>
+</html>
