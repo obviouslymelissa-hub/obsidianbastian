@@ -155,31 +155,86 @@
     .side-stack { display:flex; flex-direction:column; gap:12px }
     .small-list { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:10px }
     .small-item { display:flex; gap:10px; align-items:flex-start }
+
+    /* Default small thumb used in lists */
     .thumb { width:56px;height:36px;border-radius:6px;background:rgba(255,255,255,0.02); object-fit:cover; }
 
-    /* Gallery-specific thumbnails — increase size and keep cover cropping */
-    .panel[aria-labelledby="gallery-title"] .thumb {
-      width:140px;
-      height:96px;
+    /* Gallery wrapper and thumbnails (larger) */
+    .gallery-grid {
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .gallery-grid .thumb {
+      width:200px;
+      height:130px;
       object-fit:cover;
-      border-radius:6px;
+      border-radius:8px;
       border: 1px solid rgba(0,0,0,0.06);
+      cursor:pointer;
+      transition: transform .12s ease, box-shadow .12s ease;
       display:block;
     }
+    .gallery-grid .thumb:focus,
+    .gallery-grid .thumb:hover { transform: translateY(-6px); box-shadow: 0 8px 24px rgba(0,0,0,0.5); outline: none; }
 
-    /* Slightly larger on medium/large screens so images are more visible */
     @media (min-width: 900px) {
-      .panel[aria-labelledby="gallery-title"] .thumb {
-        width:180px;
-        height:120px;
-      }
+      .gallery-grid .thumb { width:240px; height:156px; }
     }
 
-    /* Keep layout spacing consistent for the gallery wrapper */
-    .panel[aria-labelledby="gallery-title"] > div {
-      gap: 12px;
-      align-items: center;
+    /* Lightbox / slideshow */
+    .lightbox {
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,0.85);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:1200;
+      padding:24px;
     }
+    .lightbox.open { display:flex; }
+
+    .lb-content {
+      max-width: 92vw;
+      max-height: 82vh;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:12px;
+    }
+    .lb-content img {
+      max-width: 100%;
+      max-height: calc(82vh - 80px);
+      object-fit:contain;
+      border-radius:8px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+      background: #000;
+    }
+    .lb-caption {
+      color:var(--text-muted);
+      font-size:0.95rem;
+      text-align:center;
+      max-width:92vw;
+    }
+
+    .lb-close, .lb-prev, .lb-next {
+      position:absolute;
+      background:transparent;
+      color:var(--text-main);
+      border:0;
+      font-size:28px;
+      cursor:pointer;
+      padding:12px;
+      line-height:1;
+    }
+    .lb-close { top:18px; right:22px; font-size:30px; }
+    .lb-prev { left:18px; top:50%; transform:translateY(-50%); }
+    .lb-next { right:18px; top:50%; transform:translateY(-50%); }
+
+    .lb-close:focus, .lb-prev:focus, .lb-next:focus { outline:2px solid rgba(79,209,197,0.28); border-radius:8px; }
 
     /* Footer */
     footer { text-align:center;color:var(--text-muted);padding:24px 0 40px;border-top:1px solid var(--border);margin-top:18px }
@@ -193,12 +248,15 @@
       .about .about-text { max-width:100% }
       .header-inner { justify-content:flex-start; }
       .header-text { text-align:left }
+      .gallery-grid .thumb { width:160px; height:104px; }
     }
     @media (max-width:600px){
       .systems-dock { grid-template-columns: 1fr }
       .ship-img { width:72px; height:72px; flex:0 0 72px; }
       .header-inner { gap:12px; padding:6px; }
       .header-text h1 { font-size:1.25rem; }
+      .gallery-grid { justify-content:center; }
+      .gallery-grid .thumb { width:140px; height:90px; }
     }
   </style>
 </head>
@@ -386,21 +444,136 @@
           </ul>
         </div>
 
-        <!-- Photo gallery compact -->
+        <!-- Photo gallery with larger thumbnails and a lightbox slideshow -->
         <div class="panel" aria-labelledby="gallery-title">
           <h3 id="gallery-title">Photo Gallery</h3>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-            <img class="thumb" src="https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-1.jpg" alt="Command Deck">
-            <img class="thumb" src="https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-2.jpg" alt="Observation Dome">
-            <img class="thumb" src="https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-3.jpg" alt="Exterior">
+          <div class="gallery-grid" id="gallery">
+            <img class="thumb" data-index="0" src="https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-1.jpg" alt="Command Deck — view 1" tabindex="0" />
+            <img class="thumb" data-index="1" src="https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-2.jpg" alt="Observation Dome — view 2" tabindex="0" />
+            <img class="thumb" data-index="2" src="https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-3.jpg" alt="Exterior — view 3" tabindex="0" />
           </div>
         </div>
       </div>
     </aside>
   </main>
 
+  <!-- Lightbox / slideshow markup -->
+  <div id="lightbox" class="lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Image viewer">
+    <button class="lb-close" id="lbClose" aria-label="Close viewer">&times;</button>
+    <button class="lb-prev" id="lbPrev" aria-label="Previous image">‹</button>
+
+    <div class="lb-content" role="document">
+      <img id="lbImage" src="" alt="">
+      <div id="lbCaption" class="lb-caption" aria-live="polite"></div>
+    </div>
+
+    <button class="lb-next" id="lbNext" aria-label="Next image">›</button>
+  </div>
+
   <footer>
     © Family Fleet — Obsidian Bastian • Public homepage
   </footer>
+
+  <script>
+    (function(){
+      const images = [
+        { src: 'https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-1.jpg', caption: 'Command Deck' },
+        { src: 'https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-2.jpg', caption: 'Observation Dome' },
+        { src: 'https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-3.jpg', caption: 'Exterior' }
+      ];
+
+      const gallery = document.getElementById('gallery');
+      const thumbs = gallery ? Array.from(gallery.querySelectorAll('.thumb')) : [];
+      const lightbox = document.getElementById('lightbox');
+      const lbImage = document.getElementById('lbImage');
+      const lbCaption = document.getElementById('lbCaption');
+      const lbClose = document.getElementById('lbClose');
+      const lbPrev = document.getElementById('lbPrev');
+      const lbNext = document.getElementById('lbNext');
+
+      let current = 0;
+
+      function openLightbox(idx) {
+        current = (typeof idx === 'number') ? idx : 0;
+        const item = images[current];
+        lbImage.src = item.src;
+        lbImage.alt = item.caption || '';
+        lbCaption.textContent = item.caption || '';
+        lightbox.classList.add('open');
+        lightbox.setAttribute('aria-hidden', 'false');
+        // move focus to close for accessibility
+        lbClose.focus();
+        // prevent page scrolling
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeLightbox() {
+        lightbox.classList.remove('open');
+        lightbox.setAttribute('aria-hidden', 'true');
+        lbImage.src = '';
+        lbCaption.textContent = '';
+        document.body.style.overflow = '';
+        // return focus to the thumbnail that opened it
+        const thumb = thumbs[current];
+        if (thumb) thumb.focus();
+      }
+
+      function showPrev() {
+        current = (current - 1 + images.length) % images.length;
+        updateLightbox();
+      }
+      function showNext() {
+        current = (current + 1) % images.length;
+        updateLightbox();
+      }
+      function updateLightbox() {
+        const item = images[current];
+        // swap image source; browsers will cache so this is usually fast
+        lbImage.src = item.src;
+        lbImage.alt = item.caption || '';
+        lbCaption.textContent = item.caption || '';
+      }
+
+      // Attach handlers to thumbnails
+      thumbs.forEach(t => {
+        t.addEventListener('click', (e) => {
+          const idx = Number(t.getAttribute('data-index'));
+          openLightbox(idx);
+        });
+        // Allow Enter/Space to open when focused
+        t.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            const idx = Number(t.getAttribute('data-index'));
+            openLightbox(idx);
+          }
+        });
+      });
+
+      // Controls
+      lbClose.addEventListener('click', closeLightbox);
+      lbPrev.addEventListener('click', showPrev);
+      lbNext.addEventListener('click', showNext);
+
+      // Close when clicking outside the image
+      lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) closeLightbox();
+      });
+
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        if (!lightbox.classList.contains('open')) return;
+        if (e.key === 'Escape') closeLightbox();
+        else if (e.key === 'ArrowLeft') showPrev();
+        else if (e.key === 'ArrowRight') showNext();
+      });
+
+      // Preload images for smoother navigation
+      images.forEach(i => {
+        const img = new Image();
+        img.src = i.src;
+      });
+    })();
+  </script>
 </body>
 </html>
