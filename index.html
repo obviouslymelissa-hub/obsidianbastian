@@ -159,28 +159,42 @@
       padding: 18px;
       box-shadow: 0 2px 12px rgba(0,0,0,0.45);
       display:flex;
-      gap:18px;
-      align-items:flex-start;
+      flex-direction:column;
+      gap:12px;
       justify-content:space-between;
-      flex-wrap:wrap;
       min-height:140px; /* ensures some vertical room so the button can sit at the bottom visually */
     }
     .about .about-text { flex:1 1 480px; min-width:0; }
     .about h3 { margin:0 0 6px 0;color:var(--accent);font-size:1.15rem }
     .about p { margin:0;color:var(--text-muted);line-height:1.45 }
 
-    /* condensed detail grid (Registry + Status together, compact layout) */
-    .about-dl {
-      margin:8px 0 12px 0;
-      display:grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap:6px 18px;
-      align-items:start;
+    /* detail chips — highlighted boxes for designation/registry/status/authority */
+    .about-chips {
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin:6px 0;
     }
-    .about-dl dt { font-weight:700; color:var(--text-main); font-size:0.86rem; text-transform:uppercase; letter-spacing:0.7px; }
-    .about-dl dd { margin:0; color:var(--text-muted); font-size:0.92rem; }
+    .detail-chip {
+      display:inline-flex;
+      flex-direction:column;
+      gap:4px;
+      align-items:flex-start;
+      padding:8px 12px;
+      background: linear-gradient(180deg, rgba(127,240,223,0.02), rgba(255,255,255,0.01));
+      border:1px solid rgba(127,240,223,0.06);
+      border-radius:10px;
+      min-width:120px;
+      cursor:pointer;
+      transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+      color:var(--text-main);
+    }
+    .detail-chip dt { font-size:0.72rem; font-weight:700; color:var(--text-main); text-transform:uppercase; letter-spacing:0.6px; }
+    .detail-chip dd { margin:0; font-size:0.95rem; color:var(--text-muted); }
 
-    /* Core assets condensed into two columns */
+    .detail-chip:hover { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(0,0,0,0.45); background:linear-gradient(180deg, rgba(127,240,223,0.035), rgba(255,255,255,0.015)); }
+
+    /* condensed Core assets into two columns */
     .core-list {
       list-style: none;
       padding:0;
@@ -192,12 +206,19 @@
     .core-list li { display:flex; gap:8px; align-items:flex-start; margin:0; }
     .core-list strong { color:var(--accent); min-width:0; display:inline-block; font-weight:700; }
 
-    /* Force the actions button to the bottom on wide screens */
-    .about .about-actions { display:flex; gap:10px; align-items:center; margin-left:auto; align-self:flex-end; }
-    /* On smaller screens make it normal flow (end of block) */
-    @media (max-width:1000px) {
-      .about .about-actions { align-self:flex-start; margin-left:0; width:100%; justify-content:flex-start; margin-top:12px; }
+    /* area to show chip info */
+    .detail-info {
+      margin-top:10px;
+      color:var(--text-muted);
+      font-size:0.92rem;
+      min-height:22px;
+      opacity:0;
+      transition: opacity .18s ease, transform .18s ease;
+      transform: translateY(6px);
     }
+    .detail-info.show { opacity:1; transform: none; }
+
+    .about .about-actions { display:flex; gap:10px; align-items:center; justify-self:end; align-self:flex-end; margin-top:8px; }
 
     .panel {
       background: var(--bg-panel);
@@ -344,6 +365,8 @@
       .header-text p { display:none; }
       .gallery-grid .thumb { width:160px; height:104px; }
       header::before { display:none; }
+      .about { min-height:unset; }
+      .core-list { grid-template-columns: 1fr; }
     }
     @media (max-width:600px){
       .systems-dock { grid-template-columns: 1fr }
@@ -354,9 +377,8 @@
       .emblem { display:none; }
       .ship-img-wrap { width:72px; height:72px; border-radius:12px; flex:0 0 72px; }
       .header-inner { height:84px; }
-      .about { flex-direction:column; align-items:flex-start; min-height:unset; }
+      .about { flex-direction:column; align-items:flex-start; }
       .about .about-actions { align-self:flex-start; margin-left:0; width:100%; justify-content:flex-start; margin-top:12px; }
-      .core-list { grid-template-columns: 1fr; }
     }
 
     /* Reduced motion */
@@ -391,7 +413,7 @@
 
         <div class="header-text" style="min-width:0">
           <h1 id="siteTitle">Obsidian Bastian Command Hub</h1>
-          <p id="siteTag">Centralized access for all crew operations and ship systems — hover tiles to reveal actions.</p>
+          <p id="siteTag">Centralized access for crew operations.</p>
         </div>
       </div>
       <!-- header CTAs removed per request -->
@@ -405,38 +427,43 @@
         <div class="about-text">
           <h3 id="about-title">About the Obsidian Bastian</h3>
 
-          <dl class="about-dl" aria-hidden="false">
-            <div>
+          <div class="about-chips" role="list" aria-label="Ship details">
+            <button class="detail-chip" data-info="A long-range exploration cruiser built for extended missions and resilience.">
               <dt>Designation</dt>
               <dd>Exploration Cruiser</dd>
-            </div>
-            <div>
+            </button>
+
+            <button class="detail-chip" data-info="Registered as an active service vessel in the Family Fleet.">
               <dt>Registry</dt>
               <dd>Active Service Vessel</dd>
-            </div>
-            <div>
+            </button>
+
+            <button class="detail-chip" data-info="Ship status: Ready for deployment and operations.">
               <dt>Status</dt>
               <dd>Ready</dd>
-            </div>
-            <div>
+            </button>
+
+            <button class="detail-chip" data-info="Primary command sits on the bridge — responsible for mission direction and safety.">
               <dt>Authority</dt>
-              <dd>Command-certified · Fleet-aligned</dd>
-            </div>
-          </dl>
+              <dd>Bridge Command</dd>
+            </button>
+          </div>
 
           <p>
             A long-range cruiser optimized for extended missions, resilient systems, and crew comfort.
           </p>
 
-          <h4 style="margin:12px 0 6px 0;color:var(--text-main)">Core assets include:</h4>
+          <h4 style="margin:12px 0 6px 0;color:var(--text-main)">Core assets</h4>
           <ul class="core-list" aria-label="Core assets">
-            <li><strong>Mission Control:</strong> Navigation & tactical relay.</li>
-            <li><strong>Mainframe:</strong> Telemetry & communications.</li>
-            <li><strong>Engineering:</strong> Modular repair hub.</li>
-            <li><strong>Onboard Computer:</strong> Continuous system monitoring.</li>
-            <li><strong>Defense:</strong> Integrated lasers & shields.</li>
-            <li><strong>Crew Accom.:</strong> Reinforced living quarters.</li>
+            <li><strong>Mission:</strong> Navigation & tactical relay</li>
+            <li><strong>Mainframe:</strong> Telemetry & comms</li>
+            <li><strong>Engineering:</strong> Modular repair hub</li>
+            <li><strong>Computer:</strong> Continuous system monitoring</li>
+            <li><strong>Defense:</strong> Lasers & shields</li>
+            <li><strong>Crew:</strong> Reinforced quarters</li>
           </ul>
+
+          <div id="detailInfo" class="detail-info" aria-live="polite"></div>
         </div>
 
         <div class="about-actions" aria-hidden="false">
@@ -455,45 +482,9 @@
       </section>
     </div>
 
-    <!-- Sidebar: Notifications first, then Systems -->
-    <aside aria-labelledby="alerts-title">
+    <!-- Sidebar: Systems first, Notifications second -->
+    <aside aria-label="Right sidebar">
       <div class="side-stack">
-        <div class="panel" aria-labelledby="alerts-title">
-          <h3 id="alerts-title">Notifications &amp; Events</h3>
-
-          <ul class="small-list" aria-live="polite" style="margin-bottom:12px">
-            <li class="small-item">
-              <div style="flex:1">
-                <strong style="color:var(--accent)">No critical alerts</strong>
-                <div style="color:var(--text-muted);font-size:0.9rem">All mission-critical systems stable.</div>
-              </div>
-            </li>
-
-            <li class="small-item">
-              <div style="flex:1">
-                <strong>Communications</strong>
-                <div style="color:var(--text-muted);font-size:0.9rem">Channel: Standby</div>
-              </div>
-            </li>
-          </ul>
-
-          <h4 style="margin:0 0 8px 0;color:var(--text-main)">Upcoming Events</h4>
-          <ul class="small-list">
-            <li class="small-item">
-              <div style="flex:1">
-                <strong>Captain Carter's Birthday</strong>
-                <div style="color:var(--text-muted);font-size:0.9rem">2026-01-22 • 17:30 — Authorized Personnel Only</div>
-              </div>
-            </li>
-            <li class="small-item">
-              <div style="flex:1">
-                <strong>Mechanic Nima's Birthday</strong>
-                <div style="color:var(--text-muted);font-size:0.9rem">2026-01-22 • 17:30</div>
-              </div>
-            </li>
-          </ul>
-        </div>
-
         <div class="panel" aria-labelledby="systems-title">
           <h3 id="systems-title">Systems Dock</h3>
           <div class="systems-dock" role="list">
@@ -507,10 +498,29 @@
               </div>
               <div class="tile-actions">
                 <a class="btn" href="https://obviouslymelissa-hub.github.io/obsidianbastian/onboardcomputer.html" aria-label="Open Onboard Computer">Open</a>
-                <!-- Diagnostics button removed -->
               </div>
             </div>
           </div>
+        </div>
+
+        <div class="panel" aria-labelledby="alerts-title">
+          <h3 id="alerts-title">Notifications &amp; Events</h3>
+
+          <h4 style="margin:0 0 8px 0;color:var(--text-main)">Upcoming Events</h4>
+          <ul class="small-list" style="margin-top:10px">
+            <li class="small-item">
+              <div style="flex:1">
+                <strong>Captain Carter's Birthday</strong>
+                <div style="color:var(--text-muted);font-size:0.9rem">2026-01-22 • 17:30 — Authorized Personnel Only</div>
+              </div>
+            </li>
+            <li class="small-item">
+              <div style="flex:1">
+                <strong>Mechanic Nima's Birthday</strong>
+                <div style="color:var(--text-muted);font-size:0.9rem">2026-01-22 • 17:30</div>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
     </aside>
@@ -574,6 +584,7 @@
 
   <script>
     (function(){
+      // Gallery / lightbox logic (unchanged)
       const images = [
         { src: 'https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-1.jpg', caption: 'Command Deck' },
         { src: 'https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-2.jpg', caption: 'Observation Dome' },
@@ -660,6 +671,33 @@
       images.forEach(i => {
         const img = new Image();
         img.src = i.src;
+      });
+
+      // Detail-chip interaction: show transient contextual info
+      const chips = Array.from(document.querySelectorAll('.detail-chip'));
+      const infoBox = document.getElementById('detailInfo');
+      let infoTimer = null;
+      function showInfo(text) {
+        if (!infoBox) return;
+        clearTimeout(infoTimer);
+        infoBox.textContent = text;
+        infoBox.classList.add('show');
+        infoTimer = setTimeout(() => {
+          infoBox.classList.remove('show');
+        }, 4200);
+      }
+      chips.forEach(c => {
+        c.addEventListener('click', () => {
+          const text = c.getAttribute('data-info') || '';
+          showInfo(text);
+        });
+        c.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            const text = c.getAttribute('data-info') || '';
+            showInfo(text);
+          }
+        });
       });
     })();
   </script>
