@@ -151,7 +151,7 @@
     /* content column */
     .content-column { grid-column: 1 / 2; display:flex; flex-direction:column; gap:20px; min-width:0; }
 
-    /* ABOUT panel — button pinned to bottom on wide screens */
+    /* ABOUT panel — button anchored at bottom on wide screens without forcing extra space */
     .about {
       background: linear-gradient(180deg, rgba(79,209,197,0.03), rgba(255,255,255,0.01));
       border: 1px solid var(--border);
@@ -161,8 +161,8 @@
       display:flex;
       flex-direction:column;
       gap:12px;
-      justify-content:space-between;
-      min-height:140px; /* ensures some vertical room so the button can sit at the bottom visually */
+      justify-content:flex-start;
+      /* removed forced min-height so panel doesn't create extra vertical space */
     }
     .about .about-text { flex:1 1 480px; min-width:0; }
     .about h3 { margin:0 0 6px 0;color:var(--accent);font-size:1.15rem }
@@ -218,7 +218,14 @@
     }
     .detail-info.show { opacity:1; transform: none; }
 
-    .about .about-actions { display:flex; gap:10px; align-items:center; justify-self:end; align-self:flex-end; margin-top:8px; }
+    /* default flow button spacing (small screens / when not anchored) */
+    .about .about-actions { display:flex; gap:10px; align-items:center; margin-top:12px; }
+
+    /* Anchor the button to the bottom-right on larger screens without forcing panel height */
+    @media (min-width:1000px) {
+      .about { position:relative; padding-bottom:48px; }
+      .about .about-actions { position:absolute; right:18px; bottom:16px; margin:0; }
+    }
 
     .panel {
       background: var(--bg-panel);
@@ -353,7 +360,8 @@
 
     .lb-close:focus, .lb-prev:focus, .lb-next:focus { outline:2px solid rgba(79,209,197,0.28); border-radius:8px; }
 
-    footer { text-align:center;color:var(--text-muted);padding:24px 0 40px;border-top:1px solid var(--border);margin-top:18px }
+    /* Footer quote styling */
+    footer { text-align:center;color:var(--text-muted);padding:24px 0 40px;border-top:1px solid var(--border);margin-top:18px;font-style:italic }
 
     /* Responsiveness */
     @media (max-width:1000px){
@@ -365,8 +373,10 @@
       .header-text p { display:none; }
       .gallery-grid .thumb { width:160px; height:104px; }
       header::before { display:none; }
-      .about { min-height:unset; }
+      .about { min-height:unset; padding-bottom:18px; }
       .core-list { grid-template-columns: 1fr; }
+      /* return button to normal flow on small screens */
+      .about .about-actions { position:static; margin-top:12px; }
     }
     @media (max-width:600px){
       .systems-dock { grid-template-columns: 1fr }
@@ -540,7 +550,7 @@
   </div>
 
   <footer>
-    © Family Fleet — Obsidian Bastian • Public homepage
+    “To the stars we sail — curiosity is our compass.”
   </footer>
 
   <!-- Header interactivity + lightbox scripts (parallax + sheen preserved) -->
