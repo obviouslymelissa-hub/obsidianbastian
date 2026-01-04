@@ -1,538 +1,115 @@
+ url=https://github.com/obviouslymelissa-hub/obsidianbastian/blob/main/communications.html
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Ship Communications</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Obsidian Bastian — Communications</title>
   <style>
-    :root{
-      --bg:#0b1220;
-      --panel:#0f1724;
-      --accent:#6ee7b7;
-      --muted:#9aa6b2;
-      --out:#143f2e;
-      --in:#102240;
-      --sys:#112;
-      color-scheme: dark;
-    }
-    body {
-      margin:0;
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background: linear-gradient(180deg,#06101a 0%, #08111a 100%);
-      color: #cfe7e0;
-      padding: 18px;
-    }
-
-    /* Top bar: title on the left, back link on the right */
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-    .back-link {
-      color: var(--accent);
-      text-decoration: none;
-      font-weight: 600;
-      padding: 6px 10px;
-      border-radius: 8px;
-      background: rgba(255,255,255,0.01);
-      border: 1px solid rgba(255,255,255,0.02);
-    }
-    .back-link:hover { filter: brightness(1.1); }
-
-    .shell {
-      max-width: 980px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 320px 1fr;
-      gap: 18px;
-    }
-    .panel {
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border: 1px solid rgba(255,255,255,0.03);
-      padding: 14px;
-      border-radius: 10px;
-    }
-    /* larger header to match other pages */
-    h1 { margin: 0 0 10px 0; font-size: 24px; font-weight:700; }
-    .status-row { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
-    .indicator {
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      width:100%;
-    }
-    .stat { display:flex; justify-content:space-between; font-size:13px; color:var(--muted); }
-    .big {
-      font-weight:700;
-      color:var(--accent);
-      font-size:20px;
-    }
-    .controls { display:flex; gap:8px; margin-top:10px; align-items:center; }
-    button {
-      background: rgba(255,255,255,0.03);
-      color: inherit;
-      border: 1px solid rgba(255,255,255,0.04);
-      padding: 8px 10px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight:600;
-    }
-    button.critical { background:#4c2424; color:#ffd6d6; border-color:#7a3333; }
-    .small { padding:6px 8px; font-size:13px; }
-    .toggle { display:flex; align-items:center; gap:6px; }
-    input[type="range"] { width:100%; }
-    #log {
-      height: 66vh;
-      overflow:auto;
-      padding: 12px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.02);
-      font-family: ui-monospace, "SFMono-Regular", Menlo, Monaco, "Roboto Mono", monospace;
-      font-size:13px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-    .entry {
-      padding:8px;
-      border-radius:8px;
-      max-width:86%;
-      display:inline-block;
-      white-space:pre-wrap;
-    }
-    .entry.outbound { background: linear-gradient(180deg,var(--out), rgba(20,63,46,0.85)); margin-left:auto; text-align:right; }
-    .entry.inbound { background: linear-gradient(180deg,var(--in), rgba(10,30,80,0.85)); margin-right:auto; text-align:left; }
-    .meta { font-size:11px; color:var(--muted); margin-bottom:6px; display:block; }
-    .toolbar { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
-    .composer { display:flex; gap:8px; }
-    .composer input[type="text"] {
-      flex:1;
-      padding:10px;
-      border-radius:8px;
-      border:1px solid rgba(255,255,255,0.02);
-      background: rgba(255,255,255,0.01);
-      color:inherit;
-      font-size:14px;
-    }
-    .controls-right { display:flex; gap:8px; align-items:center; margin-left:auto; }
-    .muted-note { color:var(--muted); font-size:13px; margin-top:8px; }
-    footer { margin-top:10px; color:var(--muted); font-size:12px; }
-    .row { display:flex; gap:8px; align-items:center; }
-    .pill { padding:6px 8px; border-radius:999px; background: rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.02); font-size:12px; color:var(--muted); }
-    .flex { display:flex; gap:8px; align-items:center; }
-    .select { padding:8px; border-radius:8px; background: rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.02); color:inherit; }
-    .small-muted { font-size:12px; color:var(--muted); }
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:#071017;color:#e6eef3;margin:0;padding:18px}
+    .panel{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);padding:12px;border-radius:8px;max-width:980px;margin:0 auto}
+    h1{margin:0 0 12px 0}
+    textarea{width:100%;height:220px;background:#071520;border:1px solid rgba(255,255,255,0.03);color:#dff;padding:10px;border-radius:6px;font-family:monospace}
+    .meta{font-size:13px;color:#9aa6b2;margin-bottom:8px}
+    .controls{display:flex;gap:8px;margin-top:8px}
+    .btn{background:linear-gradient(90deg,#114b3b,#427f62);color:white;padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.03);color:#9aa6b2}
+    .inbox{background:#08121a;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);font-family:monospace;color:#cfeff0;max-height:200px;overflow:auto}
   </style>
 </head>
 <body>
-  <header class="topbar" role="banner" aria-label="Page header">
-    <h1>Ship Communications</h1>
-    <a class="back-link" href="https://obviouslymelissa-hub.github.io/obsidianbastian/index.html" aria-label="Back to Command Hub">← Back to Command Hub</a>
-  </header>
+  <div class="panel">
+    <h1>Communications Console</h1>
+    <div class="meta">This page accepts a telemetry snapshot via the query string (?snapshot=...) or via postMessage from the main UI. Use "Send" to simulate transmission.</div>
 
-  <div class="shell">
-    <aside class="panel" aria-labelledby="status-heading">
-      <h2 id="status-heading">Communications Status</h2>
-
-      <div class="status-row">
-        <div style="flex:1">
-          <div class="stat"><span>Power</span><span id="powerState" class="big">OFF</span></div>
-          <div class="controls">
-            <div class="toggle">
-              <button id="btnPower" class="small">Power ON</button>
-            </div>
-            <div class="toggle">
-              <label class="small-muted">Encryption</label>
-              <select id="encryption" class="select">
-                <option value="none">None</option>
-                <option value="link">Link-layer</option>
-                <option value="e2e">End-to-end</option>
-              </select>
-            </div>
-          </div>
+    <div style="display:flex;gap:12px;align-items:flex-start">
+      <div style="flex:1">
+        <label style="display:block;margin-bottom:6px;color:#9aa6b2">Prepared message</label>
+        <textarea id="messageArea" placeholder="No snapshot received"></textarea>
+        <div class="controls">
+          <button id="btn-send" class="btn">Send</button>
+          <button id="btn-clear" class="btn ghost">Clear</button>
+          <a class="btn ghost" href="https://obviouslymelissa-hub.github.io/obsidianbastian/index.html" style="text-decoration:none">Back to Hub</a>
         </div>
       </div>
-
-      <div style="margin-top:10px;">
-        <div class="stat"><span>Signal Strength</span><span id="sigVal">0%</span></div>
-        <input id="sigRange" type="range" min="0" max="100" value="0" />
+      <div style="width:320px">
+        <div style="margin-bottom:8px;color:#9aa6b2">Latest snapshot (raw)</div>
+        <div class="inbox" id="snapshotRaw">No snapshot</div>
       </div>
+    </div>
 
-      <div style="margin-top:12px;">
-        <div class="stat"><span>Active Channel</span><span id="channelDisplay">—</span></div>
-        <div style="margin-top:8px;" class="row">
-          <input id="channel" class="select" style="width:100%" placeholder="e.g. 14.7MHz / deep-space" />
-        </div>
-      </div>
-
-      <div style="margin-top:12px;">
-        <div class="stat"><span>Last Contact</span><span id="lastContact">never</span></div>
-        <div class="stat"><span>Queued Outbound</span><span id="queuedCount">0</span></div>
-      </div>
-
-      <div class="muted-note">Local-only demo: message log saved to your browser's storage.</div>
-
-      <footer>
-        <div class="small-muted">Ship ID: <span id="shipId">Obsidian Bastian</span></div>
-      </footer>
-    </aside>
-
-    <main class="panel" aria-labelledby="log-heading">
-      <div class="toolbar">
-        <div>
-          <h2 id="log-heading" style="margin:0">Message Log</h2>
-          <div class="small-muted">Log shows outbound and inbound messages, persisted locally.</div>
-        </div>
-
-        <div class="controls-right" style="margin-left:auto">
-          <button id="btnExport" class="small">Export JSON</button>
-          <button id="btnClear" class="small critical">Clear Log</button>
-        </div>
-      </div>
-
-      <div id="log" role="log" aria-live="polite" aria-relevant="additions">
-        <!-- log entries inserted here -->
-      </div>
-
-      <div style="margin-top:12px" class="composer" role="form" aria-label="Compose message">
-        <input id="to" type="text" placeholder="Destination (e.g. New Planet / Relay-7)" />
-        <input id="msg" type="text" placeholder='Compose: "hello new planet can anybody hear me?"' />
-        <button id="btnSend">Send</button>
-        <button id="btnReceiveGreeting" title="Simulate an incoming transmission" class="small">Receive Transmission</button>
-      </div>
-
-      <div id="composeStatus" class="muted-note" style="margin-top:8px">
-        <!-- Populated by script: power-off messaging / incoming blocked -->
-      </div>
-
-      <div class="muted-note" style="margin-top:8px">
-        Tip: Use "Receive Transmission" to simulate an incoming reply. When power is off messages will be queued.
-      </div>
-    </main>
+    <div style="margin-top:12px;color:#9aa6b2;font-size:13px">Tips: snapshots sent from the main UI will appear here. This is a local simulation — implement your own transmission backend to actually send messages.</div>
   </div>
 
-  <script>
-    // Ship communications page: local-only message log with status controls
-    (function(){
-      const storageKey = 'ship-comms-log-v1';
-      const queuedKey = 'ship-comms-queued-v1';
+<script>
+// helper to pretty-print JSON safely
+function pretty(json) {
+  try { return JSON.stringify(json, null, 2); } catch(e){ return String(json); }
+}
 
-      // Elements
-      const btnPower = document.getElementById('btnPower');
-      const powerStateEl = document.getElementById('powerState');
-      const sigRange = document.getElementById('sigRange');
-      const sigVal = document.getElementById('sigVal');
-      const channelInput = document.getElementById('channel');
-      const channelDisplay = document.getElementById('channelDisplay');
-      const lastContact = document.getElementById('lastContact');
-      const queuedCount = document.getElementById('queuedCount');
-      const encryption = document.getElementById('encryption');
-      const logEl = document.getElementById('log');
-      const btnSend = document.getElementById('btnSend');
-      const btnReceiveGreeting = document.getElementById('btnReceiveGreeting');
-      const inputMsg = document.getElementById('msg');
-      const inputTo = document.getElementById('to');
-      const btnClear = document.getElementById('btnClear');
-      const btnExport = document.getElementById('btnExport');
-      const shipId = document.getElementById('shipId');
-      const composeStatus = document.getElementById('composeStatus');
+const snapshotRawEl = document.getElementById('snapshotRaw');
+const messageArea = document.getElementById('messageArea');
 
-      // State
-      let power = false;
-      let signal = Number(sigRange.value);
-      let messages = loadMessages();
-      let queued = loadQueued();
+// Try to read snapshot from ?snapshot=<encoded JSON>
+function readSnapshotFromQuery() {
+  const params = new URLSearchParams(location.search);
+  if (!params.has('snapshot')) return null;
+  try {
+    const decoded = decodeURIComponent(params.get('snapshot'));
+    return JSON.parse(decoded);
+  } catch(e) {
+    return null;
+  }
+}
 
-      function loadMessages(){ try { return JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch(e){return [];} }
-      function saveMessages(){ localStorage.setItem(storageKey, JSON.stringify(messages)); }
-      function loadQueued(){ try { return JSON.parse(localStorage.getItem(queuedKey) || '[]'); } catch(e){ return []; } }
-      function saveQueued(){ localStorage.setItem(queuedKey, JSON.stringify(queued)); }
+function applySnapshot(snapshot) {
+  if (!snapshot) return;
+  snapshotRawEl.textContent = pretty(snapshot);
+  // create a friendly prefilled message (you can customize)
+  const ts = snapshot.ts || (new Date()).toISOString();
+  let body = `Telemetry snapshot — ${ts}\n\n`;
+  if (snapshot.meta && snapshot.meta.event) body += `Event: ${snapshot.meta.event}\n`;
+  const tel = snapshot.telemetry || {};
+  body += `O2: ${tel.o2 ? tel.o2.toFixed(1)+'%' : 'N/A'}\n`;
+  body += `Pressure: ${tel.pressure ? tel.pressure.toFixed(1)+' kPa' : 'N/A'}\n`;
+  body += `CO2: ${tel.co2 ? Math.round(tel.co2)+' ppm' : 'N/A'}\n`;
+  body += `Temp: ${tel.temp ? tel.temp.toFixed(1)+'°C' : 'N/A'}\n`;
+  body += `Humidity: ${tel.humidity ? tel.humidity.toFixed(0)+'%' : 'N/A'}\n\n`;
+  if (snapshot.meta && snapshot.meta.message) body += `Message: ${snapshot.meta.message}\n`;
+  messageArea.value = body;
+}
 
-      function fmtTime(ts){ return new Date(ts).toLocaleString(); }
-      function newId(){ return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,8); }
+// on load, check query string
+const initial = readSnapshotFromQuery();
+if (initial) applySnapshot(initial);
 
-      function setPower(on){
-        power = !!on;
-        powerStateEl.textContent = power ? 'ONLINE' : 'OFF';
-        btnPower.textContent = power ? 'Power OFF' : 'Power ON';
-        btnPower.classList.toggle('small', true);
-        // Allow composing even when power is OFF; show composer status instead
-        if (power) {
-          // attempt to flush queue if we have any queued messages
-          flushQueue();
-        }
-        renderStatus();
-      }
+// listen for postMessage snapshots from the main UI
+window.addEventListener('message', (ev)=>{
+  try {
+    // only accept messages from the same origin for safety
+    if (ev.origin !== window.location.origin) return;
+  } catch(e){}
+  const data = ev.data;
+  if (!data) return;
+  if (data.type === 'snapshot' && data.payload) {
+    applySnapshot(data.payload);
+    // reflect raw payload as well
+    snapshotRawEl.textContent = pretty(data.payload);
+  }
+});
 
-      function renderStatus(){
-        sigVal.textContent = signal + '%';
-        channelDisplay.textContent = channelInput.value ? channelInput.value : '—';
-        queuedCount.textContent = queued.length;
-        lastContact.textContent = (messages.length ? fmtTime(messages[messages.length-1].ts) : 'never');
-
-        // composer status messaging for power state
-        if (!power) {
-          composeStatus.textContent = 'Power OFF — outgoing messages will be queued. Incoming messages are blocked until power is ON.';
-        } else {
-          composeStatus.textContent = 'Power ONLINE — outgoing messages will be sent when signal permits. Incoming messages accepted.';
-        }
-      }
-
-      function pushMessage(entry){
-        messages.push(entry);
-        saveMessages();
-        renderEntry(entry);
-        renderStatus();
-      }
-
-      function renderEntry(m){
-        const el = document.createElement('div');
-        el.className = 'entry ' + (m.direction === 'outbound' ? 'outbound' : 'inbound');
-        const meta = document.createElement('div');
-        meta.className = 'meta';
-        meta.textContent = `${m.direction.toUpperCase()} • ${m.from} → ${m.to} • ${fmtTime(m.ts)} • ${m.status || 'sent'}`;
-        const body = document.createElement('div');
-        body.textContent = m.text;
-        el.appendChild(meta);
-        el.appendChild(body);
-        // add small click to show raw JSON (for debugging)
-        el.title = 'Click to view details';
-        el.addEventListener('click', () => alert(JSON.stringify(m, null, 2)));
-        logEl.appendChild(el);
-        logEl.scrollTop = logEl.scrollHeight;
-      }
-
-      function renderAll(){
-        logEl.innerHTML = '';
-        for (const m of messages) renderEntry(m);
-      }
-
-      function sendMessage(text, to){
-        const entry = {
-          id: newId(),
-          ts: Date.now(),
-          direction: 'outbound',
-          from: shipId.textContent,
-          to: to || 'Unknown',
-          text: String(text || ''),
-          encryption: encryption.value,
-          channel: channelInput.value || '',
-          signal: signal,
-          status: power && signal > 5 ? 'sent' : 'queued' // simple policy
-        };
-        if (entry.status === 'queued') {
-          queued.push(entry);
-          saveQueued();
-        } else {
-          pushMessage(entry);
-        }
-        renderStatus();
-      }
-
-      function receiveMessage(text, from){
-        // Block inbound messages while power is off
-        if (!power) {
-          alert('Power is OFF — cannot receive incoming messages. Turn power ON to accept inbound transmissions.');
-          return;
-        }
-        const entry = {
-          id: newId(),
-          ts: Date.now(),
-          direction: 'inbound',
-          from: from || 'Unknown',
-          to: shipId.textContent,
-          text: String(text || ''),
-          channel: channelInput.value || '',
-          status: 'received'
-        };
-        pushMessage(entry);
-      }
-
-      function flushQueue(){
-        if (!power) return;
-        if (!queued.length) return;
-        // try to send queued messages depending on signal
-        const stillQueued = [];
-        for (const q of queued) {
-          if (signal > 5) {
-            q.status = 'sent (flushed)';
-            q.ts = Date.now();
-            messages.push(q);
-          } else {
-            q.status = 'queued';
-            stillQueued.push(q);
-          }
-        }
-        queued = stillQueued;
-        saveQueued();
-        saveMessages();
-        renderAll();
-      }
-
-      // Simulated greeting responses with more names and templates.
-      // Produces 1-3 inbound messages (small delay between them) and may reference last outbound text.
-      const responderPool = [
-        'Relay-7',
-        'Deep Echo',
-        'New Planet Authority',
-        'Voyager Relay',
-        'AI-Node 42',
-        'Sirius Station',
-        'Haven Outpost',
-        'Orchid Relay',
-        'Atlas Beacon'
-      ];
-
-      const templates = [
-        "Hello {ship}, this is {responder}. We read you loud and clear.",
-        "Greetings from {responder}. Acknowledged: we received your transmission.",
-        "Hi {ship}! {responder} here. Good to hear from you — please repeat if transmission is broken.",
-        "{responder} reporting. Signal stable. Welcome, {ship}.",
-        "Message received by {responder}. Stand by for further instructions.",
-        "👋 Hello {ship} — {responder} here. Nice to connect.",
-        "This is {responder}. We copy your last message. Over.",
-        "{responder} here: we received: \"{snippet}\" — confirm intent.",
-        "Attention {ship}: your transmission was faint but readable. Respond when able. — {responder}",
-        "This is {responder}. Friendly reminder: transmissions may be delayed in this sector.",
-        "Incoming to {ship}: all systems nominal on our end. — {responder}",
-        "{responder} to {ship}: we will relay your message to nearby units.",
-        "Unknown origin acknowledged. Hello {ship} — {responder} signing on."
-      ];
-
-      function pickResponder(lastOutbound) {
-        // Prefer last outbound's destination if it looks like a named station (not 'Unknown')
-        if (lastOutbound && lastOutbound.to && lastOutbound.to !== 'Unknown') {
-          return lastOutbound.to;
-        }
-        // otherwise pick random from pool
-        return responderPool[Math.floor(Math.random() * responderPool.length)];
-      }
-
-      function snippetFrom(text, maxLen = 60) {
-        if (!text) return '';
-        const s = String(text).trim().replace(/\s+/g, ' ');
-        if (s.length <= maxLen) return s;
-        return s.slice(0, maxLen - 1) + '…';
-      }
-
-      function simulateGreeting(){
-        // Block simulation if power off
-        if (!power) {
-          alert('Power is OFF — cannot receive incoming messages. Turn power ON to accept inbound transmissions.');
-          return;
-        }
-
-        const lastOutbound = [...messages].reverse().find(m => m.direction === 'outbound');
-        const responder = pickResponder(lastOutbound);
-        const shipName = shipId.textContent || 'your ship';
-        const outboundSnippet = lastOutbound ? snippetFrom(lastOutbound.text, 80) : '';
-
-        // generate 1-3 messages (random) to feel a bit more natural
-        const count = 1 + Math.floor(Math.random() * 3);
-        for (let i = 0; i < count; i++) {
-          // choose template and fill placeholders
-          const template = templates[Math.floor(Math.random() * templates.length)];
-          const text = template
-            .replace(/\{ship\}/g, shipName)
-            .replace(/\{responder\}/g, responder)
-            .replace(/\{snippet\}/g, outboundSnippet);
-
-          // stagger arrival slightly
-          setTimeout(() => receiveMessage(text, responder), 200 * i);
-        }
-      }
-
-      // UI hooks
-      btnPower.addEventListener('click', () => setPower(!power));
-      sigRange.addEventListener('input', (e) => {
-        signal = Number(e.target.value);
-        renderStatus();
-      });
-      channelInput.addEventListener('change', renderStatus);
-      btnSend.addEventListener('click', () => {
-        const txt = inputMsg.value.trim();
-        const to = inputTo.value.trim() || 'Unknown';
-        if (!txt) return alert('Enter a message to send.');
-        if (!power) {
-          // still allow queueing but show notice
-          if (!confirm('Communications power is OFF. Do you want to queue the message?')) return;
-        }
-        sendMessage(txt, to);
-        // show outbound immediately in UI if queued or sent
-        if (power && signal > 5) {
-          // message already pushed via pushMessage
-        } else {
-          // show queued notice in the log as queued
-          const notice = {
-            id: newId(),
-            ts: Date.now(),
-            direction: 'outbound',
-            from: shipId.textContent,
-            to: to,
-            text: txt + (power ? ' (signal weak — queued)' : ' (power off — queued)'),
-            status: 'queued'
-          };
-          renderEntry(notice);
-        }
-        inputMsg.value = '';
-      });
-
-      // Receive Transmission button hook (keeps internal name)
-      btnReceiveGreeting.addEventListener('click', () => {
-        simulateGreeting();
-      });
-
-      btnClear.addEventListener('click', () => {
-        if (!confirm('Clear full message log? This cannot be undone.')) return;
-        messages = [];
-        queued = [];
-        saveMessages();
-        saveQueued();
-        renderAll();
-        renderStatus();
-      });
-
-      btnExport.addEventListener('click', () => {
-        const payload = { exportedAt: new Date().toISOString(), messages, queued };
-        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'ship-communications-log.json';
-        a.click();
-        setTimeout(() => URL.revokeObjectURL(url), 5000);
-      });
-
-      // initial rendering
-      renderAll();
-      renderStatus();
-      setPower(false); // default off
-
-      // Optional: accept keyboard shortcut Ctrl+Enter to send
-      inputMsg.addEventListener('keydown', (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-          btnSend.click();
-        }
-      });
-
-      // Expose small API on window for convenience/testing
-      window.shipComms = {
-        send: (text, to) => sendMessage(text, to),
-        receive: (text, from) => {
-          if (!power) return false;
-          receiveMessage(text, from);
-          return true;
-        },
-        setPower: (p) => setPower(p),
-        messages: () => messages.slice(),
-        queued: () => queued.slice(),
-        simulateGreeting: simulateGreeting
-      };
-    })();
-  </script>
+// send and clear controls (simulated)
+document.getElementById('btn-send').addEventListener('click', ()=>{
+  const msg = messageArea.value.trim();
+  if (!msg) { alert('No message to send'); return; }
+  // Simulate a send; in a real implementation you'd POST to your backend or use websockets
+  console.log('Simulated send:', msg);
+  alert('Message simulated as sent — check logs.');
+});
+document.getElementById('btn-clear').addEventListener('click', ()=>{
+  messageArea.value = '';
+  snapshotRawEl.textContent = 'No snapshot';
+});
+</script>
 </body>
 </html>
