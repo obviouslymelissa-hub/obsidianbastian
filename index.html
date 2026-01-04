@@ -151,6 +151,7 @@
     /* content column */
     .content-column { grid-column: 1 / 2; display:flex; flex-direction:column; gap:20px; min-width:0; }
 
+    /* ABOUT panel — button pinned to bottom on wide screens */
     .about {
       background: linear-gradient(180deg, rgba(79,209,197,0.03), rgba(255,255,255,0.01));
       border: 1px solid var(--border);
@@ -162,19 +163,41 @@
       align-items:flex-start;
       justify-content:space-between;
       flex-wrap:wrap;
+      min-height:140px; /* ensures some vertical room so the button can sit at the bottom visually */
     }
     .about .about-text { flex:1 1 480px; min-width:0; }
     .about h3 { margin:0 0 6px 0;color:var(--accent);font-size:1.15rem }
     .about p { margin:0;color:var(--text-muted);line-height:1.45 }
 
-    .about-dl { margin:8px 0 12px 0; display:flex; gap:18px; flex-wrap:wrap; align-items:flex-start; }
-    .about-dl dt { font-weight:700; color:var(--text-main); font-size:0.92rem; text-transform:uppercase; letter-spacing:0.9px; }
-    .about-dl dd { margin:0; color:var(--text-muted); font-size:0.95rem; }
-    .core-list { list-style: none; padding:0; margin:12px 0 0 0; display:block; }
-    .core-list li { margin:10px 0; }
-    .core-list strong { color:var(--accent); display:inline-block; min-width:120px; }
+    /* condensed detail grid (Registry + Status together, compact layout) */
+    .about-dl {
+      margin:8px 0 12px 0;
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap:6px 18px;
+      align-items:start;
+    }
+    .about-dl dt { font-weight:700; color:var(--text-main); font-size:0.86rem; text-transform:uppercase; letter-spacing:0.7px; }
+    .about-dl dd { margin:0; color:var(--text-muted); font-size:0.92rem; }
 
-    .about .about-actions { display:flex; gap:10px; align-items:center; margin-top:12px; }
+    /* Core assets condensed into two columns */
+    .core-list {
+      list-style: none;
+      padding:0;
+      margin:12px 0 0 0;
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap:8px 12px;
+    }
+    .core-list li { display:flex; gap:8px; align-items:flex-start; margin:0; }
+    .core-list strong { color:var(--accent); min-width:0; display:inline-block; font-weight:700; }
+
+    /* Force the actions button to the bottom on wide screens */
+    .about .about-actions { display:flex; gap:10px; align-items:center; margin-left:auto; align-self:flex-end; }
+    /* On smaller screens make it normal flow (end of block) */
+    @media (max-width:1000px) {
+      .about .about-actions { align-self:flex-start; margin-left:0; width:100%; justify-content:flex-start; margin-top:12px; }
+    }
 
     .panel {
       background: var(--bg-panel);
@@ -331,8 +354,9 @@
       .emblem { display:none; }
       .ship-img-wrap { width:72px; height:72px; border-radius:12px; flex:0 0 72px; }
       .header-inner { height:84px; }
-      .about { flex-direction:column; align-items:flex-start; }
-      .about .about-actions { margin-left:0; width:100%; justify-content:flex-start; }
+      .about { flex-direction:column; align-items:flex-start; min-height:unset; }
+      .about .about-actions { align-self:flex-start; margin-left:0; width:100%; justify-content:flex-start; margin-top:12px; }
+      .core-list { grid-template-columns: 1fr; }
     }
 
     /* Reduced motion */
@@ -370,7 +394,7 @@
           <p id="siteTag">Centralized access for all crew operations and ship systems — hover tiles to reveal actions.</p>
         </div>
       </div>
-      <!-- header CTAs removed per request (Meet our crew button moved into About section) -->
+      <!-- header CTAs removed per request -->
     </div>
   </header>
 
@@ -392,31 +416,27 @@
             </div>
             <div>
               <dt>Status</dt>
-              <dd>Ready for exploration, research, and defense operations</dd>
+              <dd>Ready</dd>
             </div>
             <div>
               <dt>Authority</dt>
-              <dd>Command-certified · Mission-capable · Fleet-aligned</dd>
+              <dd>Command-certified · Fleet-aligned</dd>
             </div>
           </dl>
 
           <p>
-            The Obsidian Bastian is a long-range cruiser engineered for sustained deployment, operational resilience, and defensive readiness.
-            Its systems are optimized for extended missions, combining strategic command facilities with reinforced crew accommodations.
+            A long-range cruiser optimized for extended missions, resilient systems, and crew comfort.
           </p>
 
           <h4 style="margin:12px 0 6px 0;color:var(--text-main)">Core assets include:</h4>
           <ul class="core-list" aria-label="Core assets">
-            <li><strong>Mission Control:</strong> Navigation, tactical oversight, and command relay.</li>
-            <li><strong>Mainframe:</strong> Telemetry, communications, and data integrity.</li>
-            <li><strong>Engineering Bay:</strong> Compact, modular repair hub for rapid response.</li>
-            <li><strong>Onboard Computer:</strong> Continuous monitoring and system regulation.</li>
-            <li><strong>Defense Systems:</strong> Integrated laser arrays and shielding protocols, ensuring combat readiness alongside exploration duties.</li>
+            <li><strong>Mission Control:</strong> Navigation & tactical relay.</li>
+            <li><strong>Mainframe:</strong> Telemetry & communications.</li>
+            <li><strong>Engineering:</strong> Modular repair hub.</li>
+            <li><strong>Onboard Computer:</strong> Continuous system monitoring.</li>
+            <li><strong>Defense:</strong> Integrated lasers & shields.</li>
+            <li><strong>Crew Accom.:</strong> Reinforced living quarters.</li>
           </ul>
-
-          <p style="margin-top:12px;">
-            Oversight is managed by the onboard computer, maintaining efficiency and readiness at all times.
-          </p>
         </div>
 
         <div class="about-actions" aria-hidden="false">
@@ -482,12 +502,12 @@
                 <div class="tile-icon" aria-hidden="true">💻</div>
                 <div>
                   <div class="tile-title">Onboard Computer</div>
-                  <div class="tile-desc">Primary control interface — main console, diagnostics, and mission controls.</div>
+                  <div class="tile-desc">Primary control interface — main console and mission controls.</div>
                 </div>
               </div>
               <div class="tile-actions">
                 <a class="btn" href="https://obviouslymelissa-hub.github.io/obsidianbastian/onboardcomputer.html" aria-label="Open Onboard Computer">Open</a>
-                <!-- Diagnostics button removed per request -->
+                <!-- Diagnostics button removed -->
               </div>
             </div>
           </div>
