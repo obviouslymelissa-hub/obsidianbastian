@@ -15,7 +15,7 @@
     main{display:grid;grid-template-columns:1fr 360px;gap:18px;padding:18px}
     .left{display:grid;grid-template-rows:auto 1fr;gap:14px}
     .gauges{display:flex;gap:12px;align-items:stretch}
-    .gauge-card{flex:1;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;}
+    .gauge-card{flex:1;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;align-items:center;min-width:140px}
     .gauge-title{font-size:13px;color:var(--muted);margin-bottom:6px}
     svg.gauge{width:160px;height:120px;overflow:visible}
     .needle{stroke:#fff;stroke-width:2;stroke-linecap:round}
@@ -84,6 +84,20 @@
       .tile.main { grid-column: auto; }
       .systems-dock { grid-template-columns: 1fr; }
     }
+
+    /* Life support detail extras */
+    .ls-controls { display:flex; gap:10px; margin-top:10px; flex-wrap:wrap; align-items:center }
+    .status-badge { padding:6px 8px;border-radius:6px;font-weight:700 }
+    .status-ok { background:#063428;color:#9ff0c9 }
+    .status-warn { background:#3b2b00;color:#ffea99 }
+    .status-critical { background:#3b0000;color:#ffd6d6 }
+    .small { font-size:13px;color:var(--muted) }
+    .meter { height:8px;background:rgba(255,255,255,0.03);border-radius:6px;overflow:hidden;display:block }
+    .meter > i { display:block;height:100%;background:linear-gradient(90deg,#7bd389,#2ec4b6);transition:width .3s ease }
+    .ls-compact { display:flex;gap:10px;align-items:center;flex-wrap:wrap }
+    .setpoint { display:flex;gap:6px;align-items:center }
+    .setpoint input { width:72px;padding:6px;border-radius:6px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit }
+    .control-toggle { padding:6px 10px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);cursor:pointer }
   </style>
 </head>
 <body>
@@ -137,14 +151,70 @@
     <section class="panels">
       <div class="panel">
         <h3>Life Support</h3>
-        <div class="placeholder" id="life-placeholder">Placeholder: Systems nominal (simulated)</div>
-        <div style="margin-top:8px;font-size:13px;color:var(--muted)">Quick actions: <button id="btn-evac">Trigger Evac</button> <button id="btn-cycle">Cycle Scrubbers</button></div>
+
+        <!-- Summary placeholders -->
+        <div class="ls-compact">
+          <div style="flex:1">
+            <div class="placeholder" id="life-placeholder" style="height:88px;align-items:flex-start;padding:12px;display:flex;flex-direction:column;justify-content:center">
+              <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+                <div>
+                  <div style="font-weight:700">Cabin: Nominal</div>
+                  <div class="small">Auto mode • All actuators available</div>
+                </div>
+                <div style="text-align:right">
+                  <div class="status-badge status-ok">OK</div>
+                </div>
+              </div>
+              <div style="margin-top:8px;font-size:13px;color:var(--muted)">O2 setpoint: <strong id="o2-setpoint-label">78%</strong> • Pressure setpoint: <strong id="p-setpoint-label">101.3 kPa</strong></div>
+            </div>
+          </div>
+
+          <div style="min-width:220px">
+            <div style="font-size:13px;color:var(--muted);margin-bottom:6px">Scrubber</div>
+            <div class="meter" title="Scrubber efficiency">
+              <i id="scrubber-meter" style="width:82%"></i>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:6px">
+              <div class="small">Efficiency: <strong id="scrubber-eff">82%</strong></div>
+              <div class="small">ETA: <strong id="scrubber-eta">22h</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ls-controls">
+          <div class="setpoint">
+            <label class="small">O2 target</label>
+            <input id="o2-setpoint" type="number" min="60" max="95" value="78"> %
+          </div>
+          <div class="setpoint">
+            <label class="small">Temp target</label>
+            <input id="temp-setpoint" type="number" min="15" max="30" value="22"> °C
+          </div>
+          <div class="control-toggle" id="ls-mode">Mode: <strong id="ls-mode-val">Auto</strong></div>
+
+          <button id="btn-evac" class="btn.ghost">Trigger Evac</button>
+          <button id="btn-cycle">Cycle Scrubbers</button>
+          <button id="btn-send-snapshot" class="btn">Send Telemetry Snapshot → Communications</button>
+          <a class="btn ghost" href="https://obviouslymelissa-hub.github.io/obsidianbastian/communications.html" style="text-decoration:none">Open Communications</a>
+        </div>
+
+        <div style="margin-top:10px;font-size:13px;color:var(--muted)">
+          Quick readouts:
+          <span style="margin-left:8px">CO2: <strong id="co2-val">-- ppm</strong></span>
+          <span style="margin-left:8px">Temp: <strong id="temp-val">-- °C</strong></span>
+          <span style="margin-left:8px">Humidity: <strong id="hum-val">-- %</strong></span>
+        </div>
+
       </div>
 
       <div class="panel">
         <h3>Communications</h3>
         <div class="placeholder" id="comm-placeholder">Placeholder: Link to mission control pending</div>
         <div style="margin-top:8px;font-size:13px;color:var(--muted)">Status: <span id="comm-status">Standby</span></div>
+        <div style="margin-top:8px">
+          <a class="btn" href="https://obviouslymelissa-hub.github.io/obsidianbastian/communications.html">Open Communications Console</a>
+          <button id="btn-broadcast-distress" class="btn.ghost" style="margin-left:8px">Broadcast Distress (pre-fill)</button>
+        </div>
       </div>
     </section>
 
@@ -284,7 +354,7 @@
 function describeArc(cx, cy, r, startAngle, endAngle) {
   const start = polarToCartesian(cx, cy, r, endAngle);
   const end = polarToCartesian(cx, cy, r, startAngle);
-  const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+  const largeArcFlag = Math.abs(endAngle - startAngle) <= 180 ? "0" : "1";
   return [
     "M", start.x, start.y,
     "A", r, r, 0, largeArcFlag, 0, end.x, end.y
@@ -310,7 +380,12 @@ function setGauge(pathEl, percent) {
 const telemetry = {
   o2: 78.0, // percent
   pressure: 101.3, // kPa
-  power: 86.0 // percent
+  power: 86.0, // percent
+  co2: 420, // ppm
+  temp: 22.0, // C
+  humidity: 36.0, // %
+  scrubberEfficiency: 82.0, // %
+  scrubberEtaHours: 22 // hours
 };
 
 const telemetryEl = document.getElementById('telemetry');
@@ -318,17 +393,30 @@ const errorLogEl = document.getElementById('error-log');
 const lastUpdatedEl = document.getElementById('last-updated');
 
 function simulateStep() {
-  // random small fluctuations
-  telemetry.o2 += (Math.random()-0.5)*0.4;
-  telemetry.pressure += (Math.random()-0.5)*0.18;
+  // small fluctuations
+  telemetry.o2 += (Math.random()-0.5)*0.35;
+  telemetry.pressure += (Math.random()-0.5)*0.12;
   telemetry.power += (Math.random()-0.5)*0.6;
-  // clamp
-  telemetry.o2 = Math.max(55, Math.min(100, telemetry.o2));
+  telemetry.co2 += (Math.random()-0.5)*3;
+  telemetry.temp += (Math.random()-0.5)*0.06;
+  telemetry.humidity += (Math.random()-0.5)*0.25;
+
+  // scrubber slowly degrades
+  telemetry.scrubberEfficiency += (Math.random()-0.5)*0.4;
+  telemetry.scrubberEtaHours -= (Math.random()*0.02);
+
+  // clamps
+  telemetry.o2 = Math.max(60, Math.min(95, telemetry.o2));
   telemetry.pressure = Math.max(90, Math.min(110, telemetry.pressure));
   telemetry.power = Math.max(10, Math.min(100, telemetry.power));
+  telemetry.co2 = Math.max(300, Math.min(5000, telemetry.co2));
+  telemetry.temp = Math.max(15, Math.min(30, telemetry.temp));
+  telemetry.humidity = Math.max(10, Math.min(85, telemetry.humidity));
+  telemetry.scrubberEfficiency = Math.max(10, Math.min(100, telemetry.scrubberEfficiency));
+  telemetry.scrubberEtaHours = Math.max(0, telemetry.scrubberEtaHours);
 
   // update gauges
-  setGauge(document.getElementById('o2-arc'), (telemetry.o2-55)/(100-55));
+  setGauge(document.getElementById('o2-arc'), (telemetry.o2-60)/(95-60));
   setGauge(document.getElementById('p-arc'), (telemetry.pressure-90)/(110-90));
   setGauge(document.getElementById('pw-arc'), telemetry.power/100);
 
@@ -337,21 +425,55 @@ function simulateStep() {
   document.getElementById('p-val').textContent = telemetry.pressure.toFixed(1) + ' kPa';
   document.getElementById('pw-val').textContent = telemetry.power.toFixed(0) + ' %';
 
+  document.getElementById('co2-val').textContent = Math.round(telemetry.co2) + ' ppm';
+  document.getElementById('temp-val').textContent = telemetry.temp.toFixed(1) + ' °C';
+  document.getElementById('hum-val').textContent = telemetry.humidity.toFixed(0) + ' %';
+
+  document.getElementById('scrubber-eff').textContent = Math.round(telemetry.scrubberEfficiency) + '%';
+  document.getElementById('scrubber-meter').style.width = Math.round(telemetry.scrubberEfficiency) + '%';
+  document.getElementById('scrubber-eta').textContent = Math.round(telemetry.scrubberEtaHours) + 'h';
+
+  // update setpoint labels (reflect current configured setpoints)
+  const o2sp = parseFloat(document.getElementById('o2-setpoint').value);
+  document.getElementById('o2-setpoint-label').textContent = o2sp.toFixed(0) + '%';
+  const tempsp = parseFloat(document.getElementById('temp-setpoint').value);
+  document.getElementById('p-setpoint-label').textContent = telemetry.pressure.toFixed(1) + ' kPa';
+
   // append telemetry lines
   const now = new Date();
   const ts = now.toISOString().slice(11,23);
   const lines = [
     `${ts} O2: ${telemetry.o2.toFixed(1)}%`,
     `${ts} Pressure: ${telemetry.pressure.toFixed(1)} kPa`,
-    `${ts} Power: ${telemetry.power.toFixed(0)}%`
+    `${ts} Power: ${telemetry.power.toFixed(0)}%`,
+    `${ts} CO2: ${Math.round(telemetry.co2)} ppm`,
+    `${ts} Temp: ${telemetry.temp.toFixed(1)}°C`,
+    `${ts} Humidity: ${telemetry.humidity.toFixed(0)}%`,
+    `${ts} Scrubber: ${Math.round(telemetry.scrubberEfficiency)}% eff • ${Math.round(telemetry.scrubberEtaHours)}h`
   ];
   telemetryEl.innerHTML = lines.map(l=>`<div>${l}</div>`).join('');
 
   lastUpdatedEl.textContent = now.toISOString().replace('T',' ').slice(0,19);
 
+  // status warnings (simple)
+  updateStatusBadges();
+
   // occasionally emit a vague error
-  if (Math.random() < 0.06) {
-    pushVagueError();
+  if (Math.random() < 0.04) pushVagueError();
+}
+
+function updateStatusBadges() {
+  const badge = document.querySelector('.status-badge');
+  if (!badge) return;
+  if (telemetry.o2 < 70 || telemetry.co2 > 1200 || telemetry.scrubberEfficiency < 30) {
+    badge.className = 'status-badge status-critical';
+    badge.textContent = 'CRITICAL';
+  } else if (telemetry.o2 < 74 || telemetry.co2 > 800 || telemetry.scrubberEfficiency < 55) {
+    badge.className = 'status-badge status-warn';
+    badge.textContent = 'WARN';
+  } else {
+    badge.className = 'status-badge status-ok';
+    badge.textContent = 'OK';
   }
 }
 
@@ -381,17 +503,87 @@ const lifePlaceholder = document.getElementById('life-placeholder');
 const commPlaceholder = document.getElementById('comm-placeholder');
 const commStatus = document.getElementById('comm-status');
 
-btnHelp.addEventListener('click', ()=>{ alert('Keyboard shortcuts:\nH: Toggle help\nG: Toggle gauges\nL: Toggle Life Support\nC: Toggle Communications\nD: Open Diagnostics\nM: Open Mainframe Weather'); });
+btnHelp.addEventListener('click', ()=>{
+  alert(
+`Keyboard shortcuts:
+H: Toggle help
+G: Toggle gauges
+L: Toggle Life Support placeholder
+C: Toggle Communications placeholder
+D: Open Diagnostics
+M: Open Mainframe Weather
+S: Send telemetry snapshot (same as button)
+`
+  );
+});
 btnDiag.addEventListener('click', ()=>{ window.location.href='/diagnostics.html'; });
 btnWeather.addEventListener('click', ()=>{ window.location.href='/mainframeweather.html'; });
 btnToggleG.addEventListener('click', ()=>{ toggleGauges(); });
 
-document.getElementById('btn-evac').addEventListener('click', ()=>{ pushVagueError(); alert('Evac trigger simulated — this is a placeholder.'); });
-document.getElementById('btn-cycle').addEventListener('click', ()=>{ commStatus.textContent='Cycling'; setTimeout(()=>commStatus.textContent='Standby',1500); });
+document.getElementById('btn-evac').addEventListener('click', ()=>{ 
+  if (confirm('Trigger simulated evacuation sequence? This will broadcast a distress and flag mission-critical alarms.')) {
+    pushVagueError();
+    // broadcast to communications page (open with a prefilled snapshot)
+    sendSnapshotToCommunications({event:'evac_triggered', reason:'manual_simulation'});
+    alert('Evac trigger simulated — distress snapshot sent to Communications.');
+  }
+});
+document.getElementById('btn-cycle').addEventListener('click', ()=>{ 
+  commStatus.textContent='Cycling';
+  setTimeout(()=>commStatus.textContent='Standby',1500);
+  // simulate scrubber regeneration improving efficiency
+  telemetry.scrubberEfficiency = Math.min(100, telemetry.scrubberEfficiency + 6 + Math.random()*6);
+  telemetry.scrubberEtaHours += 6 + Math.random()*3;
+});
 
 function toggleGauges(){ const g = document.getElementById('gauges'); g.style.display = (g.style.display==='none') ? 'flex': 'none'; }
 function toggleLife(){ lifePlaceholder.style.display = (lifePlaceholder.style.display==='none') ? 'flex':'none'; }
 function toggleComm(){ commPlaceholder.style.display = (commPlaceholder.style.display==='none') ? 'flex':'none'; }
+
+// small control behavior
+const lsModeBtn = document.getElementById('ls-mode');
+const lsModeVal = document.getElementById('ls-mode-val');
+let lsAuto = true;
+lsModeBtn.addEventListener('click', ()=>{
+  lsAuto = !lsAuto;
+  lsModeVal.textContent = lsAuto ? 'Auto' : 'Manual';
+});
+
+// send snapshot button
+document.getElementById('btn-send-snapshot').addEventListener('click', ()=>{
+  sendSnapshotToCommunications({event:'manual_snapshot', source:'onboardcomputer'});
+});
+
+// broadcast distress prefill
+document.getElementById('btn-broadcast-distress').addEventListener('click', ()=>{
+  sendSnapshotToCommunications({event:'distress_broadcast', priority:'high', message:'Life Support emergency — immediate assistance requested'});
+  alert('Pre-filled distress message prepared in Communications.');
+});
+
+// snapshot helper: opens communications page with telemetry JSON in query string (for the communications page to decode)
+function sendSnapshotToCommunications(meta={}) {
+  const snapshot = {
+    ts: new Date().toISOString(),
+    telemetry: {
+      o2: telemetry.o2,
+      pressure: telemetry.pressure,
+      power: telemetry.power,
+      co2: telemetry.co2,
+      temp: telemetry.temp,
+      humidity: telemetry.humidity,
+      scrubberEfficiency: telemetry.scrubberEfficiency,
+      scrubberEtaHours: telemetry.scrubberEtaHours
+    },
+    setpoints: {
+      o2: parseFloat(document.getElementById('o2-setpoint').value),
+      temp: parseFloat(document.getElementById('temp-setpoint').value)
+    },
+    meta
+  };
+  const encoded = encodeURIComponent(JSON.stringify(snapshot));
+  const url = `https://obviouslymelissa-hub.github.io/obsidianbastian/communications.html?snapshot=${encoded}`;
+  window.open(url, '_blank');
+}
 
 // keyboard shortcuts
 document.addEventListener('keydown', (e)=>{
@@ -403,10 +595,11 @@ document.addEventListener('keydown', (e)=>{
   else if (k==='c'){ toggleComm(); }
   else if (k==='d'){ window.location.href='/diagnostics.html'; }
   else if (k==='m'){ window.location.href='/mainframeweather.html'; }
+  else if (k==='s'){ sendSnapshotToCommunications({event:'hotkey_snapshot'}); }
 });
 
 // initial draw
-setGauge(document.getElementById('o2-arc'), (telemetry.o2-55)/(100-55));
+setGauge(document.getElementById('o2-arc'), (telemetry.o2-60)/(95-60));
 setGauge(document.getElementById('p-arc'), (telemetry.pressure-90)/(110-90));
 setGauge(document.getElementById('pw-arc'), telemetry.power/100);
 
