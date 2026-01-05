@@ -13,7 +13,7 @@
       --danger:#ff7b7b;
     }
 
-    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:linear-gradient(180deg,#071017 0%, #0b1220 60%);color:#e6eef3;box-sizing:[...]}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:linear-gradient(180deg,#071017 0%, #0b1220 60%);color:#e6eef3;box-sizing:border-box}
     *,*::before,*::after{box-sizing:inherit}
 
     header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:rgba(255,255,255,0.02);backdrop-filter: blur(4px);border-bottom:1px solid rgba(255,255,255,0.03)}
@@ -21,13 +21,14 @@
     header .controls{display:flex;gap:8px}
     button{background:var(--panel);border:1px solid rgba(255,255,255,0.03);color:var(--muted);padding:8px 10px;border-radius:6px;cursor:pointer}
     button.primary{background:linear-gradient(90deg,#114b3b,#427f62);color:white;border:none}
+    button.ghost{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.03);padding:7px 10px;border-radius:8px;font-weight:600}
 
     main{display:grid;grid-template-columns:1fr 360px;gap:18px;padding:18px}
     @media (max-width:900px){ main{grid-template-columns:1fr;} .sidebar{order:2} }
 
     .left{display:grid;grid-template-rows:auto 1fr;gap:14px}
     .gauges{display:flex;gap:12px;align-items:stretch;flex-wrap:wrap}
-    .gauge-card{flex:1;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;[...]} 
+    .gauge-card{flex:1;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column}
     .gauge-title{font-size:13px;color:var(--muted);margin-bottom:6px}
     svg.gauge{width:160px;height:120px;overflow:visible}
     .gauge-value{font-size:22px;margin-top:6px}
@@ -35,10 +36,9 @@
     .panels{display:flex;gap:12px;flex-wrap:wrap;align-items:stretch}
     .panel{background:var(--panel);padding:18px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);flex:1;min-width:0;overflow:hidden;box-sizing:border-box}
     .panel h3{margin:0 0 12px 0;font-size:13px;color:var(--muted);position:relative;z-index:1}
-    /* ensure enough spacing so panel title is never overlapped */
     .panel .section-body { margin-top:8px; }
 
-    .placeholder{min-height:72px;border-radius:6px;background:linear-gradient(90deg,rgba(255,255,255,0.015),transparent);display:flex;align-items:center;justify-content:center;color:var(--muted);box-s[...]} 
+    .placeholder{min-height:72px;border-radius:6px;background:linear-gradient(90deg,rgba(255,255,255,0.015),transparent);display:flex;align-items:center;justify-content:center;color:var(--muted);box-sizing:border-box}
 
     .sidebar{display:flex;flex-direction:column;gap:12px}
     .card{background:var(--panel);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
@@ -75,7 +75,6 @@
     .tile-title { font-weight:700; font-size:1rem }
     .tile-desc { color:var(--muted); font-size:0.9rem; margin-top:4px }
     .btn { background:linear-gradient(90deg,#114b3b,#427f62); color:white; padding:8px 12px; border-radius:8px; text-decoration:none; font-weight:700; border:none; cursor:pointer; }
-    .btn.ghost { background:transparent;color:var(--muted); border:1px solid rgba(255,255,255,0.03); padding:7px 10px; font-weight:600 }
 
     /* Life support extras + fixes */
     .ls-controls { display:flex; gap:10px; margin-top:10px; flex-wrap:wrap; align-items:center }
@@ -84,7 +83,7 @@
     .status-warn { background:#3b2b00;color:#ffea99 }
     .status-critical { background:#3b0000;color:#ffd6d6 }
     .small { font-size:13px;color:var(--muted) }
-    .meter { height:8px;background:rgba(255,255,255,0.03);border-radius:6px;overflow:hidden;display:block }
+    .meter { height:8px;background:rgba(255,255,255,0.03);border-radius:6px;overflow:hidden;display:block;width:100% }
     .meter > i { display:block;height:100%;background:linear-gradient(90deg,#7bd389,#2ec4b6);transition:width .3s ease }
     .ls-compact { display:flex;gap:12px;align-items:center;flex-wrap:wrap }
     @media (max-width:700px){
@@ -148,43 +147,41 @@
         <h3>Life Support</h3>
 
         <div class="section-body">
-          <div class="ls-compact">
-            <div style="flex:1;min-width:0">
-              <div class="placeholder" id="life-placeholder" style="height:88px;align-items:flex-start;padding:12px;display:flex;flex-direction:column;justify-content:center">
-                <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
-                  <div>
-                    <div style="font-weight:700">Cabin: Nominal</div>
+          <!-- Redesigned life support area:
+               - CO2/Temp/Humidity moved to the top
+               - removed Cabin box and overview text
+               - scrubber bar spans full width
+               - buttons placed below the bar -->
+          <div class="ls-compact" style="align-items:flex-start;flex-direction:column">
+            <div style="width:100%;display:flex;gap:18px;flex-wrap:wrap;margin-bottom:10px">
+              <div class="small">CO2: <strong id="co2-val">-- ppm</strong></div>
+              <div class="small">Temp: <strong id="temp-val">-- °F</strong></div>
+              <div class="small">Humidity: <strong id="hum-val">-- %</strong></div>
+            </div>
+
+            <div style="width:100%">
+              <div style="font-size:13px;color:var(--muted);margin-bottom:6px">Scrubber</div>
+
+              <div class="placeholder" id="life-placeholder" style="padding:12px;display:flex;flex-direction:column;gap:10px">
+                <div style="width:100%">
+                  <div class="meter" title="Scrubber efficiency" style="width:100%">
+                    <i id="scrubber-meter" style="width:82%"></i>
                   </div>
                 </div>
 
-                <div style="margin-top:8px;font-size:13px;color:var(--muted)">
-                  Readouts show current measurements; this panel is informational only.
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+                  <div class="small">Efficiency: <strong id="scrubber-eff">82%</strong></div>
+                  <div class="small">ETA: <strong id="scrubber-eta">22h</strong></div>
+                </div>
+
+                <div style="display:flex;gap:10px;justify-content:flex-end">
+                  <button id="btn-cycle-scrubber" class="ghost" title="Run a cycle to clear trapped particulates">Cycle Scrubber</button>
+                  <button id="btn-reset-scrubber" class="btn" title="Reset scrubber parameters to defaults">Reset Scrubber</button>
                 </div>
               </div>
             </div>
-
-            <div style="min-width:220px">
-              <div style="font-size:13px;color:var(--muted);margin-bottom:6px">Scrubber</div>
-              <div class="meter" title="Scrubber efficiency">
-                <i id="scrubber-meter" style="width:82%"></i>
-              </div>
-              <div style="display:flex;justify-content:space-between;margin-top:6px">
-                <div class="small">Efficiency: <strong id="scrubber-eff">82%</strong></div>
-                <div class="small">ETA: <strong id="scrubber-eta">22h</strong></div>
-              </div>
-            </div>
           </div>
 
-          <div class="ls-controls" style="margin-top:14px">
-            <div class="small">System overview — no actuation controls on this panel</div>
-          </div>
-
-          <div style="margin-top:12px;font-size:13px;color:var(--muted)">
-            Quick readouts:
-            <span style="margin-left:8px">CO2: <strong id="co2-val">-- ppm</strong></span>
-            <span style="margin-left:8px">Temp: <strong id="temp-val">-- °F</strong></span>
-            <span style="margin-left:8px">Humidity: <strong id="hum-val">-- %</strong></span>
-          </div>
         </div>
       </div>
 
@@ -342,7 +339,7 @@ function setGauge(pathEl, percent) {
   percent = Math.max(0, Math.min(1, percent));
   const angle = arcStart + (arcEnd - arcStart) * percent;
   const d = describeArc(50,50,34,arcStart, angle);
-  pathEl.setAttribute('d', d);
+  if (pathEl) pathEl.setAttribute('d', d);
 }
 
 /* telemetry state (temp is Celsius internally) */
@@ -360,7 +357,7 @@ const telemetry = {
 const telemetryEl = document.getElementById('telemetry');
 const errorLogEl = document.getElementById('error-log');
 const lastUpdatedEl = document.getElementById('last-updated');
-const lsStatusEl = document.getElementById('ls-status');
+const lsStatusEl = document.getElementById('ls-status'); // optional
 const commStatus = document.getElementById('comm-status');
 
 function cToF(c){ return (c * 9/5) + 32; }
@@ -388,17 +385,26 @@ function simulateStep() {
   setGauge(document.getElementById('p-arc'), (telemetry.pressure-90)/(110-90));
   setGauge(document.getElementById('pw-arc'), telemetry.power/100);
 
-  document.getElementById('o2-val').textContent = telemetry.o2.toFixed(1) + ' %';
-  document.getElementById('p-val').textContent = telemetry.pressure.toFixed(1) + ' kPa';
-  document.getElementById('pw-val').textContent = telemetry.power.toFixed(0) + ' %';
+  const o2Val = document.getElementById('o2-val');
+  const pVal = document.getElementById('p-val');
+  const pwVal = document.getElementById('pw-val');
+  if (o2Val) o2Val.textContent = telemetry.o2.toFixed(1) + ' %';
+  if (pVal) pVal.textContent = telemetry.pressure.toFixed(1) + ' kPa';
+  if (pwVal) pwVal.textContent = telemetry.power.toFixed(0) + ' %';
 
-  document.getElementById('co2-val').textContent = Math.round(telemetry.co2) + ' ppm';
-  document.getElementById('temp-val').textContent = Math.round(cToF(telemetry.tempC)) + ' °F';
-  document.getElementById('hum-val').textContent = telemetry.humidity.toFixed(0) + ' %';
+  const co2El = document.getElementById('co2-val');
+  const tempEl = document.getElementById('temp-val');
+  const humEl = document.getElementById('hum-val');
+  if (co2El) co2El.textContent = Math.round(telemetry.co2) + ' ppm';
+  if (tempEl) tempEl.textContent = Math.round(cToF(telemetry.tempC)) + ' °F';
+  if (humEl) humEl.textContent = telemetry.humidity.toFixed(0) + ' %';
 
-  document.getElementById('scrubber-eff').textContent = Math.round(telemetry.scrubberEfficiency) + '%';
-  document.getElementById('scrubber-meter').style.width = Math.round(telemetry.scrubberEfficiency) + '%';
-  document.getElementById('scrubber-eta').textContent = Math.round(telemetry.scrubberEtaHours) + 'h';
+  const effEl = document.getElementById('scrubber-eff');
+  const meterEl = document.getElementById('scrubber-meter');
+  const etaEl = document.getElementById('scrubber-eta');
+  if (effEl) effEl.textContent = Math.round(telemetry.scrubberEfficiency) + '%';
+  if (meterEl) meterEl.style.width = Math.round(telemetry.scrubberEfficiency) + '%';
+  if (etaEl) etaEl.textContent = Math.round(telemetry.scrubberEtaHours) + 'h';
 
   const now = new Date();
   const ts = now.toISOString().slice(11,23);
@@ -411,8 +417,8 @@ function simulateStep() {
     `${ts} Humidity: ${telemetry.humidity.toFixed(0)}%`,
     `${ts} Scrubber: ${Math.round(telemetry.scrubberEfficiency)}% eff • ${Math.round(telemetry.scrubberEtaHours)}h`
   ];
-  telemetryEl.innerHTML = lines.map(l => `<div>${l}</div>`).join('');
-  lastUpdatedEl.textContent = now.toISOString().replace('T',' ').slice(0,19);
+  if (telemetryEl) telemetryEl.innerHTML = lines.map(l => `<div>${l}</div>`).join('');
+  if (lastUpdatedEl) lastUpdatedEl.textContent = now.toISOString().replace('T',' ').slice(0,19);
 
   updateStatusBadges();
   if (Math.random() < 0.04) pushVagueError();
@@ -444,8 +450,69 @@ function pushVagueError() {
   const when = new Date().toISOString().slice(11,19);
   const line = document.createElement('div');
   line.textContent = `${when} — ${msg}`;
-  errorLogEl.prepend(line);
-  while (errorLogEl.children.length > 20) errorLogEl.removeChild(errorLogEl.lastChild);
+  if (errorLogEl) errorLogEl.prepend(line);
+  if (errorLogEl) while (errorLogEl.children.length > 20) errorLogEl.removeChild(errorLogEl.lastChild);
+}
+
+/* small helper to append telemetry-like lines */
+function pushTelemetryLine(text){
+  const when = new Date().toISOString().slice(11,23);
+  const d = document.createElement('div');
+  d.textContent = `${when} ${text}`;
+  if (telemetryEl) telemetryEl.prepend(d);
+  if (telemetryEl) while (telemetryEl.children.length > 60) telemetryEl.removeChild(telemetryEl.lastChild);
+}
+
+/* Manual scrubber controls (UI handlers) */
+const btnCycle = document.getElementById('btn-cycle-scrubber');
+const btnReset = document.getElementById('btn-reset-scrubber');
+if (btnCycle) btnCycle.addEventListener('click', cycleScrubber);
+if (btnReset) btnReset.addEventListener('click', resetScrubber);
+
+function cycleScrubber(){
+  if (!btnCycle) return;
+  btnCycle.disabled = true;
+  const original = btnCycle.textContent;
+  btnCycle.textContent = 'Cycling...';
+  setTimeout(()=>{
+    const delta = 4 + Math.random()*8;
+    telemetry.scrubberEfficiency = Math.min(100, telemetry.scrubberEfficiency + delta);
+    telemetry.scrubberEtaHours = Math.max(0, telemetry.scrubberEtaHours - (1 + Math.random()*2));
+
+    const effEl = document.getElementById('scrubber-eff');
+    const meterEl = document.getElementById('scrubber-meter');
+    const etaEl = document.getElementById('scrubber-eta');
+    if (effEl) effEl.textContent = Math.round(telemetry.scrubberEfficiency) + '%';
+    if (meterEl) meterEl.style.width = Math.round(telemetry.scrubberEfficiency) + '%';
+    if (etaEl) etaEl.textContent = Math.round(telemetry.scrubberEtaHours) + 'h';
+
+    pushTelemetryLine('Manual scrubber cycle applied — efficiency updated');
+    btnCycle.disabled = false;
+    btnCycle.textContent = original;
+  }, 1400);
+}
+
+function resetScrubber(){
+  if (!btnReset) return;
+  if (!confirm('Reset scrubber to factory defaults? This sets efficiency to 100% and resets ETA.')) return;
+  btnReset.disabled = true;
+  const original = btnReset.textContent;
+  btnReset.textContent = 'Resetting...';
+  setTimeout(()=>{
+    telemetry.scrubberEfficiency = 100;
+    telemetry.scrubberEtaHours = 48;
+
+    const effEl = document.getElementById('scrubber-eff');
+    const meterEl = document.getElementById('scrubber-meter');
+    const etaEl = document.getElementById('scrubber-eta');
+    if (effEl) effEl.textContent = Math.round(telemetry.scrubberEfficiency) + '%';
+    if (meterEl) meterEl.style.width = Math.round(telemetry.scrubberEfficiency) + '%';
+    if (etaEl) etaEl.textContent = Math.round(telemetry.scrubberEtaHours) + 'h';
+
+    pushTelemetryLine('Scrubber reset to defaults');
+    btnReset.disabled = false;
+    btnReset.textContent = original;
+  }, 1600);
 }
 
 /* UI wiring - trimmed to overview-only */
@@ -454,7 +521,7 @@ const btnDiag = document.getElementById('btn-diagnostics');
 const btnWeather = document.getElementById('btn-weather');
 const btnToggleG = document.getElementById('btn-toggle-gauges');
 
-btnHelp.addEventListener('click', ()=>{
+if (btnHelp) btnHelp.addEventListener('click', ()=>{
   alert(
 `Keyboard shortcuts:
 H: Toggle help
@@ -466,19 +533,19 @@ M: Open Mainframe Weather
 `
   );
 });
-btnDiag.addEventListener('click', ()=>{ window.location.href='/diagnostics.html'; });
-btnWeather.addEventListener('click', ()=>{ window.location.href='/mainframeweather.html'; });
-btnToggleG.addEventListener('click', ()=>{ toggleGauges(); });
+if (btnDiag) btnDiag.addEventListener('click', ()=>{ window.location.href='/diagnostics.html'; });
+if (btnWeather) btnWeather.addEventListener('click', ()=>{ window.location.href='/mainframeweather.html'; });
+if (btnToggleG) btnToggleG.addEventListener('click', ()=>{ toggleGauges(); });
 
-function toggleGauges(){ const g = document.getElementById('gauges'); g.style.display = (g.style.display==='none') ? 'flex': 'none'; }
-function toggleLife(){ const lp = document.getElementById('life-placeholder'); lp.style.display = (lp.style.display==='none') ? 'flex':'none'; }
-function toggleComm(){ const cp = document.getElementById('comm-placeholder'); cp.style.display = (cp.style.display==='none') ? 'flex':'none'; }
+function toggleGauges(){ const g = document.getElementById('gauges'); if (!g) return; g.style.display = (g.style.display==='none') ? 'flex': 'none'; }
+function toggleLife(){ const lp = document.getElementById('life-placeholder'); if (!lp) return; lp.style.display = (lp.style.display==='none') ? 'flex':'none'; }
+function toggleComm(){ const cp = document.getElementById('comm-placeholder'); if (!cp) return; cp.style.display = (cp.style.display==='none') ? 'flex':'none'; }
 
 /* keyboard shortcuts */
 document.addEventListener('keydown', (e)=>{
   if (e.target && (e.target.tagName==='INPUT' || e.target.tagName==='TEXTAREA')) return;
   const k = e.key.toLowerCase();
-  if (k==='h') { btnHelp.click(); }
+  if (k==='h') { if (btnHelp) btnHelp.click(); }
   else if (k==='g'){ toggleGauges(); }
   else if (k==='l'){ toggleLife(); }
   else if (k==='c'){ toggleComm(); }
