@@ -13,7 +13,7 @@
       --danger:#ff7b7b;
     }
 
-    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:linear-gradient(180deg,#071017 0%, #0b1220 60%);color:#e6eef3;box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:linear-gradient(180deg,#071017 0%, #0b1220 60%);color:#e6eef3;box-sizing:[...]}
     *,*::before,*::after{box-sizing:inherit}
 
     header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:rgba(255,255,255,0.02);backdrop-filter: blur(4px);border-bottom:1px solid rgba(255,255,255,0.03)}
@@ -27,7 +27,7 @@
 
     .left{display:grid;grid-template-rows:auto 1fr;gap:14px}
     .gauges{display:flex;gap:12px;align-items:stretch;flex-wrap:wrap}
-    .gauge-card{flex:1;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;align-items:center;min-width:140px}
+    .gauge-card{flex:1;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;[...]} 
     .gauge-title{font-size:13px;color:var(--muted);margin-bottom:6px}
     svg.gauge{width:160px;height:120px;overflow:visible}
     .gauge-value{font-size:22px;margin-top:6px}
@@ -38,7 +38,7 @@
     /* ensure enough spacing so panel title is never overlapped */
     .panel .section-body { margin-top:8px; }
 
-    .placeholder{min-height:72px;border-radius:6px;background:linear-gradient(90deg,rgba(255,255,255,0.015),transparent);display:flex;align-items:center;justify-content:center;color:var(--muted);box-sizing:border-box;padding:12px}
+    .placeholder{min-height:72px;border-radius:6px;background:linear-gradient(90deg,rgba(255,255,255,0.015),transparent);display:flex;align-items:center;justify-content:center;color:var(--muted);box-s[...]} 
 
     .sidebar{display:flex;flex-direction:column;gap:12px}
     .card{background:var(--panel);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
@@ -154,10 +154,6 @@
                 <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
                   <div>
                     <div style="font-weight:700">Cabin: Nominal</div>
-                    <div class="small">Overview only — no direct controls here</div>
-                  </div>
-                  <div style="text-align:right">
-                    <div class="status-badge status-ok" id="ls-status">OK</div>
                   </div>
                 </div>
 
