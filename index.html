@@ -76,6 +76,7 @@
       box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 30px rgba(79,209,197,0.02) inset;
     }
     .emblem svg { width:52px;height:52px;display:block; }
+    .emblem img { width:52px; height:52px; display:block; object-fit:contain; }
 
     .ship-img-wrap {
       width:96px;
@@ -95,6 +96,34 @@
       position:relative;
     }
     .ship-img { width:100%; height:100%; object-fit:cover; display:block; transform-origin:center; transition: transform .28s cubic-bezier(.2,.9,.2,1); }
+
+    /* Button styles (fixed — replaced truncated rule) */
+    .btn {
+      background: var(--accent);
+      color: var(--bg-panel);
+      padding: 8px 12px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+      transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+    }
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+    }
+    .btn:active { transform: translateY(-1px); }
+    .btn:focus {
+      outline: 2px solid rgba(127,240,223,0.18);
+      outline-offset: 2px;
+      border-radius: 8px;
+    }
+    .btn.ghost { background:transparent;color:var(--text-main); border:1px solid rgba(255,255,255,0.04); padding:7px 10px; font-weight:600 }
 
     /* subtle sliding/floating motion for the header image */
     @keyframes headerFloat {
@@ -133,9 +162,6 @@
       transform: translateX(110%);
     }
     .header-text p { margin:6px 0 0 0; color:var(--text-muted); font-size:0.95rem; max-width:560px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
-
-    .btn { background:var(--accent); color:var(--bg-panel); padding:8px 12px; border-radius:8px; text-decoration:none; font-weight:700; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:8px; }
-    .btn.ghost { background:transparent;color:var(--text-main); border:1px solid rgba(255,255,255,0.04); padding:7px 10px; font-weight:600 }
 
     /* Main layout: content + right sidebar */
     .container {
@@ -398,17 +424,7 @@
     <div class="header-inner" role="banner" aria-label="Obsidian Bastian header">
       <div class="hero-left" style="min-width:0">
         <div class="emblem" aria-hidden="true" title="Obsidian Bastian emblem">
-          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-            <defs>
-              <linearGradient id="g1" x1="0" x2="1">
-                <stop offset="0" stop-color="#7ef0df" stop-opacity="0.9"/>
-                <stop offset="1" stop-color="#4fd1c5" stop-opacity="0.9"/>
-              </linearGradient>
-            </defs>
-            <rect width="64" height="64" rx="10" fill="url(#g1)" opacity="0.08"/>
-            <path d="M32 6L38 24L56 28L38 32L32 50L26 32L8 28L26 24L32 6Z" fill="#7ef0df" opacity="0.9"/>
-            <circle cx="32" cy="32" r="6" fill="#0f1318" />
-          </svg>
+          <img src="images/stropboard.png" alt="Obsidian Bastian emblem">
         </div>
 
         <div class="ship-img-wrap floating" id="shipWrap" aria-hidden="false">
@@ -480,9 +496,11 @@
       <section class="panel" aria-labelledby="gallery-title">
         <h3 id="gallery-title">Registry Images</h3>
         <div class="gallery-grid" id="gallery">
-          <img class="thumb" data-index="0" src="https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-1.jpg" alt="Command Deck — view 1" tabindex="0" />
-          <img class="thumb" data-index="1" src="https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-2.jpg" alt="Observation Dome — view 2" tabindex="0" />
-          <img class="thumb" data-index="2" src="https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-3.jpg" alt="Exterior — view 3" tabindex="0" />
+          <!-- New order: parked.jpg (first), exterior (ship-3), interior photos (ship-1, ship-2) -->
+          <img class="thumb" data-index="0" src="https://obviouslymelissa-hub.github.io/obsidianbastian/images/parked.jpg" alt="Parked — exterior view" tabindex="0" />
+          <img class="thumb" data-index="1" src="https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-3.jpg" alt="Exterior — view" tabindex="0" />
+          <img class="thumb" data-index="2" src="https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-1.jpg" alt="Command Deck — interior view" tabindex="0" />
+          <img class="thumb" data-index="3" src="https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-2.jpg" alt="Observation Dome — interior view" tabindex="0" />
         </div>
       </section>
     </div>
@@ -595,11 +613,12 @@
 
   <script>
     (function(){
-      // Gallery / lightbox logic (unchanged)
+      // Gallery / lightbox logic — updated order and added parked.jpg
       const images = [
+        { src: 'https://obviouslymelissa-hub.github.io/obsidianbastian/images/parked.jpg', caption: 'Parked' },
+        { src: 'https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-3.jpg', caption: 'Exterior' },
         { src: 'https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-1.jpg', caption: 'Command Deck' },
-        { src: 'https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-2.jpg', caption: 'Observation Dome' },
-        { src: 'https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-3.jpg', caption: 'Exterior' }
+        { src: 'https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-2.jpg', caption: 'Observation Dome' }
       ];
 
       const gallery = document.getElementById('gallery');
@@ -679,6 +698,7 @@
         else if (e.key === 'ArrowRight') showNext();
       });
 
+      // Preload images
       images.forEach(i => {
         const img = new Image();
         img.src = i.src;
