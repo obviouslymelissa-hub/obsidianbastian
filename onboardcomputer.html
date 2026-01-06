@@ -119,6 +119,17 @@
       pointer-events: auto; /* blocks clicks while evac is engaged to avoid accidental actions */
     }
 
+    /* Keep critical controls clickable above the overlay during EVAC */
+    body.evac .controls,
+    body.evac .controls *,
+    body.evac #btn-cancel-dispatch,
+    body.evac #btn-clear-alert,
+    body.evac #btn-mute {
+      position: relative;
+      z-index: 10002;      /* above #alert-overlay (9998) and modal (10001) */
+      pointer-events: auto;
+    }
+
     @keyframes pulse-alert {
       0% { filter: drop-shadow(0 0 6px rgba(255,0,0,0.06)); transform: scale(1); }
       50% { filter: drop-shadow(0 0 28px rgba(255,0,0,0.18)); }
@@ -745,12 +756,14 @@ const SoundManager = (function(){
     mute = !!val;
   }
 
+  function isMuted(){ return mute; }
+
   return {
     startRed(){ startRedAlert(); },
     startEvac(){ startEvac(); },
     stop(){ stopAll(); },
     setMute,
-    isMuted(){ return mute; }
+    isMuted
   };
 })();
 
