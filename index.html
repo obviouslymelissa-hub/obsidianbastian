@@ -62,6 +62,7 @@
     }
 
     .hero-left { display:flex; align-items:center; gap:14px; min-width:0; }
+    .hero-right { display:flex; align-items:center; margin-left:auto; gap:14px; min-width:0; }
 
     .emblem {
       width:72px;
@@ -71,12 +72,13 @@
       align-items:center;
       justify-content:center;
       border-radius:12px;
+      /* subtle panel behind the logo; change to 'transparent' if you want full alpha */
       background: linear-gradient(135deg, rgba(127,240,223,0.06), rgba(79,209,197,0.02));
       border:1px solid rgba(127,240,223,0.08);
       box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 30px rgba(79,209,197,0.02) inset;
     }
     .emblem svg { width:52px;height:52px;display:block; }
-    .emblem img { width:52px; height:52px; display:block; object-fit:contain; }
+    .emblem img { width:52px; height:52px; display:block; object-fit:contain; background:transparent; }
 
     .ship-img-wrap {
       width:96px;
@@ -97,7 +99,7 @@
     }
     .ship-img { width:100%; height:100%; object-fit:cover; display:block; transform-origin:center; transition: transform .28s cubic-bezier(.2,.9,.2,1); }
 
-    /* Button styles (fixed — replaced truncated rule) */
+    /* Button styles (fixed) */
     .btn {
       background: var(--accent);
       color: var(--bg-panel);
@@ -143,11 +145,11 @@
       display:block;
       position:relative;
       line-height:1.05;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+      white-space:normal; /* allow wrapping / stacking */
+      overflow:visible;
+      text-overflow:unset;
     }
-    /* sheen effect on title */
+    /* sheen effect on primary title */
     .header-text h1::before{
       content:"";
       position:absolute;
@@ -161,7 +163,13 @@
     .header-text h1.sheen::before{
       transform: translateX(110%);
     }
-    .header-text p { margin:6px 0 0 0; color:var(--text-muted); font-size:0.95rem; max-width:560px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+    .header-text h2 {
+      margin:6px 0 0 0;
+      color:var(--text-muted);
+      font-size:1rem;
+      font-weight:700;
+      letter-spacing:0.6px;
+    }
 
     /* Main layout: content + right sidebar */
     .container {
@@ -389,8 +397,9 @@
       .content-column { grid-column: 1 / -1; }
       aside { grid-column: 1 / -1; }
       .header-inner { justify-content:flex-start; gap:12px; }
+      .hero-right { margin-left:0; order:2; } /* keep ship image below on narrow screens */
       .header-text h1 { font-size:1.25rem; white-space:normal; }
-      .header-text p { display:none; }
+      .header-text h2 { font-size:0.95rem; }
       .gallery-grid .thumb { width:160px; height:104px; }
       header::before { display:none; }
       .about { min-height:unset; padding-bottom:18px; }
@@ -422,21 +431,25 @@
 <body>
   <header>
     <div class="header-inner" role="banner" aria-label="Obsidian Bastian header">
+      <!-- Left side: emblem + stacked title -->
       <div class="hero-left" style="min-width:0">
         <div class="emblem" aria-hidden="true" title="Obsidian Bastian emblem">
-          <img src="images/StrOpBoard.png" alt="Obsidian Bastian emblem">
+          <img src="images/stropboard.png" alt="Obsidian Bastian emblem">
         </div>
 
-        <div class="ship-img-wrap floating" id="shipWrap" aria-hidden="false">
-          <img class="ship-img" id="shipImg" src="https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-header.jpg" alt="Obsidian Bastian ship image placeholder">
-        </div>
-
-        <div class="header-text" style="min-width:0">
-          <h1 id="siteTitle">Obsidian Vessel Registry & Operations</h1>
-          <p id="siteTag">Centralized access for crew operations.</p>
+        <div class="header-text" style="min-width:0" aria-label="Site title">
+          <!-- Primary title kept with id for sheen script -->
+          <h1 id="siteTitle">Obsidian Bastian</h1>
+          <h2>Registry &amp; Operations</h2>
         </div>
       </div>
-      <!-- header CTAs removed per request -->
+
+      <!-- Right side: ship image -->
+      <div class="hero-right" aria-hidden="false">
+        <div class="ship-img-wrap floating" id="shipWrap">
+          <img class="ship-img" id="shipImg" src="https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-header.jpg" alt="Obsidian Bastian ship image placeholder">
+        </div>
+      </div>
     </div>
   </header>
 
@@ -492,11 +505,10 @@
         </div>
       </section>
 
-      <!-- Gallery placed immediately after the about content for natural flow -->
+      <!-- Gallery -->
       <section class="panel" aria-labelledby="gallery-title">
         <h3 id="gallery-title">Registry Images</h3>
         <div class="gallery-grid" id="gallery">
-          <!-- New order: parked.jpg (first), exterior (ship-3), interior photos (ship-1, ship-2) -->
           <img class="thumb" data-index="0" src="https://obviouslymelissa-hub.github.io/obsidianbastian/images/parked.jpg" alt="Parked — exterior view" tabindex="0" />
           <img class="thumb" data-index="1" src="https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-3.jpg" alt="Exterior — view" tabindex="0" />
           <img class="thumb" data-index="2" src="https://obviouslymelissa-hub.github.io/obsidianbastian/images/ship-1.jpg" alt="Command Deck — interior view" tabindex="0" />
@@ -505,7 +517,7 @@
       </section>
     </div>
 
-    <!-- Sidebar: Systems first, Notifications second -->
+    <!-- Sidebar -->
     <aside aria-label="Right sidebar">
       <div class="side-stack">
         <div class="panel" aria-labelledby="systems-title">
