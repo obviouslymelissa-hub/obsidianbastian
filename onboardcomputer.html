@@ -29,10 +29,16 @@
 
     .left{display:grid;grid-template-rows:auto 1fr;gap:14px}
     .gauges{display:flex;gap:12px;align-items:stretch;flex-wrap:wrap}
-    .gauge-card{flex:1;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column}
+    .gauge-card{flex:1;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;align-items:center;min-width:0}
     .gauge-title{font-size:13px;color:var(--muted);margin-bottom:6px}
     svg.gauge{width:160px;height:120px;overflow:visible}
     .gauge-value{font-size:22px;margin-top:6px}
+
+    /* mini gauges for life support */
+    .mini-gauges { display:flex; gap:10px; align-items:center; flex-wrap:wrap }
+    .mini-gauge-card { width:120px; background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent); padding:8px; border-radius:8px; border:1px solid rgba(255,255,255,0.03); display:flex;flex-direction:column; align-items:center; gap:6px }
+    svg.mini-gauge{width:96px;height:66px}
+    .mini-gauge-value{font-size:14px;color:var(--muted)}
 
     .panels{display:flex;gap:12px;flex-wrap:wrap;align-items:stretch}
     .panel{background:var(--panel);padding:18px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);flex:1;min-width:0;overflow:hidden;box-sizing:border-box}
@@ -89,6 +95,7 @@
       .tile.main { grid-column: auto; }
       .systems-dock { grid-template-columns: 1fr; }
       .ls-controls { width:100%; }
+      .mini-gauges { justify-content:space-between }
     }
 
     /* Alert overlay and visual pulse effects */
@@ -200,31 +207,8 @@
 
 <main>
   <div class="left">
+    <!-- Top row: four system gauges (Power + Reactor temp + Fuel level + Network latency) -->
     <section class="gauges" id="gauges">
-      <div class="gauge-card">
-        <div class="gauge-title">Life Support — O2</div>
-        <svg class="gauge" viewBox="-10 -10 120 80" aria-hidden="true">
-          <defs>
-            <linearGradient id="o2" x1="0" x2="1">
-              <stop offset="0%" stop-color="#7bd389"/>
-              <stop offset="100%" stop-color="#2ec4b6"/>
-            </linearGradient>
-          </defs>
-          <circle cx="50" cy="50" r="34" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8"></circle>
-          <path id="o2-arc" d="" stroke="url(#o2)" stroke-width="8" fill="none" stroke-linecap="round"></path>
-        </svg>
-        <div class="gauge-value" id="o2-val">-- %</div>
-      </div>
-
-      <div class="gauge-card">
-        <div class="gauge-title">Pressure</div>
-        <svg class="gauge" viewBox="-10 -10 120 80" aria-hidden="true">
-          <circle cx="50" cy="50" r="34" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8"></circle>
-          <path id="p-arc" d="" stroke="#66a0ff" stroke-width="8" fill="none" stroke-linecap="round"></path>
-        </svg>
-        <div class="gauge-value" id="p-val">-- kPa</div>
-      </div>
-
       <div class="gauge-card">
         <div class="gauge-title">Power</div>
         <svg class="gauge" viewBox="-10 -10 120 80" aria-hidden="true">
@@ -233,6 +217,37 @@
         </svg>
         <div class="gauge-value" id="pw-val">-- %</div>
       </div>
+
+      <div class="gauge-card">
+        <div class="gauge-title">Reactor Core</div>
+        <svg class="gauge" viewBox="-10 -10 120 80" aria-hidden="true">
+          <defs>
+            <linearGradient id="reactor-grad" x1="0" x2="1">
+              <stop offset="0%" stop-color="#66c2ff"/>
+              <stop offset="100%" stop-color="#ff7b7b"/>
+            </linearGradient>
+          </defs>
+          <circle cx="50" cy="50" r="34" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8"></circle>
+          <path id="reactor-arc" d="" stroke="url(#reactor-grad)" stroke-width="8" fill="none" stroke-linecap="round"></path>
+        </svg>
+        <div class="gauge-value" id="reactor-val">-- °C</div>
+      </div>
+
+      <div class="gauge-card">
+        <div class="gauge-title">Fuel Level</div>
+        <svg class="gauge" viewBox="-10 -10 120 80" aria-hidden="true">
+          <path id="fuel-arc" d="" stroke="#9ad65b" stroke-width="8" fill="none" stroke-linecap="round"></path>
+        </svg>
+        <div class="gauge-value" id="fuel-val">-- %</div>
+      </div>
+
+      <div class="gauge-card">
+        <div class="gauge-title">Network</div>
+        <svg class="gauge" viewBox="-10 -10 120 80" aria-hidden="true">
+          <path id="net-arc" d="" stroke="#66a0ff" stroke-width="8" fill="none" stroke-linecap="round"></path>
+        </svg>
+        <div class="gauge-value" id="net-val">-- ms</div>
+      </div>
     </section>
 
     <section class="panels">
@@ -240,6 +255,33 @@
         <h3>Life Support</h3>
 
         <div class="section-body">
+          <!-- Mini-gauges for O2 & Pressure moved into Life Support -->
+          <div class="mini-gauges" style="margin-bottom:10px">
+            <div class="mini-gauge-card" aria-hidden="true">
+              <div style="font-size:12px;color:var(--muted)">O2</div>
+              <svg class="mini-gauge" viewBox="-8 -8 96 66" aria-hidden="true">
+                <circle cx="40" cy="40" r="24" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="6"></circle>
+                <path id="o2-arc" d="" stroke="url(#o2-mini-grad)" stroke-width="6" fill="none" stroke-linecap="round"></path>
+                <defs>
+                  <linearGradient id="o2-mini-grad" x1="0" x2="1">
+                    <stop offset="0%" stop-color="#7bd389"/>
+                    <stop offset="100%" stop-color="#2ec4b6"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div class="mini-gauge-value" id="o2-mini-val">-- %</div>
+            </div>
+
+            <div class="mini-gauge-card" aria-hidden="true">
+              <div style="font-size:12px;color:var(--muted)">Pressure</div>
+              <svg class="mini-gauge" viewBox="-8 -8 96 66" aria-hidden="true">
+                <circle cx="40" cy="40" r="24" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="6"></circle>
+                <path id="p-arc" d="" stroke="#66a0ff" stroke-width="6" fill="none" stroke-linecap="round"></path>
+              </svg>
+              <div class="mini-gauge-value" id="p-mini-val">-- kPa</div>
+            </div>
+          </div>
+
           <div class="ls-compact" style="align-items:flex-start;flex-direction:column">
             <div style="width:100%;display:flex;gap:18px;flex-wrap:wrap;margin-bottom:10px">
               <div class="small">CO2: <strong id="co2-val">-- ppm</strong></div>
@@ -488,7 +530,12 @@ const telemetry = {
   tempC: 22.0,
   humidity: 36.0,
   scrubberEfficiency: 82.0,
-  scrubberEtaHours: 22
+  scrubberEtaHours: 22,
+
+  // new top-row metrics
+  reactorTemp: 480.0,    // °C
+  fuelLevel: 74.0,       // %
+  netLatency: 18         // ms
 };
 
 const telemetryEl = document.getElementById('telemetry');
@@ -509,6 +556,12 @@ function simulateStep() {
   telemetry.scrubberEfficiency += (Math.random()-0.5)*0.4;
   telemetry.scrubberEtaHours -= (Math.random()*0.02);
 
+  // reactor temp drifts slowly
+  telemetry.reactorTemp += (Math.random()-0.5)*2.2;
+  telemetry.fuelLevel += (Math.random()-0.5)*0.18;
+  telemetry.netLatency += (Math.random()-0.5)*3.5;
+
+  // bounds
   telemetry.o2 = Math.max(60, Math.min(95, telemetry.o2));
   telemetry.pressure = Math.max(90, Math.min(110, telemetry.pressure));
   telemetry.power = Math.max(10, Math.min(100, telemetry.power));
@@ -518,16 +571,38 @@ function simulateStep() {
   telemetry.scrubberEfficiency = Math.max(10, Math.min(100, telemetry.scrubberEfficiency));
   telemetry.scrubberEtaHours = Math.max(0, telemetry.scrubberEtaHours);
 
+  telemetry.reactorTemp = Math.max(250, Math.min(900, telemetry.reactorTemp));
+  telemetry.fuelLevel = Math.max(0, Math.min(100, telemetry.fuelLevel));
+  telemetry.netLatency = Math.max(2, Math.min(800, telemetry.netLatency));
+
+  // update gauges
+  // life support mini gauges
   setGauge(document.getElementById('o2-arc'), (telemetry.o2-60)/(95-60));
   setGauge(document.getElementById('p-arc'), (telemetry.pressure-90)/(110-90));
-  setGauge(document.getElementById('pw-arc'), telemetry.power/100);
 
-  const o2Val = document.getElementById('o2-val');
-  const pVal = document.getElementById('p-val');
+  // top-row gauges
+  setGauge(document.getElementById('pw-arc'), telemetry.power/100);
+  // reactor temp: map 250..900C to 0..1
+  setGauge(document.getElementById('reactor-arc'), (telemetry.reactorTemp - 250) / (900 - 250));
+  // fuel level direct
+  setGauge(document.getElementById('fuel-arc'), telemetry.fuelLevel/100);
+  // network latency: map 0..300ms where 300ms is full arc (tweakable)
+  const netPercent = Math.max(0, Math.min(1, telemetry.netLatency / 300));
+  setGauge(document.getElementById('net-arc'), netPercent);
+
+  // update values text
+  const o2Val = document.getElementById('o2-mini-val');
+  const pVal = document.getElementById('p-mini-val');
   const pwVal = document.getElementById('pw-val');
+  const reactorVal = document.getElementById('reactor-val');
+  const fuelVal = document.getElementById('fuel-val');
+  const netVal = document.getElementById('net-val');
   if (o2Val) o2Val.textContent = telemetry.o2.toFixed(1) + ' %';
   if (pVal) pVal.textContent = telemetry.pressure.toFixed(1) + ' kPa';
   if (pwVal) pwVal.textContent = telemetry.power.toFixed(0) + ' %';
+  if (reactorVal) reactorVal.textContent = Math.round(telemetry.reactorTemp) + ' °C';
+  if (fuelVal) fuelVal.textContent = Math.round(telemetry.fuelLevel) + ' %';
+  if (netVal) netVal.textContent = Math.round(telemetry.netLatency) + ' ms';
 
   const co2El = document.getElementById('co2-val');
   const tempEl = document.getElementById('temp-val');
@@ -552,6 +627,7 @@ function simulateStep() {
     `${ts} CO2: ${Math.round(telemetry.co2)} ppm`,
     `${ts} Temp: ${Math.round(cToF(telemetry.tempC))}°F`,
     `${ts} Humidity: ${telemetry.humidity.toFixed(0)}%`,
+    `${ts} Reactor: ${Math.round(telemetry.reactorTemp)}°C • Fuel: ${Math.round(telemetry.fuelLevel)}% • Net: ${Math.round(telemetry.netLatency)}ms`,
     `${ts} Scrubber: ${Math.round(telemetry.scrubberEfficiency)}% eff • ${Math.round(telemetry.scrubberEtaHours)}h`
   ];
   if (telemetryEl) telemetryEl.innerHTML = lines.map(l => `<div>${l}</div>`).join('');
@@ -692,9 +768,13 @@ document.addEventListener('keydown', (e)=>{
 });
 
 /* initial draw and start */
+// initial mini/major gauges
 setGauge(document.getElementById('o2-arc'), (telemetry.o2-60)/(95-60));
 setGauge(document.getElementById('p-arc'), (telemetry.pressure-90)/(110-90));
 setGauge(document.getElementById('pw-arc'), telemetry.power/100);
+setGauge(document.getElementById('reactor-arc'), (telemetry.reactorTemp - 250) / (900 - 250));
+setGauge(document.getElementById('fuel-arc'), telemetry.fuelLevel/100);
+setGauge(document.getElementById('net-arc'), Math.max(0, Math.min(1, telemetry.netLatency / 300)));
 
 simulateStep();
 setInterval(simulateStep, 1100);
@@ -804,7 +884,7 @@ const SoundManager = (function(){
   const commStatusEl = document.getElementById('comm-status');
   const commBadge = document.getElementById('comms-badge');
   const commMsg = document.getElementById('comm-msg');
-  const btnMute = document.getElementById('btn-mute');
+  const btnMute = document.getElementById('btn-mute'); 
   const overlay = document.getElementById('alert-overlay');
 
   const evacModal = document.getElementById('evac-modal');
