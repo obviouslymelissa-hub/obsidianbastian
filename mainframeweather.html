@@ -13,8 +13,10 @@
     html,body{height:100%;margin:0;background:linear-gradient(180deg,#041024 0%, #071025 60%);color:#e6eef8;}
     .wrap{max-width:980px;margin:36px auto;padding:24px;}
     header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .header-left{display:flex;flex-direction:column}
     h1{font-size:20px;margin:0}
     .controls{display:flex;gap:8px;align-items:center}
+    .controls .center{display:flex;gap:10px;align-items:center}
     button{background:var(--accent);color:#042023;border:0;padding:8px 12px;border-radius:8px;font-weight:600;cursor:pointer}
     .toggle{display:flex;align-items:center;gap:8px;font-size:14px}
     .grid{display:grid;grid-template-columns:1fr 340px;gap:16px;margin-top:18px}
@@ -28,6 +30,10 @@
     .bar{height:10px;background:rgba(255,255,255,0.06);border-radius:8px;overflow:hidden;margin-top:6px}
     .bar > i{display:block;height:100%;background:linear-gradient(90deg,#6ee7b7,#60a5fa);width:0%}
     .rightcol{display:flex;flex-direction:column;gap:12px}
+    .visual-tabs{display:flex;gap:8px;border-bottom:1px dashed rgba(255,255,255,0.03);padding-bottom:8px;margin-bottom:8px}
+    .tab{padding:6px 10px;border-radius:8px;background:transparent;color:var(--muted);cursor:pointer}
+    .tab.active{background:rgba(255,255,255,0.02);color:var(--accent);font-weight:700}
+    .visual-canvas{height:200px;display:flex;align-items:center;justify-content:center}
     .json{white-space:pre-wrap;background:#041427;padding:12px;border-radius:8px;color:#bfe6ff;font-size:13px;max-height:420px;overflow:auto}
     .footer{margin-top:18px;color:var(--muted);font-size:13px}
     .pill{display:inline-block;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.03);font-weight:600}
@@ -37,29 +43,45 @@
     .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
     .unit-switch{display:flex;align-items:center;gap:6px}
     .unit-switch input{width:16px;height:16px}
+    /* Habitability gauge */
+    .gauge { width:140px; height:140px; display:inline-block; }
+    .gauge svg { transform: rotate(-90deg); }
+    .funfacts{font-size:13px;line-height:1.4;color:#d9f6ff}
+    .save-note{font-size:12px;color:var(--muted);margin-left:8px}
+    .header-actions{display:flex;gap:8px;align-items:center}
+    input[type="text"].planet-name{padding:6px 8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit}
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <div>
-        <h1>aPlanetary Atmospherics</h1>
+      <div class="header-left">
+        <h1>Planetary Atmospherics</h1>
         <div class="small">Solar system and planet explorer with atmospheric conditions and habitability check.</div>
       </div>
+
       <div class="controls">
-        <a href="https://obviouslymelissa-hub.github.io/obsidianbastian/index.html" style="color: var(--accent); text-decoration: none; padding: 8px 12px; background: rgba(110, 231, 183, 0.1); border-radius: 8px;">← Back to Command Hub</a>
-        <div class="toggle">
-          <label><input id="earthToggle" type="checkbox"> Current Earth Conditions</label>
-        </div>
+        <div class="center">
+          <div class="toggle">
+            <label><input id="earthToggle" type="checkbox"> Current Earth Conditions</label>
+          </div>
 
-        <!-- Unit toggle -->
-        <div class="unit-switch">
-          <label><input id="unitToggle" type="checkbox"> Show °C</label>
-        </div>
+          <!-- Unit toggle -->
+          <div class="unit-switch">
+            <label><input id="unitToggle" type="checkbox"> Show °C</label>
+          </div>
 
+          <div style="display:flex;align-items:center;gap:6px">
+            <input id="planetNameInput" class="planet-name" type="text" placeholder="Give this planet a name (optional)">
+          </div>
+        </div>
+      </div>
+
+      <div class="header-actions">
         <button id="shuffle">Random Planet</button>
         <button id="findHabitable">Find Habitable</button>
-        <button id="copyJson">Copy Data</button>
+        <button id="saveFavorite">Save Favorite</button>
+        <div id="saveNote" class="save-note" aria-live="polite"></div>
       </div>
     </header>
 
@@ -135,8 +157,27 @@
         </div>
 
         <div class="card">
-          <div class="label">Raw Data (JSON)</div>
-          <div id="json" class="json">—</div>
+          <div class="label">Visuals</div>
+          <div class="visual-tabs" role="tablist">
+            <button class="tab active" data-tab="orbit">Orbit</button>
+            <button class="tab" data-tab="gauge">Habitability</button>
+            <button class="tab" data-tab="facts">Fun Facts</button>
+          </div>
+
+          <div id="visualOrbit" class="visual-canvas" style="display:block">
+            <!-- orbit svg drawn here -->
+            <svg id="orbitSvg" width="300" height="180" viewBox="0 0 300 180" aria-label="Orbit diagram"></svg>
+          </div>
+
+          <div id="visualGauge" class="visual-canvas" style="display:none;flex-direction:column;gap:8px">
+            <div id="gaugeContainer" class="gauge" aria-hidden="false"></div>
+            <div class="small" id="gaugeText">—</div>
+          </div>
+
+          <div id="visualFacts" style="display:none">
+            <div class="label" style="margin-top:6px">Quick Facts</div>
+            <div id="funfacts" class="funfacts" style="margin-top:8px">—</div>
+          </div>
         </div>
       </aside>
     </div>
@@ -159,7 +200,6 @@
   // Templates & pools
   const starClasses = ['O','B','A','F','G','K','M'];
   const luminosity = ['I','II','III','IV','V'];
-  const planetTypes = ['Terrestrial','Super-Earth','Sub-Neptune','Ice World','Gas Giant','Ocean World','Rocky','Desert','Lava'];
   const phenomenaPool = [
     "Global dust storms", "Auroral curtains", "Methane rain", "Silicate particulates in atmosphere",
     "Supersonic jet streams", "Persistent lightning storms", "High-altitude hydrocarbons haze",
@@ -185,12 +225,21 @@
     phenomena: qs('#phenomena'),
     location: qs('#location'),
     diagnostics: qs('#diagnostics'),
-    json: qs('#json'),
     shuffle: qs('#shuffle'),
     earthToggle: qs('#earthToggle'),
-    copyJson: qs('#copyJson'),
     unitToggle: qs('#unitToggle'),
     findHabitable: qs('#findHabitable'),
+    orbitSvg: qs('#orbitSvg'),
+    visualTabs: Array.from(document.querySelectorAll('.tab')),
+    visualOrbit: qs('#visualOrbit'),
+    visualGauge: qs('#visualGauge'),
+    visualFacts: qs('#visualFacts'),
+    gaugeContainer: qs('#gaugeContainer'),
+    gaugeText: qs('#gaugeText'),
+    funfacts: qs('#funfacts'),
+    saveFavorite: qs('#saveFavorite'),
+    saveNote: qs('#saveNote'),
+    planetNameInput: qs('#planetNameInput'),
   };
 
   // Keep last dataset to allow re-render when switching units
@@ -200,7 +249,7 @@
   // Searching state
   let searching = false;
 
-  // Random generators
+  // Random generators (same as before)
   function makeSystemName(){
     if(Math.random() < 0.25){
       return choice(['Kepler','TRAPPIST','Gliese','HD','KIC']) + '-' + randint(10,9999);
@@ -244,7 +293,6 @@
     }
     const gravity = +(massEarth / (radiusEarth*radiusEarth)).toFixed(2);
 
-    // Temperature: compute via Kelvin then convert to C and F; store both
     let tempK = 278 * Math.pow(star.luminosityFactor, 0.25) / Math.sqrt(Math.max(orbital,0.2));
     tempK = tempK * (0.6 + Math.random()*1.8);
     const tempC = +(tempK - 273.15).toFixed(1);
@@ -295,7 +343,6 @@
       let n2 = +(rand(30,90)).toFixed(1);
       let o2 = +(rand(0,30)).toFixed(1);
       let co2 = +(rand(0,10)).toFixed(2);
-      // Bias for habitable-like mixes using Fahrenheit range roughly equivalent to original C bias
       if(tempF >= -13 && tempF <= 131 && Math.random() < 0.5){
         n2 = +(rand(60,80)).toFixed(1);
         o2 = +(rand(10,25)).toFixed(1);
@@ -310,7 +357,6 @@
       if(Math.random() < 0.12) comps.push({gas:'SO2',pct: +(rand(0,4)).toFixed(2)});
     }
     let sum = comps.reduce((s,c)=>s+Number(c.pct),0);
-    if(sum < 30 && pType.includes('Gas')) sum = comps.reduce((s,c)=>s+Number(c.pct),0);
     comps.forEach(c => { c.pct = +(100 * c.pct / sum).toFixed(2); });
     return comps.sort((a,b)=>b.pct - a.pct);
   }
@@ -332,7 +378,6 @@
   }
 
   function evaluateHabitability({tempF, tempC, pressure, comp, gravity, pType}){
-    // Heuristic uses Fahrenheit bounds internally
     let score = 0;
     if(pType==='Terrestrial' || pType==='Super-Earth' || pType==='Ocean World') score += 1;
     if(tempF >= -4 && tempF <= 122) score += 2;
@@ -412,14 +457,15 @@
     lastDataset = dataset; // save for unit toggling
     const star = dataset.star;
     const planet = dataset.planet;
+    const customName = el.planetNameInput.value.trim();
+
     el.systemName.textContent = planet.systemName || star.name || '—';
     el.starInfo.textContent = `${star.name} • ${star.type || '='}`;
-    el.planetName.textContent = planet.planetCode;
+    el.planetName.textContent = customName || planet.planetCode;
     el.planetSummary.textContent = `${planet.type} • ${planet.radiusEarth} R⊕ • ${planet.massEarth} M⊕`;
     el.orbital.textContent = `${planet.orbitalAU} AU (index ${planet.index})`;
     el.gravity.textContent = `${planet.gravity} g`;
 
-    // Temperature display based on unit toggle
     const tempDisplay = (displayUnit === 'F') ? `${planet.tempF} °F` : `${planet.tempC} °C`;
     el.temperature.textContent = tempDisplay;
 
@@ -453,9 +499,10 @@
     el.location.textContent = `≈ Sector ${makeCoordinate()} • System ${planet.systemName} • Star class ${star.cls}${star.sub}${star.lum}`;
     el.diagnostics.textContent = `Generated ${new Date().toISOString()}`;
 
-    // JSON includes both tempF and tempC so copy always has both
-    const pretty = JSON.stringify({star,planet}, null, 2);
-    el.json.textContent = pretty;
+    // Visuals
+    drawOrbit(planet, star);
+    drawGauge(planet.habitability.score);
+    populateFunFacts(planet, star);
   }
 
   function makeCoordinate(){
@@ -463,6 +510,122 @@
     const y = randint(-1200,1200);
     const z = randint(-1200,1200);
     return `${x}, ${y}, ${z}`;
+  }
+
+  // Orbit drawing: simple star center + scaled orbit circle + planet dot
+  function drawOrbit(planet, star){
+    const svg = el.orbitSvg;
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+    const w = svg.viewBox.baseVal.width || 300;
+    const h = svg.viewBox.baseVal.height || 180;
+    const cx = w/2;
+    const cy = h/2;
+
+    // star
+    const starEl = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    starEl.setAttribute('cx', cx);
+    starEl.setAttribute('cy', cy);
+    starEl.setAttribute('r', 8);
+    starEl.setAttribute('fill', '#ffd97a');
+    svg.appendChild(starEl);
+
+    // orbit radius scaled by orbitalAU
+    const maxAU = 5; // visual scale
+    const r = Math.min((Math.max(planet.orbitalAU,0.1)/maxAU) * (Math.min(cx,cy)-20) + 30, Math.min(cx,cy)-10);
+    const orbitEl = document.createElementNS('http://www.w3.org/2000/svg','ellipse');
+    orbitEl.setAttribute('cx', cx);
+    orbitEl.setAttribute('cy', cy);
+    orbitEl.setAttribute('rx', r);
+    orbitEl.setAttribute('ry', r*0.6);
+    orbitEl.setAttribute('fill', 'none');
+    orbitEl.setAttribute('stroke', 'rgba(255,255,255,0.04)');
+    orbitEl.setAttribute('stroke-dasharray', '3 4');
+    svg.appendChild(orbitEl);
+
+    // planet position (angle based on index)
+    const angle = (planet.index / 12) * Math.PI*2;
+    const px = cx + r * Math.cos(angle);
+    const py = cy + r*0.6 * Math.sin(angle);
+
+    const planetSize = Math.max(3, Math.min(18, planet.radiusEarth * 3));
+    const pEl = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    pEl.setAttribute('cx', px);
+    pEl.setAttribute('cy', py);
+    pEl.setAttribute('r', planetSize);
+    pEl.setAttribute('fill', planet.type.includes('Gas') ? '#85c1ff' : '#6ee7b7');
+    pEl.setAttribute('stroke', 'rgba(0,0,0,0.2)');
+    svg.appendChild(pEl);
+
+    const label = document.createElementNS('http://www.w3.org/2000/svg','text');
+    label.setAttribute('x', px + planetSize + 6);
+    label.setAttribute('y', py + 4);
+    label.setAttribute('fill', '#bfe6ff');
+    label.setAttribute('font-size', '12');
+    label.textContent = el.planetName.textContent;
+    svg.appendChild(label);
+  }
+
+  // Habitability gauge using SVG circle
+  function drawGauge(score){
+    const max = 10;
+    const pct = Math.max(0, Math.min(1, score / max));
+    const size = 120;
+    const stroke = 12;
+    const r = (size - stroke)/2;
+    const c = 2 * Math.PI * r;
+    const filled = c * pct;
+    const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('width', size);
+    svg.setAttribute('height', size);
+    svg.setAttribute('viewBox', `0 0 ${size} ${size}`);
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.setAttribute('transform', `translate(${size/2},${size/2})`);
+    // background circle
+    const bg = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    bg.setAttribute('r', r);
+    bg.setAttribute('fill', 'none');
+    bg.setAttribute('stroke', 'rgba(255,255,255,0.04)');
+    bg.setAttribute('stroke-width', stroke);
+    g.appendChild(bg);
+    // foreground
+    const fg = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    fg.setAttribute('r', r);
+    fg.setAttribute('fill', 'none');
+    fg.setAttribute('stroke', pct > 0.66 ? '#6ee7b7' : (pct > 0.33 ? '#ffd97a' : '#ff7b7b'));
+    fg.setAttribute('stroke-width', stroke);
+    fg.setAttribute('stroke-linecap', 'round');
+    fg.setAttribute('stroke-dasharray', `${filled} ${c - filled}`);
+    fg.setAttribute('stroke-dashoffset', '0');
+    g.appendChild(fg);
+    // center text
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x', 0);
+    t.setAttribute('y', 6);
+    t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('fill', '#bfe6ff');
+    t.setAttribute('font-size', '18');
+    t.setAttribute('font-weight', '700');
+    t.textContent = `${Math.round(pct*100)}%`;
+    g.appendChild(t);
+
+    svg.appendChild(g);
+    el.gaugeContainer.innerHTML = '';
+    el.gaugeContainer.appendChild(svg);
+    el.gaugeText.textContent = `Score: ${score}/10 — ${score >= 7 ? 'Likely habitable' : 'Not habitable (by heuristic)'}`;
+  }
+
+  function populateFunFacts(planet, star){
+    const facts = [];
+    facts.push(`Star: ${star.name} (${star.cls}${star.sub}${star.lum})`);
+    facts.push(`Type: ${planet.type} • ${planet.radiusEarth} R⊕ • ${planet.massEarth} M⊕`);
+    const tempString = displayUnit === 'F' ? `${planet.tempF} °F` : `${planet.tempC} °C`;
+    facts.push(`Mean Temperature: ${tempString}`);
+    facts.push(`Pressure: ${planet.pressureBar} bar • Clouds: ${planet.cloudsPercent}%`);
+    // pick up to 2 notable composition entries
+    const topGases = planet.composition.slice(0,2).map(g => `${g.gas} ${g.pct}%`).join(', ');
+    facts.push(`Main gases: ${topGases}`);
+    if(planet.phenomena && planet.phenomena.length) facts.push(`Notables: ${planet.phenomena[0]}`);
+    el.funfacts.textContent = facts.join('\n');
   }
 
   // Main actions
@@ -483,18 +646,16 @@
     if(searching) return;
     searching = true;
 
-    // Save current states to restore later
     const prevEarth = el.earthToggle.checked;
-    const prevUnitToggle = el.unitToggle.checked;
     // Disable earthToggle during search to avoid collision
     el.earthToggle.checked = false;
 
-    // Disable controls while searching
     el.shuffle.disabled = true;
     el.findHabitable.disabled = true;
-    el.copyJson.disabled = true;
     el.unitToggle.disabled = true;
     el.earthToggle.disabled = true;
+    el.saveFavorite.disabled = true;
+    el.saveNote.textContent = '';
 
     const maxAttempts = 5000;
     const chunkSize = 100; // process in chunks then yield
@@ -510,53 +671,69 @@
         if(planet.habitability.habitable){
           render({star,planet});
           el.diagnostics.textContent = `Found habitable after ${attempts} attempts • ${new Date().toISOString()}`;
-          // restore toggles & controls
           el.shuffle.disabled = false;
           el.findHabitable.disabled = false;
-          el.copyJson.disabled = false;
           el.unitToggle.disabled = false;
           el.earthToggle.disabled = false;
+          el.saveFavorite.disabled = false;
           el.earthToggle.checked = prevEarth;
           searching = false;
           return;
         }
       }
-      // update diagnostics and yield to the UI
       el.diagnostics.textContent = `Searching for habitable planet... attempts: ${attempts}`;
-      // short pause to keep UI responsive
-      // eslint-disable-next-line no-await-in-loop
       await new Promise(r => setTimeout(r, 0));
     }
 
-    // If we reach here, no habitable planet found within attempt limit
     el.diagnostics.textContent = `No habitable planet found after ${attempts} attempts. Try increasing maxAttempts.`;
-    // restore toggles & controls
     el.shuffle.disabled = false;
     el.findHabitable.disabled = false;
-    el.copyJson.disabled = false;
     el.unitToggle.disabled = false;
     el.earthToggle.disabled = false;
+    el.saveFavorite.disabled = false;
     el.earthToggle.checked = prevEarth;
     searching = false;
   }
 
-  // Copy JSON
-  el.copyJson.addEventListener('click', ()=>{
-    navigator.clipboard?.writeText(el.json.textContent || '')
-      .then(()=> alert('JSON copied to clipboard'))
-      .catch(()=> alert('Unable to copy'));
+  // Tab switching for visuals
+  el.visualTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      el.visualTabs.forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+      const tabName = tab.dataset.tab;
+      el.visualOrbit.style.display = tabName === 'orbit' ? 'flex' : 'none';
+      el.visualGauge.style.display = tabName === 'gauge' ? 'flex' : 'none';
+      el.visualFacts.style.display = tabName === 'facts' ? 'block' : 'none';
+    });
   });
 
-  el.shuffle.addEventListener('click', ()=> randomize());
-  el.earthToggle.addEventListener('change', ()=> randomize());
-  el.findHabitable.addEventListener('click', ()=> findHabitable());
+  // Save favorite (localStorage)
+  el.saveFavorite.addEventListener('click', ()=>{
+    if(!lastDataset) return;
+    const entry = {
+      id: `${lastDataset.planet.planetCode}-${Date.now()}`,
+      name: el.planetNameInput.value.trim() || lastDataset.planet.planetCode,
+      created: new Date().toISOString(),
+      star: lastDataset.star,
+      planet: lastDataset.planet
+    };
+    const existing = JSON.parse(localStorage.getItem('pb_favorites') || '[]');
+    existing.push(entry);
+    localStorage.setItem('pb_favorites', JSON.stringify(existing));
+    el.saveNote.textContent = `Saved as favorite (${entry.name})`;
+    setTimeout(()=> el.saveNote.textContent = '', 3000);
+  });
 
   // Unit toggle listener — re-render using saved lastDataset
   el.unitToggle.addEventListener('change', ()=>{
     displayUnit = el.unitToggle.checked ? 'C' : 'F';
-    // Re-render the last dataset (if any) so UI and habitability messages update
     render(lastDataset);
   });
+
+  // Quick listeners
+  el.shuffle.addEventListener('click', ()=> randomize());
+  el.earthToggle.addEventListener('change', ()=> randomize());
+  el.findHabitable.addEventListener('click', ()=> findHabitable());
 
   // Initial generation
   randomize();
