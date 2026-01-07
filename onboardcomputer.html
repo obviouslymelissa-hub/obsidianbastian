@@ -40,10 +40,14 @@
     button.ghost{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.03);padding:7px 10px;border-radius:8px;font-weight:600}
     a.link{color:var(--accent);text-decoration:none}
 
+    /* Top-level layout: two columns (main gauges/panels + sidebar navigation) */
     main{display:grid;grid-template-columns:1fr 360px;gap:18px;padding:18px}
     @media (max-width:900px){ main{grid-template-columns:1fr;} .sidebar{order:2} }
 
+    /* Left column stack: gauges (top) + subpanels (below) */
     .left{display:grid;grid-template-rows:auto 1fr;gap:14px}
+
+    /* Gauges row: left/top */
     .gauges{
       display:flex;
       gap:12px;
@@ -68,10 +72,10 @@
     .gauge-value{font-size:22px;margin-top:6px}
     .gauge-optimal{font-size:12px;color:var(--muted);margin-top:6px;text-align:center}
 
-/* optimal status color variants (text-only) */
-.gauge-optimal.status-ok { color: #9ff0c9; font-weight:700; }
-.gauge-optimal.status-warn { color: #ffea99; font-weight:700; }
-.gauge-optimal.status-critical { color: #ffd6d6; font-weight:700; }
+    /* optimal status color variants (text-only) */
+    .gauge-optimal.status-ok { color: #9ff0c9; font-weight:700; }
+    .gauge-optimal.status-warn { color: #ffea99; font-weight:700; }
+    .gauge-optimal.status-critical { color: #ffd6d6; font-weight:700; }
 
     /* mini gauges for life support */
     .mini-gauges { display:flex; gap:10px; align-items:center; flex-wrap:wrap }
@@ -90,7 +94,17 @@
     .mini-gauge-value{font-size:14px;color:var(--muted)}
     .mini-gauge-opt{font-size:11px;color:var(--muted);margin-top:4px}
 
-    .panels{display:flex;gap:12px;flex-wrap:wrap;align-items:stretch}
+    /* Subpanels area (below gauges) split into two columns */
+    .subpanels{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      align-items:start;
+    }
+    @media (max-width:900px){
+      .subpanels{grid-template-columns:1fr; }
+    }
+
     .panel{background:var(--panel);padding:18px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);flex:1;min-width:0;overflow:hidden;box-sizing:border-box}
     .panel h3{margin:0 0 12px 0;font-size:13px;color:var(--muted);position:relative;z-index:1}
     .panel .section-body { margin-top:8px; }
@@ -105,7 +119,7 @@
     .kbd-list{display:flex;flex-direction:column;gap:6px;font-size:13px}
     .kbd{display:inline-block;background:#08121a;border:1px solid rgba(255,255,255,0.02);padding:6px 8px;border-radius:6px;color:var(--muted);font-family:monospace}
 
-    /* Systems dock / tile styles */
+    /* Systems dock / tile styles (kept in right column) */
     .systems-panel { margin-top: 8px; }
     .systems-dock {
       display: grid;
@@ -295,7 +309,7 @@
 
 <main>
   <div class="left">
-    <!-- Top row: four system gauges (Power + Reactor temp + Fuel level + Network latency) -->
+    <!-- Top row: gauges -->
     <section class="gauges" id="gauges">
       <div class="gauge-card" id="pw-card">
         <div class="gauge-title">Power</div>
@@ -344,128 +358,131 @@
       </div>
     </section>
 
-    <section class="panels">
-      <div class="panel" id="panel-life-support">
-        <h3>Life Support</h3>
+    <!-- Subpanels: two columns under gauges -->
+    <section class="subpanels" aria-live="polite">
+      <!-- Column 1: Life Support + Error Log -->
+      <div>
+        <div class="panel" id="panel-life-support">
+          <h3>Life Support</h3>
+          <div class="section-body">
+            <div class="mini-gauges" style="margin-bottom:10px">
+              <div class="mini-gauge-card" aria-hidden="true">
+                <div style="font-size:12px;color:var(--muted)">O2</div>
+                <svg class="mini-gauge" viewBox="-8 -8 96 66" aria-hidden="true">
+                  <circle cx="40" cy="40" r="24" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="6"></circle>
+                  <path id="o2-arc" d="" stroke="url(#o2-mini-grad)" stroke-width="6" fill="none" stroke-linecap="round"></path>
+                  <defs>
+                    <linearGradient id="o2-mini-grad" x1="0" x2="1">
+                      <stop offset="0%" stop-color="#7bd389"/>
+                      <stop offset="100%" stop-color="#2ec4b6"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div class="mini-gauge-value" id="o2-mini-val">-- %</div>
+                <div id="o2-opt" class="mini-gauge-opt">Optimal: 78–82%</div>
+              </div>
 
-        <div class="section-body">
-          <!-- Mini-gauges for O2 & Pressure -->
-          <div class="mini-gauges" style="margin-bottom:10px">
-            <div class="mini-gauge-card" aria-hidden="true">
-              <div style="font-size:12px;color:var(--muted)">O2</div>
-              <svg class="mini-gauge" viewBox="-8 -8 96 66" aria-hidden="true">
-                <circle cx="40" cy="40" r="24" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="6"></circle>
-                <path id="o2-arc" d="" stroke="url(#o2-mini-grad)" stroke-width="6" fill="none" stroke-linecap="round"></path>
-                <defs>
-                  <linearGradient id="o2-mini-grad" x1="0" x2="1">
-                    <stop offset="0%" stop-color="#7bd389"/>
-                    <stop offset="100%" stop-color="#2ec4b6"/>
-                  </linearGradient>
-                </defs>
-              </svg>
-              <div class="mini-gauge-value" id="o2-mini-val">-- %</div>
-              <div id="o2-opt" class="mini-gauge-opt">Optimal: 78–82%</div>
+              <div class="mini-gauge-card" aria-hidden="true">
+                <div style="font-size:12px;color:var(--muted)">Pressure</div>
+                <svg class="mini-gauge" viewBox="-8 -8 96 66" aria-hidden="true">
+                  <circle cx="40" cy="40" r="24" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="6"></circle>
+                  <path id="p-arc" d="" stroke="#66a0ff" stroke-width="6" fill="none" stroke-linecap="round"></path>
+                </svg>
+                <div class="mini-gauge-value" id="p-mini-val">-- kPa</div>
+                <div id="p-opt" class="mini-gauge-opt">Optimal: 100–103 kPa</div>
+              </div>
             </div>
 
-            <div class="mini-gauge-card" aria-hidden="true">
-              <div style="font-size:12px;color:var(--muted)">Pressure</div>
-              <svg class="mini-gauge" viewBox="-8 -8 96 66" aria-hidden="true">
-                <circle cx="40" cy="40" r="24" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="6"></circle>
-                <path id="p-arc" d="" stroke="#66a0ff" stroke-width="6" fill="none" stroke-linecap="round"></path>
-              </svg>
-              <div class="mini-gauge-value" id="p-mini-val">-- kPa</div>
-              <div id="p-opt" class="mini-gauge-opt">Optimal: 100–103 kPa</div>
-            </div>
-          </div>
+            <div class="ls-compact" style="align-items:flex-start;flex-direction:column">
+              <div style="width:100%;display:flex;gap:18px;flex-wrap:wrap;margin-bottom:10px">
+                <div class="small">CO2: <strong id="co2-val">-- ppm</strong></div>
+                <div class="small">Temp: <strong id="temp-val">-- °F</strong></div>
+                <div class="small">Humidity: <strong id="hum-val">-- %</strong></div>
+              </div>
 
-          <div class="ls-compact" style="align-items:flex-start;flex-direction:column">
-            <div style="width:100%;display:flex;gap:18px;flex-wrap:wrap;margin-bottom:10px">
-              <div class="small">CO2: <strong id="co2-val">-- ppm</strong></div>
-              <div class="small">Temp: <strong id="temp-val">-- °F</strong></div>
-              <div class="small">Humidity: <strong id="hum-val">-- %</strong></div>
-            </div>
+              <div style="width:100%">
+                <div style="font-size:13px;color:var(--muted);margin-bottom:6px">Scrubber</div>
 
-            <div style="width:100%">
-              <div style="font-size:13px;color:var(--muted);margin-bottom:6px">Scrubber</div>
-
-              <div class="placeholder" id="life-placeholder" style="padding:12px;display:flex;flex-direction:column;gap:10px">
-                <div style="width:100%">
-                  <div class="meter" title="Scrubber efficiency" style="width:100%">
-                    <i id="scrubber-meter" style="width:82%"></i>
+                <div class="placeholder" id="life-placeholder" style="padding:12px;display:flex;flex-direction:column;gap:10px">
+                  <div style="width:100%">
+                    <div class="meter" title="Scrubber efficiency" style="width:100%">
+                      <i id="scrubber-meter" style="width:82%"></i>
+                    </div>
                   </div>
-                </div>
 
-                <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-                  <div class="small">Efficiency: <strong id="scrubber-eff">82%</strong></div>
-                  <div class="small">ETA: <strong id="scrubber-eta">22h</strong></div>
-                </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+                    <div class="small">Efficiency: <strong id="scrubber-eff">82%</strong></div>
+                    <div class="small">ETA: <strong id="scrubber-eta">22h</strong></div>
+                  </div>
 
-                <div style="display:flex;gap:10px;justify-content:flex-end">
-                  <button id="btn-cycle-scrubber" class="ghost" title="Run a cycle to clear trapped particulates">Cycle Scrubber</button>
-                  <button id="btn-reset-scrubber" class="btn" title="Reset scrubber parameters to defaults">Reset Scrubber</button>
+                  <div style="display:flex;gap:10px;justify-content:flex-end">
+                    <button id="btn-cycle-scrubber" class="ghost" title="Run a cycle to clear trapped particulates">Cycle Scrubber</button>
+                    <button id="btn-reset-scrubber" class="btn" title="Reset scrubber parameters to defaults">Reset Scrubber</button>
+                  </div>
                 </div>
               </div>
             </div>
+
           </div>
-
         </div>
-      </div>
 
-      <!-- Error Log underneath Life Support -->
-      <div class="panel" id="panel-error-log" style="min-width:260px">
-        <h3>Error Log</h3>
-        <div class="section-body">
-          <div id="error-log" style="max-height:180px;overflow:auto;color:var(--danger);font-weight:600;">No critical errors</div>
-        </div>
-      </div>
-
-      <!-- Telemetry panel above Emergency Operations -->
-      <div class="panel" id="panel-telemetry">
-        <h3>Telemetry</h3>
-        <div class="section-body">
-          <div class="telemetry" id="telemetry">
-            <!-- simulated telemetry lines -->
+        <div class="panel" id="panel-error-log" style="margin-top:12px">
+          <h3>Error Log</h3>
+          <div class="section-body">
+            <div id="error-log" style="max-height:220px;overflow:auto;color:var(--danger);font-weight:600;">No critical errors</div>
           </div>
         </div>
       </div>
 
-      <div class="panel">
-        <h3>Emergency Operations</h3>
-
-        <!-- Compact Communications cockpit + Red Alert / Evacuate controls -->
-        <div id="comms-cockpit" style="display:flex;flex-direction:column;gap:10px">
-          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
-            <div style="display:flex;gap:8px;align-items:center">
-              <span class="status-badge status-ok" id="comms-badge">STANDBY</span>
-              <div style="font-size:13px;color:var(--muted)">Channel: <strong id="comms-channel">Alpha</strong></div>
-            </div>
-
-            <div class="emergency-controls" style="margin-left:12px">
-              <button id="btn-red-alert" class="ghost" title="Toggle Red Alert">Red Alert</button>
-              <button id="btn-evacuate" class="btn-danger" title="Initiate Evacuate">Evacuate Now</button>
-              <button id="btn-cancel-dispatch" class="ghost" title="Cancel ongoing dispatch" disabled>Cancel Dispatch</button>
-              <button id="btn-clear-alert" class="btn" title="Clear current alert">Clear Alert</button>
+      <!-- Column 2: Telemetry + Emergency Operations -->
+      <div>
+        <div class="panel" id="panel-telemetry">
+          <h3>Telemetry</h3>
+          <div class="section-body">
+            <div class="telemetry" id="telemetry">
+              <!-- simulated telemetry lines -->
             </div>
           </div>
-
-          <div id="comm-msg" class="placeholder" style="min-height:48px;padding:10px">No active comms events</div>
-
-          <!-- Pod dispatches live list -->
-          <div style="margin-top:6px">
-            <div style="font-size:13px;color:var(--muted);margin-bottom:6px">Evacuation Dispatch</div>
-            <div id="evac-pods" style="display:flex;flex-direction:column;gap:6px;min-height:36px"></div>
-          </div>
-
-          <div style="margin-top:8px;font-size:13px;color:var(--muted)">Status: <span id="comm-status">Standby</span></div>
         </div>
 
+        <div class="panel" style="margin-top:12px">
+          <h3>Emergency Operations</h3>
+
+          <!-- Compact Communications cockpit + Red Alert / Evacuate controls -->
+          <div id="comms-cockpit" style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+              <div style="display:flex;gap:8px;align-items:center">
+                <span class="status-badge status-ok" id="comms-badge">STANDBY</span>
+                <div style="font-size:13px;color:var(--muted)">Channel: <strong id="comms-channel">Alpha</strong></div>
+              </div>
+
+              <div class="emergency-controls" style="margin-left:12px">
+                <button id="btn-red-alert" class="ghost" title="Toggle Red Alert">Red Alert</button>
+                <button id="btn-evacuate" class="btn-danger" title="Initiate Evacuate">Evacuate Now</button>
+                <button id="btn-cancel-dispatch" class="ghost" title="Cancel ongoing dispatch" disabled>Cancel Dispatch</button>
+                <button id="btn-clear-alert" class="btn" title="Clear current alert">Clear Alert</button>
+              </div>
+            </div>
+
+            <div id="comm-msg" class="placeholder" style="min-height:48px;padding:10px">No active comms events</div>
+
+            <!-- Pod dispatches live list -->
+            <div style="margin-top:6px">
+              <div style="font-size:13px;color:var(--muted);margin-bottom:6px">Evacuation Dispatch</div>
+              <div id="evac-pods" style="display:flex;flex-direction:column;gap:6px;min-height:36px"></div>
+            </div>
+
+            <div style="margin-top:8px;font-size:13px;color:var(--muted)">Status: <span id="comm-status">Standby</span></div>
+          </div>
+
+        </div>
       </div>
     </section>
 
   </div>
 
+  <!-- Right column: Systems Dock (navigation) -->
   <aside class="sidebar">
-    <!-- Systems Dock moved to top of the sidebar so navigation tiles sit at the top -->
     <section class="panel systems-panel" aria-labelledby="systems-title" style="margin-top:0">
       <h3 id="systems-title" style="color:var(--muted);margin:0 0 8px 0">Systems Dock</h3>
 
@@ -562,8 +579,6 @@
         </div>
       </div>
     </section>
-
-    <!-- Sidebar intentionally compact so navigation stays near the top -->
   </aside>
 </main>
 
@@ -1055,7 +1070,6 @@ const SoundManager = (function(){
     SoundManager.stop();
     if (commBadge) { commBadge.className = 'status-badge status-ok'; commBadge.textContent = 'STANDBY'; }
     if (commStatusEl) commStatusEl.textContent = 'Standby';
-    // clear pods if needed
   }
 
   function startEvac(){
