@@ -277,7 +277,7 @@
      * System Health — interactive demo (trimmed)
      * - Chart.js v4
      * - Runs in simulated mode by default
-     * - Includes a lightweight incident log UI
+     * - Includes a lightweight incident log UI (Runbook button removed)
      **************************************************************/
 
     // state
@@ -304,8 +304,7 @@
         severity: "high",
         status: "investigating",
         owner: "oncall-db",
-        desc: "Increased IO latency on DB nodes causing request queuing. Initial mitigation: throttled batch jobs.",
-        runbook: "#db-queue-backlog"
+        desc: "Increased IO latency on DB nodes causing request queuing. Initial mitigation: throttled batch jobs."
       },
       {
         id: generateId(),
@@ -314,8 +313,7 @@
         severity: "critical",
         status: "mitigated",
         owner: "network-team",
-        desc: "Intermittent packet drops detected between datacenter A and B. Traffic rerouted to secondary path.",
-        runbook: "#net-failover"
+        desc: "Intermittent packet drops detected between datacenter A and B. Traffic rerouted to secondary path."
       }
     ];
 
@@ -541,21 +539,13 @@
 
         const actions = document.createElement('div');
         actions.className = 'actions';
-        // acknowledge / resolve
+        // resolve / reopen
         const ackBtn = document.createElement('button');
         ackBtn.textContent = inc.status === 'resolved' ? 'Reopen' : 'Resolve';
         ackBtn.addEventListener('click', ()=>{
           toggleResolve(inc.id);
         });
         actions.appendChild(ackBtn);
-
-        // link to runbook
-        const rb = document.createElement('a');
-        rb.href = inc.runbook || '#';
-        rb.className = 'muted-link';
-        rb.textContent = 'Runbook';
-        rb.target = '_blank';
-        actions.appendChild(rb);
 
         main.appendChild(metaRow);
         main.appendChild(actions);
@@ -583,8 +573,7 @@
         severity: Math.random() > 0.6 ? 'high' : 'critical',
         status: "investigating",
         owner: Math.random() > 0.5 ? 'oncall-app' : 'network-team',
-        desc: "Observed elevated p99 latency for API requests. Investigating upstream dependencies and network paths.",
-        runbook: "#api-latency"
+        desc: "Observed elevated p99 latency for API requests. Investigating upstream dependencies and network paths."
       };
       incidents.push(candidate);
       renderIncidents();
@@ -705,7 +694,7 @@
     window.SystemHealth = {
       ingestPoint,
       addIncident: function(obj){
-        // expected fields: {time, title, severity, owner, desc, runbook}
+        // expected fields: {time, title, severity, owner, desc}
         const inc = Object.assign({ id: generateId(), status: 'investigating', time: Date.now() }, obj);
         incidents.push(inc);
         renderIncidents();
