@@ -590,21 +590,26 @@
     svg.appendChild(label);
   }
 
-  // Habitability gauge using SVG circle
+  // Habitability gauge using SVG circle (fixed centering)
   function drawGauge(score){
     const max = 10;
     const pct = Math.max(0, Math.min(1, score / max));
-    const size = 120;
+    // match the CSS .gauge dimensions so the SVG fills the container
+    const size = 140;
     const stroke = 12;
     const r = (size - stroke)/2;
     const c = 2 * Math.PI * r;
     const filled = c * pct;
+
     const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
     svg.setAttribute('width', size);
     svg.setAttribute('height', size);
     svg.setAttribute('viewBox', `0 0 ${size} ${size}`);
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
     const g = document.createElementNS('http://www.w3.org/2000/svg','g');
     g.setAttribute('transform', `translate(${size/2},${size/2})`);
+
     // background circle
     const bg = document.createElementNS('http://www.w3.org/2000/svg','circle');
     bg.setAttribute('r', r);
@@ -612,7 +617,8 @@
     bg.setAttribute('stroke', 'rgba(255,255,255,0.04)');
     bg.setAttribute('stroke-width', stroke);
     g.appendChild(bg);
-    // foreground
+
+    // foreground arc
     const fg = document.createElementNS('http://www.w3.org/2000/svg','circle');
     fg.setAttribute('r', r);
     fg.setAttribute('fill', 'none');
@@ -621,14 +627,15 @@
     fg.setAttribute('stroke-linecap', 'round');
     fg.setAttribute('stroke-dasharray', `${filled} ${c - filled}`);
     fg.setAttribute('stroke-dashoffset', '0');
-    // rotate only the foreground arc so the arc starts at top, but text remains upright
     fg.setAttribute('transform', 'rotate(-90)');
     g.appendChild(fg);
-    // center text
+
+    // center text - vertically centered using dominant-baseline
     const t = document.createElementNS('http://www.w3.org/2000/svg','text');
     t.setAttribute('x', 0);
-    t.setAttribute('y', 6);
+    t.setAttribute('y', 0);
     t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('dominant-baseline', 'middle');
     t.setAttribute('fill', '#bfe6ff');
     t.setAttribute('font-size', '18');
     t.setAttribute('font-weight', '700');
