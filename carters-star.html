@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Carter's Star — Obsidian Bastian</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="css/_theme.css" />
+  <style>
+    body {
+      background: linear-gradient(180deg, var(--bg-dark) 0%, #0a0e14 100%);
+    }
+    
+    .container {
+      max-width: var(--content-max);
+      margin: 20px auto;
+      padding: 0 18px 48px;
+    }
+    
+    .star-profile {
+      background: linear-gradient(180deg, rgba(79,209,197,0.03), rgba(255,255,255,0.01));
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.45);
+      margin-bottom: 24px;
+    }
+    
+    .star-header {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    
+    .star-image {
+      width: 280px;
+      height: 280px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(79,209,197,0.1), rgba(127,240,223,0.05));
+      border: 2px solid rgba(79,209,197,0.2);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 40px rgba(79,209,197,0.08) inset;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    
+    .star-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .star-image .placeholder-icon {
+      font-size: 6rem;
+      opacity: 0.3;
+    }
+    
+    .star-info {
+      flex: 1;
+      min-width: 300px;
+    }
+    
+    .star-info h1 {
+      margin: 0 0 12px 0;
+      font-size: 2.5rem;
+      color: var(--accent);
+      letter-spacing: 1.5px;
+    }
+    
+    .star-info h2 {
+      margin: 0 0 18px 0;
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    
+    .coordinates {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    
+    .coord-chip {
+      display: inline-flex;
+      flex-direction: column;
+      gap: 4px;
+      align-items: flex-start;
+      padding: 10px 14px;
+      background: linear-gradient(180deg, rgba(127,240,223,0.04), rgba(255,255,255,0.01));
+      border: 1px solid rgba(127,240,223,0.08);
+      border-radius: 10px;
+      min-width: 120px;
+    }
+    
+    .coord-chip dt {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+    
+    .coord-chip dd {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--text-main);
+      font-weight: 600;
+    }
+    
+    .dedication-section {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.35);
+      margin-bottom: 24px;
+    }
+    
+    .dedication-section h3 {
+      margin: 0 0 16px 0;
+      color: var(--accent-2);
+      font-size: 1.5rem;
+      letter-spacing: 1px;
+    }
+    
+    .dedication-text {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      color: var(--text-main);
+      margin-bottom: 20px;
+      font-style: italic;
+    }
+    
+    .dedicator-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    
+    .dedicator-name {
+      font-weight: 700;
+      color: var(--accent);
+      font-size: 1.1rem;
+    }
+    
+    .dedication-date {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+    
+    .certificate-section {
+      background: linear-gradient(180deg, rgba(79,209,197,0.02), rgba(255,255,255,0.01));
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.35);
+    }
+    
+    .certificate-section h3 {
+      margin: 0 0 16px 0;
+      color: var(--accent);
+      font-size: 1.3rem;
+    }
+    
+    .certificate-placeholder {
+      background: rgba(255,255,255,0.02);
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      padding: 40px;
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    
+    .notes {
+      background: rgba(255,255,255,0.01);
+      border-left: 3px solid var(--accent-2);
+      padding: 16px;
+      border-radius: 4px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    
+    .notes h4 {
+      margin: 0 0 10px 0;
+      color: var(--text-main);
+      font-size: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+      .star-header {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .star-image {
+        width: 100%;
+        max-width: 280px;
+      }
+      
+      .star-info {
+        text-align: center;
+      }
+      
+      .star-info h1 {
+        font-size: 2rem;
+      }
+      
+      .coordinates {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header placeholder for injection -->
+  <div id="header-placeholder"></div>
+  
+  <main class="container">
+    <div class="star-profile">
+      <div class="star-header">
+        <div class="star-image">
+          <!-- Placeholder for star image - could be replaced with actual star photo -->
+          <div class="placeholder-icon">⭐</div>
+        </div>
+        
+        <div class="star-info">
+          <h1>Carter's Star</h1>
+          <h2>Named in honor of Captain Carter</h2>
+          
+          <div class="coordinates">
+            <div class="coord-chip">
+              <dt>Right Ascension</dt>
+              <dd>--h --m --s</dd>
+            </div>
+            
+            <div class="coord-chip">
+              <dt>Declination</dt>
+              <dd>--° --' --"</dd>
+            </div>
+            
+            <div class="coord-chip">
+              <dt>Constellation</dt>
+              <dd>--</dd>
+            </div>
+            
+            <div class="coord-chip">
+              <dt>Magnitude</dt>
+              <dd>--</dd>
+            </div>
+          </div>
+          
+          <p style="color: var(--text-muted); line-height: 1.6; margin: 0;">
+            This star has been officially named and registered in honor of Captain Carter.
+            The star will shine in the cosmos as a testament to their journey and the adventures
+            that await.
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="dedication-section">
+      <h3>Dedication</h3>
+      
+      <div class="dedication-text">
+        "To Captain Carter, whose curiosity lights the way through uncharted space.
+        May this star guide your adventures and remind you that the universe is yours to explore.
+        With love from the crew of Obsidian Bastian."
+      </div>
+      
+      <div class="dedicator-info">
+        <div class="dedicator-name">
+          — The Strategic Operations Board
+        </div>
+        <div class="dedication-date">
+          Dedicated: January 22, 2026
+        </div>
+      </div>
+    </div>
+    
+    <div class="certificate-section">
+      <h3>Certificate & Documentation</h3>
+      
+      <div class="certificate-placeholder">
+        <p style="font-size: 1.2rem; margin: 0 0 10px 0;">📜</p>
+        <p style="margin: 0;">Official Star Certificate</p>
+        <p style="margin: 8px 0 0 0; font-size: 0.85rem;">Certificate details will be displayed here</p>
+      </div>
+      
+      <div class="notes">
+        <h4>Registry Notes</h4>
+        <p style="margin: 0 0 10px 0;">
+          This star naming is maintained in the Obsidian Bastian registry as part of
+          the mission commemorations. The star coordinates and designation are recorded
+          for navigation reference purposes.
+        </p>
+        <p style="margin: 0;">
+          <strong>Registry Code:</strong> OB-STAR-CC-001<br>
+          <strong>Status:</strong> Active<br>
+          <strong>Category:</strong> Honorary Designation
+        </p>
+      </div>
+    </div>
+  </main>
+  
+  <footer style="text-align: center; color: var(--text-muted); padding: 24px 0 40px; border-top: 1px solid var(--border); margin-top: 18px; font-style: italic;">
+    "Among the stars, we find our way home."
+  </footer>
+  
+  <!-- Load header injector -->
+  <script src="js/header-inject.js"></script>
+</body>
+</html>
