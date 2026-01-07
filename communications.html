@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <title>Ship Communications</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="css/shared-theme.css">
   <style>
     :root{
       --bg:#0b1220;
@@ -17,13 +18,16 @@
     }
     body {
       margin:0;
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background: linear-gradient(180deg,#06101a 0%, #08111a 100%);
-      color: #cfe7e0;
+      font-family: var(--font-family);
+      background: var(--bg-dark);
+      color: var(--text-main);
+      padding: 0;
+    }
+
+    .content-wrapper {
       padding: 18px;
     }
 
-    /* Top bar: title on the left, back link on the right */
     .topbar {
       display: flex;
       align-items: center;
@@ -31,16 +35,6 @@
       gap: 12px;
       margin-bottom: 10px;
     }
-    .back-link {
-      color: var(--accent);
-      text-decoration: none;
-      font-weight: 600;
-      padding: 6px 10px;
-      border-radius: 8px;
-      background: rgba(255,255,255,0.01);
-      border: 1px solid rgba(255,255,255,0.02);
-    }
-    .back-link:hover { filter: brightness(1.1); }
 
     .shell {
       max-width: 980px;
@@ -129,12 +123,34 @@
   </style>
 </head>
 <body>
-  <header class="topbar" role="banner" aria-label="Page header">
-    <h1>Ship Communications</h1>
-    <a class="back-link" href="https://obviouslymelissa-hub.github.io/obsidianbastian/index.html" aria-label="Back to Command Hub">← Back to Command Hub</a>
+  <!-- Shared Header -->
+  <header class="site-header">
+    <div class="site-header-inner" role="banner" aria-label="Obsidian Bastian header">
+      <div class="header-left">
+        <div class="site-emblem" aria-hidden="true" title="Obsidian Bastian emblem">
+          <img src="https://obviouslymelissa-hub.github.io/obsidianbastian/images/StrOpBoard.png" alt="Strategic Operations Board">
+        </div>
+        <div class="site-header-text" aria-label="Site title">
+          <h1>Obsidian Bastian</h1>
+          <h2>Ship Systems</h2>
+        </div>
+      </div>
+      <div class="header-right">
+        <a href="https://obviouslymelissa-hub.github.io/obsidianbastian/onboardcomputer.html" 
+           class="return-command-hub" 
+           aria-label="Return to Command Hub">
+          ← Return to Command Hub
+        </a>
+      </div>
+    </div>
   </header>
 
-  <div class="shell">
+  <div class="content-wrapper">
+    <header class="topbar" role="banner" aria-label="Page header">
+      <h1>Ship Communications</h1>
+    </header>
+
+    <div class="shell">
     <aside class="panel" aria-labelledby="status-heading">
       <h2 id="status-heading">Communications Status</h2>
 
@@ -147,7 +163,7 @@
             </div>
             <div class="toggle">
               <label class="small-muted">Encryption</label>
-              <select id="encryption" class="select">
+              <select id="encryption" class="dropdown-select">
                 <option value="none">None</option>
                 <option value="link">Link-layer</option>
                 <option value="e2e">End-to-end</option>
@@ -213,6 +229,7 @@
         Tip: Use "Receive Transmission" to simulate an incoming reply. When power is off messages will be queued.
       </div>
     </main>
+  </div>
   </div>
 
   <script>

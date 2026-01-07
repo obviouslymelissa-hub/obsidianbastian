@@ -4,43 +4,32 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Obsidian Bastian — Crew</title>
+  <link rel="stylesheet" href="css/shared-theme.css">
   <style>
-    :root {
-      --bg-dark: #181c24;
-      --bg-panel: #23283a;
-      --accent: #4fd1c5;
-      --text-main: #e2e8f0;
-      --text-muted: #a0aec0;
-      --border: #2d3748;
-      --card-gradient: linear-gradient(180deg, rgba(79,209,197,0.04), rgba(0,0,0,0.02));
-      --font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
-      --radius: 12px;
-    }
-
-    /* Page basics (matching index theme) */
-    html, body {
-      height: 100%;
+    body {
       margin: 0;
       background: var(--bg-dark);
       color: var(--text-main);
       font-family: var(--font-family);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
     }
 
-    header {
+    .content-wrapper {
+      padding: 0;
+    }
+
+    .page-header {
       background: var(--bg-panel);
       padding: 1.4rem 1.6rem;
       border-bottom: 2px solid var(--accent);
       text-align: center;
     }
-    header h1 {
+    .page-header h1 {
       margin: 0;
       font-size: 1.9rem;
       color: var(--accent);
       letter-spacing: 1.5px;
     }
-    header p {
+    .page-header p {
       margin: 0.35rem 0 0 0;
       color: var(--text-muted);
       font-size: 0.95rem;
@@ -59,20 +48,6 @@
       gap: 1rem;
       margin-bottom: 1rem;
       flex-wrap: wrap;
-    }
-    .back-link {
-      color: var(--text-muted);
-      text-decoration: none;
-      border: 1px solid transparent;
-      padding: 0.45rem 0.75rem;
-      border-radius: 8px;
-      background: transparent;
-      transition: all .12s ease;
-    }
-    .back-link:hover {
-      color: var(--text-main);
-      border-color: var(--border);
-      background: rgba(255,255,255,0.02);
     }
 
     /* Crew grid/cards */
@@ -169,17 +144,34 @@
   </style>
 </head>
 <body>
-  <header>
+  <!-- Shared Header -->
+  <header class="site-header">
+    <div class="site-header-inner" role="banner" aria-label="Obsidian Bastian header">
+      <div class="header-left">
+        <div class="site-emblem" aria-hidden="true" title="Obsidian Bastian emblem">
+          <img src="https://obviouslymelissa-hub.github.io/obsidianbastian/images/StrOpBoard.png" alt="Strategic Operations Board">
+        </div>
+        <div class="site-header-text" aria-label="Site title">
+          <h1>Obsidian Bastian</h1>
+          <h2>Ship Systems</h2>
+        </div>
+      </div>
+      <div class="header-right">
+        <a href="https://obviouslymelissa-hub.github.io/obsidianbastian/onboardcomputer.html" 
+           class="return-command-hub" 
+           aria-label="Return to Command Hub">
+          ← Return to Command Hub
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <header class="page-header">
     <h1>Obsidian Bastian</h1>
     <p>Crew Roster</p>
   </header>
 
   <main class="container" role="main" aria-labelledby="crew-heading">
-    <div class="nav-row">
-      <a class="back-link" href="https://obviouslymelissa-hub.github.io/obsidianbastian/index.html">← Back to Command Hub</a>
-      <div class="muted-small"></div>
-    </div>
-
     <h2 id="crew-heading" style="color:var(--text-muted); margin:0 0 1rem 0; font-weight:600;">
       Current Crew
     </h2>
