@@ -3,18 +3,34 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Navigation Console — Universal</title>
+  <title>Navigation Console — Obsidian Bastian</title>
   <link rel="stylesheet" href="app.css">
 </head>
 <body>
+  <!-- Shared site header -->
+  <header class="site-header">
+    <div class="header-inner" role="banner" aria-label="Obsidian Bastian header">
+      <div class="header-left">
+        <div class="site-emblem" aria-hidden="true" title="Obsidian Bastian emblem">
+          <img src="https://obviouslymelissa-hub.github.io/obsidianbastian/images/StrOpBoard.png" alt="Strategic Operations Board">
+        </div>
+        <div class="header-text" aria-label="Site title">
+          <h1>Obsidian Bastian</h1>
+          <h2>Navigation Console</h2>
+        </div>
+      </div>
+      <div class="header-right">
+        <a href="https://obviouslymelissa-hub.github.io/obsidianbastian/index.html" class="return-command-hub" aria-label="Return to Command Hub">← Return to Command Hub</a>
+      </div>
+    </div>
+  </header>
+
   <div class="app">
-    <header class="app-header">
-      <h1>Universal Navigation Console</h1>
-      <div class="header-actions">
-        <a href="https://obviouslymelissa-hub.github.io/obsidianbastian/index.html" style="color: var(--accent, #4fd1c5); text-decoration: none; margin-right: 1rem;">← Back to Command Hub</a>
+    <div class="app-header">
+      <div class="header-actions" style="margin-left: auto;">
         <input id="search" placeholder="Search systems or planets…" aria-label="Search systems and planets" />
       </div>
-    </header>
+    </div>
 
     <!-- Large separate map -->
     <div id="mapLarge" class="map-large panel" aria-label="Navigation Map">
@@ -61,8 +77,8 @@
     <section class="panel custom" aria-label="Custom Location" style="max-width:1100px;margin:18px auto 28px;display:block">
       <h3>Go to a custom location</h3>
       <div style="display:flex;gap:8px;align-items:center">
-        <input id="customGotoInput" placeholder="Type location (e.g. Earth, Sol-03b, Kepler-452/Kepler-452b)" style="flex:1;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--text)" />
-        <select id="travelModeSelect" title="Travel mode" style="padding:8px;border-radius:6px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--text)">
+        <input id="customGotoInput" placeholder="Type location (e.g. Earth, Sol-03b, Kepler-452/Kepler-452b)" style="flex:1;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--text-main)" />
+        <select id="travelModeSelect" title="Travel mode">
           <option value="regular">Regular</option>
           <option value="warp">Warp</option>
           <option value="hyper">Hyperwarp</option>
