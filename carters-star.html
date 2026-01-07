@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carter's Star — Obsidian Bastian</title>
+  <link rel="stylesheet" href="css/_theme.css">
+  <style>
+    /* Page-specific styles for Carter's Star */
+    body {
+      padding-bottom: 48px;
+    }
+
+    .hero-section {
+      background: 
+        radial-gradient(ellipse 800px 300px at 50% 0%, rgba(79,209,197,0.08), transparent 70%),
+        linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      padding: 48px 24px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 32px;
+    }
+
+    .hero-section h1 {
+      font-size: 3rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      margin: 0 0 12px 0;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin: 0;
+    }
+
+    .container {
+      max-width: var(--content-max);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 28px;
+      margin-bottom: 32px;
+    }
+
+    .star-image-container {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      min-height: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    }
+
+    .star-image-placeholder {
+      width: 100%;
+      max-width: 500px;
+      aspect-ratio: 1;
+      background: 
+        radial-gradient(circle at 50% 50%, rgba(255,223,155,0.12), transparent 40%),
+        radial-gradient(circle at 30% 30%, rgba(79,209,197,0.06), transparent 50%),
+        radial-gradient(circle at 70% 60%, rgba(127,240,223,0.04), transparent 45%),
+        var(--bg-dark);
+      border-radius: 12px;
+      border: 1px solid rgba(255,223,155,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      font-style: italic;
+      margin-bottom: 12px;
+    }
+
+    .star-image-caption {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+
+    .info-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    }
+
+    .info-card h2 {
+      margin: 0 0 20px 0;
+      color: var(--accent);
+      font-size: 1.4rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .info-item {
+      margin-bottom: 16px;
+    }
+
+    .info-item dt {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 4px;
+    }
+
+    .info-item dd {
+      margin: 0;
+      font-size: 1.1rem;
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .dedication-section {
+      background: linear-gradient(180deg, rgba(79,209,197,0.04), rgba(255,255,255,0.01));
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      margin-bottom: 32px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    }
+
+    .dedication-section h2 {
+      margin: 0 0 20px 0;
+      color: var(--accent);
+      font-size: 1.8rem;
+      text-align: center;
+    }
+
+    .dedication-content {
+      max-width: 700px;
+      margin: 0 auto;
+      text-align: center;
+      line-height: 1.8;
+      font-size: 1.1rem;
+    }
+
+    .dedication-meta {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(79,209,197,0.2);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .dedication-meta strong {
+      color: var(--accent);
+    }
+
+    .certificate-section {
+      background: var(--bg-panel);
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      padding: 32px;
+      margin-bottom: 32px;
+      box-shadow: 0 8px 32px rgba(79,209,197,0.15);
+    }
+
+    .certificate-section h2 {
+      margin: 0 0 20px 0;
+      color: var(--accent);
+      font-size: 1.6rem;
+      text-align: center;
+      letter-spacing: 1.5px;
+    }
+
+    .certificate-content {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    .instructions {
+      background: rgba(255,255,255,0.02);
+      border-left: 4px solid var(--accent);
+      padding: 16px;
+      margin: 24px 0;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .instructions strong {
+      color: var(--accent);
+    }
+
+    @media (max-width: 900px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-section h1 {
+        font-size: 2rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .hero-section {
+        padding: 32px 16px;
+      }
+
+      .hero-section h1 {
+        font-size: 1.8rem;
+      }
+
+      .dedication-section,
+      .certificate-section {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header placeholder - Return link will be shown via header injection -->
+  <div id="site-header-placeholder" data-skip-return="false"></div>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <h1>Carter's Star</h1>
+    <p class="hero-subtitle">A Stellar Dedication in the Obsidian Bastian Registry</p>
+  </section>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="content-grid">
+      <!-- Star Image -->
+      <div class="star-image-container">
+        <div class="star-image-placeholder">
+          <!-- 
+            MAINTAINER NOTE: Replace this placeholder with an actual star image
+            Recommended: Use a high-quality image of a star or astronomical object
+            Image should be square aspect ratio (1:1) for best display
+            Place image in /images/ directory and update src below
+          -->
+          <span>Star Image Placeholder</span>
+        </div>
+        <p class="star-image-caption">
+          <!-- Update this caption with actual image details -->
+          Artist rendering or telescope observation of Carter's Star
+        </p>
+      </div>
+
+      <!-- Info Card -->
+      <aside class="info-card">
+        <h2>Star Information</h2>
+        
+        <dl class="info-item">
+          <dt>Designation</dt>
+          <dd id="star-designation">CS-2026-001</dd>
+          <!-- MAINTAINER: Update with actual star designation -->
+        </dl>
+
+        <dl class="info-item">
+          <dt>Coordinates</dt>
+          <dd id="star-coordinates">RA 12h 34m 56s, Dec +45° 12' 34"</dd>
+          <!-- MAINTAINER: Update with actual celestial coordinates -->
+        </dl>
+
+        <dl class="info-item">
+          <dt>Constellation</dt>
+          <dd id="star-constellation">Ursa Major</dd>
+          <!-- MAINTAINER: Update with actual constellation -->
+        </dl>
+
+        <dl class="info-item">
+          <dt>Apparent Magnitude</dt>
+          <dd id="star-magnitude">+8.2</dd>
+          <!-- MAINTAINER: Update with actual magnitude -->
+        </dl>
+
+        <dl class="info-item">
+          <dt>Discovery Date</dt>
+          <dd id="star-discovery">January 22, 2026</dd>
+          <!-- MAINTAINER: Update with actual discovery/dedication date -->
+        </dl>
+
+        <dl class="info-item">
+          <dt>Distance</dt>
+          <dd id="star-distance">~450 light-years</dd>
+          <!-- MAINTAINER: Update with actual distance (if known) -->
+        </dl>
+      </aside>
+    </div>
+
+    <!-- Dedication Section -->
+    <section class="dedication-section">
+      <h2>Dedication</h2>
+      <div class="dedication-content">
+        <p>
+          <!-- 
+            MAINTAINER NOTE: Replace this placeholder text with the actual dedication message
+            This should be a personal message explaining why this star was named after Carter
+            and what it means to those who dedicated it.
+          -->
+          This star is dedicated to Captain Carter on the occasion of their 8th birthday.
+          May this celestial beacon shine as brightly as your spirit, courage, and curiosity
+          as you navigate the vast adventures that lie ahead in your journey through the stars.
+        </p>
+        <p>
+          Like the Obsidian Bastian charting courses through uncharted space, may you always
+          find wonder in exploration, strength in discovery, and joy in every new frontier.
+        </p>
+      </div>
+      
+      <div class="dedication-meta">
+        <p>
+          <strong>Dedicated by:</strong> <span id="dedicator-name">The Crew of Obsidian Bastian</span>
+          <br>
+          <!-- MAINTAINER: Update dedicator name above -->
+          <strong>Date:</strong> <span id="dedication-date">January 22, 2026</span>
+          <!-- MAINTAINER: Update dedication date above -->
+        </p>
+      </div>
+    </section>
+
+    <!-- Certificate Section -->
+    <section class="certificate-section">
+      <h2>✦ Official Star Registry Certificate ✦</h2>
+      <div class="certificate-content">
+        <p style="text-align: center; font-size: 1.1rem; margin-bottom: 20px;">
+          <strong>This certifies that</strong>
+        </p>
+        <p style="text-align: center; font-size: 1.4rem; color: var(--accent); font-weight: 700; margin: 16px 0;">
+          Carter's Star
+        </p>
+        <p style="text-align: center; margin-bottom: 20px;">
+          has been officially registered in the Obsidian Bastian Star Registry
+          <br>under designation <strong id="cert-designation">CS-2026-001</strong>
+        </p>
+        <p style="text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+          <!-- MAINTAINER: Add any additional certificate text or credentials here -->
+          Registered by the Strategic Operations Board<br>
+          Obsidian Bastian Exploration Cruiser<br>
+          Registry: Active Service Vessel
+        </p>
+        <p style="text-align: center; margin-top: 24px; font-style: italic; color: var(--text-muted);">
+          "To the stars we sail — curiosity is our compass."
+        </p>
+      </div>
+    </section>
+
+    <!-- Instructions for maintainers -->
+    <div class="instructions">
+      <strong>For Site Maintainers:</strong>
+      <br>
+      To customize this page:
+      <ol style="margin: 12px 0; padding-left: 20px;">
+        <li>Replace the star image placeholder by adding your image to <code>/images/</code> and updating the <code>.star-image-placeholder</code> section</li>
+        <li>Update all fields marked with "MAINTAINER" comments in the HTML source</li>
+        <li>Edit the dedication message in the Dedication Section</li>
+        <li>Customize the certificate content as needed</li>
+        <li>Update star information (coordinates, magnitude, etc.) with actual data</li>
+      </ol>
+      All changes should be made directly in this HTML file. No backend or database is required.
+    </div>
+  </div>
+
+  <!-- Include shared scripts -->
+  <script src="js/header-inject.js"></script>
+  <script src="js/app.js"></script>
+
+  <script>
+    // Optional: Add any page-specific JavaScript here
+    // For example, you could add interactive elements, animations, or data loading
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      // Log that the page loaded successfully
+      console.log('Carter\'s Star page loaded successfully');
+      
+      // You could add functionality here such as:
+      // - Loading star data from an external source
+      // - Adding interactive constellation maps
+      // - Implementing a certificate download feature
+      // - Adding social sharing capabilities
+    });
+  </script>
+</body>
+</html>

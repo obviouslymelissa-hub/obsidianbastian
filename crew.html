@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Obsidian Bastian — Crew</title>
+  <link rel="stylesheet" href="css/_theme.css">
   <style>
     :root {
       --bg-dark: #181c24;
@@ -169,16 +170,10 @@
   </style>
 </head>
 <body>
-  <header>
-    <h1>Obsidian Bastian</h1>
-    <p>Crew Roster</p>
-  </header>
+  <!-- Shared header injection placeholder -->
+  <div id="site-header-placeholder" data-skip-return="false"></div>
 
   <main class="container" role="main" aria-labelledby="crew-heading">
-    <div class="nav-row">
-      <a class="back-link" href="https://obviouslymelissa-hub.github.io/obsidianbastian/index.html">← Back to Command Hub</a>
-      <div class="muted-small"></div>
-    </div>
 
     <h2 id="crew-heading" style="color:var(--text-muted); margin:0 0 1rem 0; font-weight:600;">
       Current Crew
@@ -285,5 +280,9 @@
       
     </p>
   </main>
+
+  <!-- Include shared scripts -->
+  <script src="js/header-inject.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>

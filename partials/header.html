@@ -1,0 +1,45 @@
+<!--
+  SHARED SITE HEADER - REFERENCE COPY
+  
+  This file serves as a reference for the header markup.
+  The actual header injection is done by js/header-inject.js at runtime.
+  
+  To update the header across all pages:
+  1. Edit this file to match your desired header structure
+  2. Update the header HTML string in js/header-inject.js
+  3. The changes will apply to all pages that include the header-inject.js script
+  
+  The "Return to Command Hub" link will automatically be excluded on index.html
+  via the data-skip-return="true" attribute.
+-->
+
+<header class="site-header" role="banner">
+  <div class="header-inner">
+    <!-- Left: Logo and Site Title -->
+    <div class="header-left">
+      <div class="site-logo" aria-hidden="true">
+        <img src="https://obviouslymelissa-hub.github.io/obsidianbastian/images/StrOpBoard.png" alt="Obsidian Bastian emblem">
+      </div>
+      <h1 class="site-title">Obsidian Bastian</h1>
+    </div>
+
+    <!-- Center: Navigation (optional - can be populated per page if needed) -->
+    <nav class="header-center site-nav" aria-label="Main navigation">
+      <!-- Navigation links can be added here or injected per page -->
+    </nav>
+
+    <!-- Right: Utilities and Return Link -->
+    <div class="header-right">
+      <!-- Return to Command Hub - Will be hidden on index.html -->
+      <a href="https://obviouslymelissa-hub.github.io/obsidianbastian/onboardcomputer.html" 
+         class="return-link" 
+         id="return-to-hub"
+         aria-label="Return to Command Hub">
+        <svg viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M8 0L0 8l8 8 1.5-1.5L3.5 8.5H16v-2H3.5l6-6z"/>
+        </svg>
+        Return to Command Hub
+      </a>
+    </div>
+  </div>
+</header>
