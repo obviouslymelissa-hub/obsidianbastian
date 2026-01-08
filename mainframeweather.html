@@ -15,24 +15,20 @@
     .wrap{max-width:980px;margin:0 auto;padding:24px;}
 
     /* HEADER LAYOUT
-       Change: title + subtitle occupy full width.
-       Controls and action buttons are in their own block BELOW the subtitle,
-       centered on the page (same for wide and narrow screens).
+       Title + subtitle full width, subtitle aligned left.
+       Controls + actions grouped below the subtitle and centered.
     */
-    .page-header{
-      /* use block stacking so header-left is full width, then header-controls below it */
-      display:block;
-      margin-bottom:18px;
-    }
+    .page-header{ display:block; margin-bottom:18px; }
     .header-left{
       display:flex;
       flex-direction:column;
       width:100%;
-      min-width:0; /* important to allow long subtitle to wrap without forcing overflow */
+      min-width:0;
       margin-bottom:8px;
+      align-items:flex-start;    /* ensure left alignment */
+      text-align:left;           /* make subtitle text align left */
     }
     .header-left h1{margin:0}
-    /* new wrapper for controls+actions centered below subtitle */
     .header-controls{
       display:flex;
       flex-direction:column;
@@ -43,7 +39,6 @@
       box-sizing:border-box;
       margin-top:8px;
     }
-    /* keep controls and actions horizontal but centered within the header-controls block */
     .controls{
       display:flex;
       gap:8px;
@@ -64,7 +59,6 @@
     button{background:var(--accent);color:#042023;border:0;padding:8px 12px;border-radius:8px;font-weight:600;cursor:pointer}
     .toggle{display:flex;align-items:center;gap:8px;font-size:14px}
     .grid{display:grid;grid-template-columns:1fr 340px;gap:16px;margin-top:18px}
-    /* fixed truncated rule for .card */
     .card{
       background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
       padding:16px;border-radius:12px;
@@ -93,17 +87,37 @@
     .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
     .unit-switch{display:flex;align-items:center;gap:6px}
     .unit-switch input{width:16px;height:16px}
-    /* Habitability gauge */
     .gauge { width:140px; height:140px; display:inline-block; }
     .funfacts{font-size:13px;line-height:1.4;color:#d9f6ff}
     .save-note{font-size:12px;color:var(--muted);margin-left:8px}
     input[type="text"].planet-name{padding:6px 8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit}
-    /* thumbnail gallery */
-    .thumb-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-    .thumb{width:88px;height:88px;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.04);background:#031a2b;display:flex;align-items:center;justify-content:center;cursor:pointer}
-    .thumb img{width:100%;height:100%;object-fit:cover;display:block}
 
-    /* responsive tweaks: on small screens keep the stacked layout */
+    /* Saved thumbnails */
+    .thumb-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+    /* fixed small size and responsive caps so thumbnails can't blow out layout on mobile */
+    .thumb{
+      width:88px;
+      height:88px;
+      border-radius:8px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,0.04);
+      background:#031a2b;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      flex: 0 0 auto;
+      max-width:88px;
+      max-height:88px;
+      box-sizing:border-box;
+    }
+    .thumb img{width:100%;height:100%;object-fit:cover;display:block;max-width:100%;max-height:100%}
+
+    /* ensure smaller thumbs on very small screens */
+    @media (max-width:480px){
+      .thumb{ width:64px; height:64px; max-width:64px; max-height:64px; }
+    }
+
     @media (max-width: 900px){
       .page-header{display:block}
       .header-left{margin-bottom:8px}
@@ -343,6 +357,10 @@
   // last thumbnail
   let lastThumbnailDataUrl = null;
 
+  // Track planet name input origin:
+  let planetNameUserEdited = false;
+  let planetNameProgrammatic = false;
+
   // Random generators
   function makeSystemName(){
     if(Math.random() < 0.25){
@@ -438,7 +456,6 @@
       let n2 = +(rand(30,90)).toFixed(1);
       let o2 = +(rand(0,30)).toFixed(1);
       let co2 = +(rand(0,10)).toFixed(2);
-      // Bias for habitable-like mixes using Fahrenheit range roughly equivalent to original C bias
       if(tempF >= -13 && tempF <= 131 && Math.random() < 0.5){
         n2 = +(rand(60,80)).toFixed(1);
         o2 = +(rand(10,25)).toFixed(1);
@@ -475,7 +492,6 @@
   }
 
   function evaluateHabitability({tempF, tempC, pressure, comp, gravity, pType}){
-    // Heuristic uses Fahrenheit bounds internally
     let score = 0;
     if(pType==='Terrestrial' || pType==='Super-Earth' || pType==='Ocean World') score += 1;
     if(tempF >= -4 && tempF <= 122) score += 2;
@@ -555,7 +571,10 @@
     lastDataset = dataset; // save for unit toggling
     const star = dataset.star;
     const planet = dataset.planet;
-    const customName = el.planetNameInput.value.trim();
+
+    // Determine displayed name:
+    const inputVal = el.planetNameInput ? el.planetNameInput.value.trim() : '';
+    const customName = (planetNameUserEdited || planetNameProgrammatic) ? inputVal : '';
 
     el.systemName.textContent = planet.systemName || star.name || '—';
     el.starInfo.textContent = `${star.name} • ${star.type || '='}`;
@@ -595,8 +614,16 @@
     el.habitabilityReason.textContent = (planet.habitability.habitable ? displayReasons.join(' ') : displayReasons.slice(0,3).join(' '));
 
     el.phenomena.textContent = planet.phenomena.join('; ');
-    el.location.textContent = `≈ Sector ${makeCoordinate()} • System ${planet.systemName} • Star class ${star.cls}${star.sub}${star.lum}`;
-    el.diagnostics.textContent = `Generated ${new Date().toISOString()}`;
+
+    // --- Preserve generated location & diagnostics so saved thumbnails show the original snapshot ---
+    if(!planet._locationText){
+      planet._locationText = `≈ Sector ${makeCoordinate()} • System ${planet.systemName} • Star class ${star.cls}${star.sub}${star.lum}`;
+    }
+    if(!planet._diagnostics){
+      planet._diagnostics = `Generated ${new Date().toISOString()}`;
+    }
+    el.location.textContent = planet._locationText;
+    el.diagnostics.textContent = planet._diagnostics;
 
     // Visuals
     drawOrbit(planet, star);
@@ -614,7 +641,7 @@
     return `${x}, ${y}, ${z}`;
   }
 
-  // Orbit drawing: simple star center + scaled orbit circle + planet dot
+  // Orbit drawing
   function drawOrbit(planet, star){
     const svg = el.orbitSvg;
     while(svg.firstChild) svg.removeChild(svg.firstChild);
@@ -623,7 +650,6 @@
     const cx = w/2;
     const cy = h/2;
 
-    // star
     const starEl = document.createElementNS('http://www.w3.org/2000/svg','circle');
     starEl.setAttribute('cx', cx);
     starEl.setAttribute('cy', cy);
@@ -631,8 +657,7 @@
     starEl.setAttribute('fill', '#ffd97a');
     svg.appendChild(starEl);
 
-    // orbit radius scaled by orbitalAU
-    const maxAU = 5; // visual scale
+    const maxAU = 5;
     const r = Math.min((Math.max(planet.orbitalAU,0.1)/maxAU) * (Math.min(cx,cy)-20) + 30, Math.min(cx,cy)-10);
     const orbitEl = document.createElementNS('http://www.w3.org/2000/svg','ellipse');
     orbitEl.setAttribute('cx', cx);
@@ -644,7 +669,6 @@
     orbitEl.setAttribute('stroke-dasharray', '3 4');
     svg.appendChild(orbitEl);
 
-    // planet position (angle based on index)
     const angle = (planet.index / 12) * Math.PI*2;
     const px = cx + r * Math.cos(angle);
     const py = cy + r*0.6 * Math.sin(angle);
@@ -663,16 +687,14 @@
     label.setAttribute('y', py + 4);
     label.setAttribute('fill', '#bfe6ff');
     label.setAttribute('font-size', '12');
-    // Use the displayed UI name so label always matches the main section
     label.textContent = el.planetName.textContent || planet.planetCode;
     svg.appendChild(label);
   }
 
-  // Habitability gauge using SVG circle (fixed centering)
+  // Gauge, funfacts, thumbnails etc.
   function drawGauge(score){
     const max = 10;
     const pct = Math.max(0, Math.min(1, score / max));
-    // match the CSS .gauge dimensions so the SVG fills the container
     const size = 140;
     const stroke = 12;
     const r = (size - stroke)/2;
@@ -688,7 +710,6 @@
     const g = document.createElementNS('http://www.w3.org/2000/svg','g');
     g.setAttribute('transform', `translate(${size/2},${size/2})`);
 
-    // background circle
     const bg = document.createElementNS('http://www.w3.org/2000/svg','circle');
     bg.setAttribute('r', r);
     bg.setAttribute('fill', 'none');
@@ -696,7 +717,6 @@
     bg.setAttribute('stroke-width', stroke);
     g.appendChild(bg);
 
-    // foreground arc
     const fg = document.createElementNS('http://www.w3.org/2000/svg','circle');
     fg.setAttribute('r', r);
     fg.setAttribute('fill', 'none');
@@ -708,7 +728,6 @@
     fg.setAttribute('transform', 'rotate(-90)');
     g.appendChild(fg);
 
-    // center text - vertically centered using dominant-baseline
     const t = document.createElementNS('http://www.w3.org/2000/svg','text');
     t.setAttribute('x', 0);
     t.setAttribute('y', 0);
@@ -733,7 +752,6 @@
     const tempString = displayUnit === 'F' ? `${planet.tempF} °F` : `${planet.tempC} °C`;
     facts.push(`Mean Temperature: ${tempString}`);
     facts.push(`Pressure: ${planet.pressureBar} bar • Clouds: ${planet.cloudsPercent}%`);
-    // pick up to 2 notable composition entries
     const topGases = planet.composition.slice(0,2).map(g => `${g.gas} ${g.pct}%`).join(', ');
     facts.push(`Main gases: ${topGases}`);
     if(planet.phenomena && planet.phenomena.length) facts.push(`Notables: ${planet.phenomena[0]}`);
@@ -741,25 +759,21 @@
   }
 
   // --- Thumbnail generation ---
-  // create a compact canvas thumbnail (data URL)
   function generateThumbnail(dataset, size = 300){
     if(!dataset) return null;
     const star = dataset.star;
     const planet = dataset.planet;
-    // offscreen canvas
     const cvs = document.createElement('canvas');
     cvs.width = size;
     cvs.height = size;
     const ctx = cvs.getContext('2d');
 
-    // background gradient
     const g = ctx.createLinearGradient(0,0,0,size);
     g.addColorStop(0, '#071025');
     g.addColorStop(1, '#021021');
     ctx.fillStyle = g;
     ctx.fillRect(0,0,size,size);
 
-    // star (center-left)
     const cx = size * 0.35;
     const cy = size * 0.45;
     ctx.beginPath();
@@ -767,7 +781,6 @@
     ctx.arc(cx, cy, Math.max(6, size*0.04), 0, Math.PI*2);
     ctx.fill();
 
-    // orbit ellipse
     const r = size * (0.25 + Math.min(planet.orbitalAU / 5, 0.6) * 0.35);
     ctx.strokeStyle = 'rgba(255,255,255,0.06)';
     ctx.lineWidth = 2;
@@ -777,14 +790,11 @@
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // planet position (angle from index)
     const angle = (planet.index/12) * Math.PI*2;
     const px = cx + r*Math.cos(angle);
     const py = cy + r*0.6*Math.sin(angle);
-    // planet color
     const pColor = planet.type.includes('Gas') ? '#85c1ff' : '#6ee7b7';
     const pSize = Math.max(6, Math.min(40, planet.radiusEarth * 6));
-    // glow for gas giants
     if(planet.type.includes('Gas')){
       const rad = pSize * 1.8;
       const lg = ctx.createRadialGradient(px,py,0,px,py,rad);
@@ -800,14 +810,12 @@
     ctx.arc(px,py,pSize,0,Math.PI*2);
     ctx.fill();
 
-    // use the displayed UI name (authoritative)
     const displayName = el.planetName.textContent || planet.planetCode;
     ctx.fillStyle = 'rgba(191,230,255,0.9)';
     ctx.font = `${Math.max(10, size*0.04)}px Inter, sans-serif`;
     ctx.textAlign = 'left';
     ctx.fillText(displayName, Math.max(px + pSize + 6, 12), Math.min(py + 6, size - 12));
 
-    // bottom info bar
     ctx.fillStyle = 'rgba(255,255,255,0.03)';
     ctx.fillRect(0, size - 48, size, 48);
     ctx.fillStyle = '#bfe6ff';
@@ -816,7 +824,6 @@
     const tempString = displayUnit === 'F' ? `${planet.tempF}°F` : `${planet.tempC}°C`;
     ctx.fillText(`${planet.type} • ${tempString} • ${planet.habitability.habitable ? 'LIVABLE' : 'UNSUITABLE'}`, size/2, size - 20);
 
-    // result
     return cvs.toDataURL('image/png');
   }
 
@@ -841,19 +848,30 @@
   // Save favorite includes thumbnail and uses displayed name
   function saveFavorite(){
     if(!lastDataset) return;
-    // ensure we have a thumbnail
     if(!lastThumbnailDataUrl){
       lastThumbnailDataUrl = generateThumbnail(lastDataset, 300);
     }
-    // prefer user-input name if present
     const inputName = el.planetNameInput && el.planetNameInput.value.trim();
     const displayName = inputName || el.planetName.textContent || lastDataset.planet.planetCode;
+
+    // Ensure the planet has stored snapshot fields (location/diagnostics) before saving
+    if(!lastDataset.planet._locationText){
+      lastDataset.planet._locationText = `≈ Sector ${makeCoordinate()} • System ${lastDataset.planet.systemName} • Star class ${lastDataset.star.cls}${lastDataset.star.sub}${lastDataset.star.lum}`;
+    }
+    if(!lastDataset.planet._diagnostics){
+      lastDataset.planet._diagnostics = `Generated ${new Date().toISOString()}`;
+    }
+
+    // Deep-clone star and planet objects so saved snapshot remains immutable
+    const starSnapshot = JSON.parse(JSON.stringify(lastDataset.star));
+    const planetSnapshot = JSON.parse(JSON.stringify(lastDataset.planet));
+
     const entry = {
       id: `${lastDataset.planet.planetCode}-${Date.now()}`,
       name: displayName || (el.planetNameInput.value.trim() || lastDataset.planet.planetCode),
       created: new Date().toISOString(),
-      star: lastDataset.star,
-      planet: lastDataset.planet,
+      star: starSnapshot,
+      planet: planetSnapshot,
       thumbnail: lastThumbnailDataUrl
     };
     const existing = JSON.parse(localStorage.getItem('pb_favorites') || '[]');
@@ -876,10 +894,18 @@
       d.appendChild(img);
       d.title = `${item.name}\n${new Date(item.created).toLocaleString()}`;
       d.addEventListener('click', ()=>{
-        // clicking thumbnail loads that planet into the UI
-        // set the planetNameInput first so render will pick it up as the displayed name
-        if(el.planetNameInput) el.planetNameInput.value = item.name;
-        render({star: item.star, planet: item.planet});
+        // clicking thumbnail loads that planet snapshot exactly as it was saved
+        const savedStar = JSON.parse(JSON.stringify(item.star));
+        const savedPlanet = JSON.parse(JSON.stringify(item.planet));
+        const savedDataset = { star: savedStar, planet: savedPlanet };
+
+        if(el.planetNameInput){
+          planetNameProgrammatic = true;
+          el.planetNameInput.value = item.name;
+          setTimeout(()=> { planetNameProgrammatic = false; }, 0);
+        }
+
+        render(savedDataset);
       });
       el.thumbGrid.appendChild(d);
     });
@@ -887,6 +913,13 @@
 
   // Main actions
   function randomize(){
+    // Clear any name in the input so new planets get generated names
+    if(el.planetNameInput){
+      el.planetNameInput.value = '';
+    }
+    planetNameUserEdited = false;
+    planetNameProgrammatic = false;
+
     if(el.earthToggle.checked){
       const {star,planet} = setEarth();
       render({star,planet});
@@ -903,12 +936,16 @@
     if(searching) return;
     searching = true;
 
-    // Save current states to restore later
+    // Clear any name in the input so the found planet uses a generated name
+    if(el.planetNameInput){
+      el.planetNameInput.value = '';
+    }
+    planetNameUserEdited = false;
+    planetNameProgrammatic = false;
+
     const prevEarth = el.earthToggle.checked;
-    // Disable earthToggle during search to avoid collision
     el.earthToggle.checked = false;
 
-    // Disable controls while searching
     el.shuffle.disabled = true;
     el.findHabitable.disabled = true;
     el.unitToggle.disabled = true;
@@ -930,7 +967,6 @@
         if(planet.habitability.habitable){
           render({star,planet});
           el.diagnostics.textContent = `Found habitable after ${attempts} attempts • ${new Date().toISOString()}`;
-          // restore toggles & controls
           el.shuffle.disabled = false;
           el.findHabitable.disabled = false;
           el.unitToggle.disabled = false;
@@ -942,16 +978,11 @@
           return;
         }
       }
-      // update diagnostics and yield to the UI
       el.diagnostics.textContent = `Searching for habitable planet... attempts: ${attempts}`;
-      // short pause to keep UI responsive
-      // eslint-disable-next-line no-await-in-loop
       await new Promise(r => setTimeout(r, 0));
     }
 
-    // If we reach here, no habitable planet found within attempt limit
     el.diagnostics.textContent = `No habitable planet found after ${attempts} attempts. Try increasing maxAttempts.`;
-    // restore toggles & controls
     el.shuffle.disabled = false;
     el.findHabitable.disabled = false;
     el.unitToggle.disabled = false;
@@ -984,14 +1015,17 @@
     el.saveFavorite.addEventListener('click', ()=> saveFavorite());
   }
 
-  // Wire planet name input so typing updates the display immediately
+  // Wire planet name input
   if(el.planetNameInput){
     el.planetNameInput.addEventListener('input', ()=>{
-      // If a dataset exists, re-render so label, orbit label, and thumbnails use the value
+      // ignore programmatic changes
+      if(planetNameProgrammatic){
+        return;
+      }
+      planetNameUserEdited = true;
       if(lastDataset){
         render(lastDataset);
       } else {
-        // no dataset yet — just set visible label
         el.planetName.textContent = el.planetNameInput.value.trim() || '—';
       }
     });
