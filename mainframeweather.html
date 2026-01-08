@@ -7,8 +7,15 @@
   <link rel="stylesheet" href="app.css">
   <style>
     :root{
-      --bg:#0b0f1a; --card:#0f1724; --muted:#9aa6c0; --accent:#6ee7b7;
-      --danger:#ff7b7b; --glass: rgba(255,255,255,0.03);
+      /* Reduced green: move accent toward a cooler blue palette and add a complementary accent2
+         so gradients and UI highlights look blue/teal rather than bright green. */
+      --bg:#0b0f1a;
+      --card:#0f1724;
+      --muted:#9aa6c0;
+      --accent:#60a5fa;    /* primary accent (blue) */
+      --accent2:#7dd3fc;   /* secondary, lighter accent for gradients */
+      --danger:#ff7b7b;
+      --glass: rgba(255,255,255,0.03);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     }
     html,body{height:100%;margin:0;color:#e6eef8;background:var(--bg);}
@@ -51,6 +58,7 @@
 
     h1{font-size:20px;margin:0}
     .controls .center{display:flex;gap:10px;align-items:center}
+    /* Buttons updated to use the new blue accent. Slightly darker text color for contrast. */
     button{background:var(--accent);color:#042023;border:0;padding:8px 12px;border-radius:8px;font-weight:600;cursor:pointer}
     .toggle{display:flex;align-items:center;gap:8px;font-size:14px}
     .grid{display:grid;grid-template-columns:1fr 340px;gap:16px;margin-top:18px}
@@ -68,7 +76,8 @@
     .composition{margin-top:10px;display:flex;flex-direction:column;gap:6px}
     .comp-row{display:flex;justify-content:space-between;font-size:13px}
     .bar{height:10px;background:rgba(255,255,255,0.06);border-radius:8px;overflow:hidden;margin-top:6px}
-    .bar > i{display:block;height:100%;background:linear-gradient(90deg,#6ee7b7,#60a5fa);width:0%}
+    /* use the new blue accent gradient instead of the green/blue mix */
+    .bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0%}
     .rightcol{display:flex;flex-direction:column;gap:12px}
     .visual-tabs{display:flex;gap:8px;border-bottom:1px dashed rgba(255,255,255,0.03);padding-bottom:8px;margin-bottom:8px}
     .tab{padding:6px 10px;border-radius:8px;background:transparent;color:var(--muted);cursor:pointer}
@@ -687,7 +696,7 @@
     const fg = document.createElementNS('http://www.w3.org/2000/svg','circle');
     fg.setAttribute('r', r);
     fg.setAttribute('fill', 'none');
-    fg.setAttribute('stroke', pct > 0.66 ? '#6ee7b7' : (pct > 0.33 ? '#ffd97a' : '#ff7b7b'));
+    fg.setAttribute('stroke', pct > 0.66 ? 'var(--accent)' : (pct > 0.33 ? '#ffd97a' : '#ff7b7b'));
     fg.setAttribute('stroke-width', stroke);
     fg.setAttribute('stroke-linecap', 'round');
     fg.setAttribute('stroke-dasharray', `${filled} ${c - filled}`);
