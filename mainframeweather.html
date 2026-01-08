@@ -7,54 +7,60 @@
   <link rel="stylesheet" href="app.css">
   <style>
     :root{
-      /* restored original palette (green accent) */
       --bg:#0b0f1a; --card:#0f1724; --muted:#9aa6c0; --accent:#6ee7b7;
       --danger:#ff7b7b; --glass: rgba(255,255,255,0.03);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     }
-
     html,body{height:100%;margin:0;color:#e6eef8;background:var(--bg);}
     .wrap{max-width:980px;margin:0 auto;padding:24px;}
 
-    /*
-      Header/subheader layout fixes:
-      - keep a single, top site header spanning full width (unchanged in markup)
-      - the page subheader (.page-header) is a single-row flex container on desktop
-        with three items: left (title+subtitle), controls (toggles), and header-actions (buttons).
-      - make .header-left flexible (flex:1) and add min-width:0 so long subtitle text can
-        shrink correctly and won't force overflow / create a narrow column.
-      - on narrow screens stack items using a media query (max-width:900px).
+    /* HEADER LAYOUT
+       Change: title + subtitle occupy full width.
+       Controls and action buttons are in their own block BELOW the subtitle,
+       centered on the page (same for wide and narrow screens).
     */
     .page-header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
+      /* use block stacking so header-left is full width, then header-controls below it */
+      display:block;
       margin-bottom:18px;
-      /* do NOT wrap on desktop; stacking handled by media query */
     }
     .header-left{
       display:flex;
       flex-direction:column;
-      flex: 1 1 auto;    /* allow this column to take the remaining space */
-      min-width: 0;      /* IMPORTANT: allows long text to truncate/wrap correctly in a flex item */
+      width:100%;
+      min-width:0; /* important to allow long subtitle to wrap without forcing overflow */
+      margin-bottom:8px;
     }
     .header-left h1{margin:0}
+    /* new wrapper for controls+actions centered below subtitle */
+    .header-controls{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      width:100%;
+      box-sizing:border-box;
+      margin-top:8px;
+    }
+    /* keep controls and actions horizontal but centered within the header-controls block */
     .controls{
       display:flex;
       gap:8px;
       align-items:center;
-      flex: 0 0 auto;
+      justify-content:center;
+      flex-wrap:wrap;
     }
+    .controls .center{display:flex;gap:10px;align-items:center}
     .header-actions{
       display:flex;
       gap:8px;
       align-items:center;
-      flex: 0 0 auto;
+      justify-content:center;
+      flex-wrap:wrap;
     }
 
     h1{font-size:20px;margin:0}
-    .controls .center{display:flex;gap:10px;align-items:center}
     button{background:var(--accent);color:#042023;border:0;padding:8px 12px;border-radius:8px;font-weight:600;cursor:pointer}
     .toggle{display:flex;align-items:center;gap:8px;font-size:14px}
     .grid{display:grid;grid-template-columns:1fr 340px;gap:16px;margin-top:18px}
@@ -72,7 +78,6 @@
     .composition{margin-top:10px;display:flex;flex-direction:column;gap:6px}
     .comp-row{display:flex;justify-content:space-between;font-size:13px}
     .bar{height:10px;background:rgba(255,255,255,0.06);border-radius:8px;overflow:hidden;margin-top:6px}
-    /* original composition gradient */
     .bar > i{display:block;height:100%;background:linear-gradient(90deg,#6ee7b7,#60a5fa);width:0%}
     .rightcol{display:flex;flex-direction:column;gap:12px}
     .visual-tabs{display:flex;gap:8px;border-bottom:1px dashed rgba(255,255,255,0.03);padding-bottom:8px;margin-bottom:8px}
@@ -92,19 +97,18 @@
     .gauge { width:140px; height:140px; display:inline-block; }
     .funfacts{font-size:13px;line-height:1.4;color:#d9f6ff}
     .save-note{font-size:12px;color:var(--muted);margin-left:8px}
-    .header-actions{display:flex;gap:8px;align-items:center}
     input[type="text"].planet-name{padding:6px 8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit}
     /* thumbnail gallery */
     .thumb-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
     .thumb{width:88px;height:88px;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.04);background:#031a2b;display:flex;align-items:center;justify-content:center;cursor:pointer}
     .thumb img{width:100%;height:100%;object-fit:cover;display:block}
 
-    /* responsive stacking on narrow screens */
+    /* responsive tweaks: on small screens keep the stacked layout */
     @media (max-width: 900px){
-      .page-header{flex-direction:column;align-items:flex-start}
-      .controls{width:100%;margin-top:8px}
-      .header-actions{width:100%;justify-content:flex-start;flex-wrap:wrap;margin-top:8px}
-      .grid{grid-template-columns:1fr;}
+      .page-header{display:block}
+      .header-left{margin-bottom:8px}
+      .header-controls{margin-top:8px}
+      .grid{grid-template-columns:1fr; }
       .rightcol{order:2}
     }
   </style>
@@ -135,29 +139,32 @@
         <div class="small">Solar system and planet explorer with atmospheric conditions and habitability check.</div>
       </div>
 
-      <div class="controls">
-        <div class="center">
-          <div class="toggle">
-            <label><input id="earthToggle" type="checkbox"> Current Earth Conditions</label>
-          </div>
+      <!-- Grouped controls & actions in a centered block below the subtitle -->
+      <div class="header-controls">
+        <div class="controls">
+          <div class="center">
+            <div class="toggle">
+              <label><input id="earthToggle" type="checkbox"> Current Earth Conditions</label>
+            </div>
 
-          <!-- Unit toggle -->
-          <div class="unit-switch">
-            <label><input id="unitToggle" type="checkbox"> Show °C</label>
-          </div>
+            <!-- Unit toggle -->
+            <div class="unit-switch">
+              <label><input id="unitToggle" type="checkbox"> Show °C</label>
+            </div>
 
-          <div style="display:flex;align-items:center;gap:6px">
-            <input id="planetNameInput" class="planet-name" type="text" placeholder="Give this planet a name (optional)">
+            <div style="display:flex;align-items:center;gap:6px">
+              <input id="planetNameInput" class="planet-name" type="text" placeholder="Give this planet a name (optional)">
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="header-actions">
-        <button id="shuffle">Random Planet</button>
-        <button id="findHabitable">Find Habitable</button>
-        <button id="downloadThumb">Download Thumbnail</button>
-        <button id="saveFavorite">Save Favorite</button>
-        <div id="saveNote" class="save-note" aria-live="polite"></div>
+        <div class="header-actions">
+          <button id="shuffle">Random Planet</button>
+          <button id="findHabitable">Find Habitable</button>
+          <button id="downloadThumb">Download Thumbnail</button>
+          <button id="saveFavorite">Save Favorite</button>
+          <div id="saveNote" class="save-note" aria-live="polite"></div>
+        </div>
       </div>
     </div>
 
@@ -647,7 +654,6 @@
     pEl.setAttribute('cx', px);
     pEl.setAttribute('cy', py);
     pEl.setAttribute('r', planetSize);
-    // color choices: keep a blue/green mix for gas vs terrestrial (same as original)
     pEl.setAttribute('fill', planet.type.includes('Gas') ? '#85c1ff' : '#6ee7b7');
     pEl.setAttribute('stroke', 'rgba(0,0,0,0.2)');
     svg.appendChild(pEl);
