@@ -171,6 +171,14 @@
     .muted-link { color:var(--accent); text-decoration:none; font-size:13px; }
     .small-muted { font-size:12px; color:var(--muted); }
     .resolved { opacity:0.6; text-decoration:line-through; }
+
+    /* Make the toolbar's badge sit at the very left inside the toolbar card */
+    .card.toolbar { padding-left: 0; } /* overrides .card default left padding for this toolbar only */
+
+    /* Optional helper classes for clearer states */
+    .badge.good { background: rgba(120,224,143,0.06); color: inherit; }
+    .badge.degraded { background: linear-gradient(90deg,var(--warn),#ffd39a40); color: #021219; }
+    .badge.critical { background: linear-gradient(90deg,var(--danger),#ff9e9e); color: #021219; font-weight:700; }
   </style>
 </head>
 <body>
@@ -262,7 +270,7 @@
     <main class="main">
       <div class="card toolbar">
         <div class="left">
-          <div class="badge" id="healthBadge">Health: Good</div>
+          <div class="badge good" id="healthBadge">Health: Good</div>
           <div class="small" style="margin-left:8px" id="lastUpdated">last updated: —</div>
         </div>
         <div class="right">
@@ -287,7 +295,7 @@
       </div>
 
       <footer class="card small">
-        System message: "All hands calm — core systems are humming. If they weren't, you'd be seeing red." This page displays system telemetry — use the Export CSV button to download the visible window of metrics for troubleshooting or post-incident analysis.
+        System message: "All hands calm — core systems are humming. If they weren't, you'd be seeing red." This page displays system telemetry — use the Export CSV button to download the visible w[...]
       </footer>
     </main>
   </div>
@@ -458,12 +466,22 @@
       if (lastNet) netNowEl.textContent = `${lastNet.y} ms`;
 
       const recentLoss = series.packetLoss.length ? series.packetLoss[series.packetLoss.length-1].y : 0;
-      if (recentLoss > 3 || (lastCpu && lastCpu.y > 90)) {
+
+      // thresholds:
+      // - critical if packet loss > 5% or CPU > 95%
+      // - degraded if packet loss > 3% or CPU > 90%
+      if (recentLoss > 5 || (lastCpu && lastCpu.y > 95)) {
+        healthBadge.textContent = 'Health: Critical';
+        healthBadge.classList.remove('good','degraded');
+        healthBadge.classList.add('critical');
+      } else if (recentLoss > 3 || (lastCpu && lastCpu.y > 90)) {
         healthBadge.textContent = 'Health: Degraded';
-        healthBadge.style.background = 'linear-gradient(90deg,var(--danger),#ff9e9e20)';
+        healthBadge.classList.remove('good','critical');
+        healthBadge.classList.add('degraded');
       } else {
         healthBadge.textContent = 'Health: Good';
-        healthBadge.style.background = '';
+        healthBadge.classList.remove('degraded','critical');
+        healthBadge.classList.add('good');
       }
 
       lastUpdatedEl.textContent = 'last updated: ' + formatTimeISO(Date.now());
