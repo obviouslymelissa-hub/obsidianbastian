@@ -855,7 +855,7 @@ function simulateStep() {
   if (etaEl) etaEl.textContent = Math.round(telemetry.scrubberEtaHours) + 'h';
 
   updateOptimalIndicators();
-  if (Math.random() < 0.04) pushVagueError();
+  if (Math.random() < 0.08) pushVagueError();
 
   // optional: update telemetry feed
   const now = new Date();
@@ -944,7 +944,7 @@ const initialNetPercent = Math.max(0.08, Math.min(1, telemetry.netLatency / 300)
 setGauge(document.getElementById('net-arc'), initialNetPercent, 50,50,34);
 
 simulateStep();
-setInterval(simulateStep, 1100);
+setInterval(simulateStep, 900);
 
 /* --- ALERT / SOUND MANAGER --- */
 const SoundManager = (function(){
