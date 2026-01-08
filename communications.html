@@ -201,6 +201,8 @@
         <input id="to" type="text" placeholder="Destination (e.g. New Planet / Relay-7)" />
         <input id="msg" type="text" placeholder='Compose: "hello new planet can anybody hear me?"' />
         <button id="btnSend">Send</button>
+        <!-- incoming indicator: hidden until incoming signal is available -->
+        <span id="incomingIndicator" class="pill" style="display:none">Incoming signal detected</span>
         <button id="btnReceiveGreeting" title="Simulate an incoming transmission" class="small">Receive Transmission</button>
       </div>
 
@@ -239,12 +241,17 @@
       const btnExport = document.getElementById('btnExport');
       const shipId = document.getElementById('shipId');
       const composeStatus = document.getElementById('composeStatus');
+      const incomingIndicator = document.getElementById('incomingIndicator');
 
       // State
       let power = false;
       let signal = Number(sigRange.value);
       let messages = loadMessages();
       let queued = loadQueued();
+
+      // Incoming-signal scheduling state
+      let incomingAvailable = false;
+      let incomingTimerId = null;
 
       function loadMessages(){ try { return JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch(e){return [];} }
       function saveMessages(){ localStorage.setItem(storageKey, JSON.stringify(messages)); }
@@ -277,8 +284,17 @@
         if (!power) {
           composeStatus.textContent = 'Power OFF — outgoing messages will be queued. Incoming messages are blocked until power is ON.';
         } else {
-          composeStatus.textContent = 'Power ONLINE — outgoing messages will be sent when signal permits. Incoming messages accepted.';
+          // if incoming available, mention it here as well
+          if (incomingAvailable) {
+            composeStatus.textContent = 'Power ONLINE — incoming signal detected. Click "Receive Transmission" to accept.';
+          } else {
+            composeStatus.textContent = 'Power ONLINE — outgoing messages will be sent when signal permits. Incoming messages accepted.';
+          }
         }
+
+        // update receive button enabled/disabled based on incomingAvailable and power
+        btnReceiveGreeting.disabled = !incomingAvailable || !power;
+        incomingIndicator.style.display = incomingAvailable && power ? 'inline-block' : 'none';
       }
 
       function pushMessage(entry){
@@ -310,6 +326,7 @@
         for (const m of messages) renderEntry(m);
       }
 
+      // return the created entry so caller can decide (e.g., schedule incoming)
       function sendMessage(text, to){
         const entry = {
           id: newId(),
@@ -330,6 +347,7 @@
           pushMessage(entry);
         }
         renderStatus();
+        return entry;
       }
 
       function receiveMessage(text, from){
@@ -445,6 +463,28 @@
         }
       }
 
+      // Incoming signal scheduling helpers
+      function scheduleIncomingForLastOutbound() {
+        // Only schedule one incoming at a time
+        if (incomingAvailable || incomingTimerId) return;
+        // pick a random delay between 3s and 12s
+        const delay = 3000 + Math.floor(Math.random() * 9000);
+        incomingTimerId = setTimeout(() => {
+          incomingTimerId = null;
+          incomingAvailable = true;
+          renderStatus();
+        }, delay);
+      }
+
+      function clearIncomingNotification() {
+        incomingAvailable = false;
+        if (incomingTimerId) {
+          clearTimeout(incomingTimerId);
+          incomingTimerId = null;
+        }
+        renderStatus();
+      }
+
       // UI hooks
       btnPower.addEventListener('click', () => setPower(!power));
       sigRange.addEventListener('input', (e) => {
@@ -460,10 +500,13 @@
           // still allow queueing but show notice
           if (!confirm('Communications power is OFF. Do you want to queue the message?')) return;
         }
-        sendMessage(txt, to);
+        // sendMessage now returns the entry so we can decide whether to schedule incoming
+        const entry = sendMessage(txt, to);
         // show outbound immediately in UI if queued or sent
         if (power && signal > 5) {
           // message already pushed via pushMessage
+          // schedule incoming signal for received reply
+          scheduleIncomingForLastOutbound();
         } else {
           // show queued notice in the log as queued
           const notice = {
@@ -482,8 +525,15 @@
 
       // Receive Transmission button hook (keeps internal name)
       btnReceiveGreeting.addEventListener('click', () => {
+        // If there's no incoming available, do nothing (button is disabled but guard here too)
+        if (!incomingAvailable || !power) return;
+        // clear the incoming notice and then simulate the greeting
+        clearIncomingNotification();
         simulateGreeting();
       });
+
+      // initialize receive button disabled state
+      btnReceiveGreeting.disabled = true;
 
       btnClear.addEventListener('click', () => {
         if (!confirm('Clear full message log? This cannot be undone.')) return;
@@ -520,7 +570,11 @@
 
       // Expose small API on window for convenience/testing
       window.shipComms = {
-        send: (text, to) => sendMessage(text, to),
+        send: (text, to) => {
+          const entry = sendMessage(text, to);
+          if (entry.status !== 'queued') scheduleIncomingForLastOutbound();
+          return entry;
+        },
         receive: (text, from) => {
           if (!power) return false;
           receiveMessage(text, from);
