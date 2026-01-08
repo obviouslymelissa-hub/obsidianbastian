@@ -73,10 +73,14 @@
       color:var(--muted);
       margin-bottom:6px;
       text-align:center;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+      /* allow wrapping so multi-word names won't be truncated */
+      white-space:normal;
+      overflow:visible;
+      text-overflow:unset;
       width:100%;
+      line-height:1.15;
+      word-break:break-word;
+      padding:0 6px;
     }
     /* responsive SVG sizing with preserved aspect ratio and allow overflow so glow isn't clipped */
     svg.gauge{
@@ -327,8 +331,10 @@
         </feMerge>
       </filter>
 
-      <!-- Reactor: simplified two-stop gradient (cool → warm) so it matches other gauges -->
-      <linearGradient id="reactor-grad" x1="0" x2="1">
+      <!-- Reactor gradient tied to SVG user space so left→right maps reliably across the circular arc.
+           viewBox for gauge SVG is "-10 -10 120 80" and the gauge center is at (50,50),
+           radius 34 so leftmost x is 16 and rightmost x is 84 — use those coordinates to force correct mapping. -->
+      <linearGradient id="reactor-grad" gradientUnits="userSpaceOnUse" x1="16" y1="50" x2="84" y2="50">
         <stop offset="0%" stop-color="#4ec8ff" />
         <stop offset="100%" stop-color="#ff5a5a" />
       </linearGradient>
