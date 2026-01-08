@@ -5,32 +5,22 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Navigation Console — Obsidian Bastian</title>
 
-  <!-- keep the external stylesheet link (will work when app.css is present) -->
+  <!-- keep the external stylesheet link (used when app.css is present) -->
   <link rel="stylesheet" href="app.css">
 
-  <!--
-    Embedded fallback/primary styles so the page renders correctly even when app.css
-    isn't available (e.g. opened via file:// or app.css missing). This also contains
-    small additions for the favorites UI we added earlier.
-  -->
+  <!-- Embedded fallback/primary styles (adjusted to match the Mainframe Weather palette) -->
   <style>
     :root{
-      --bg:#071025;
-      --panel:#0f1724;
-      --muted:#9aa6c0;
-      --accent:#6ee7b7;
-      --glass: rgba(255,255,255,0.03);
-      --card-shadow: 0 6px 18px rgba(2,6,23,0.6);
+      --bg:#0b0f1a; --card:#0f1724; --muted:#9aa6c0; --accent:#6ee7b7;
+      --danger:#ff7b7b; --glass: rgba(255,255,255,0.03);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      color-scheme: dark;
     }
 
-    html,body{height:100%;margin:0;background:linear-gradient(180deg,#051025,#07142a);color:#e6eef8;}
+    html,body{height:100%;margin:0;color:#e6eef8;background:var(--bg);}
     a { color: var(--accent); text-decoration: none; }
     a:hover { text-decoration: underline; }
 
-    /* Header */
-    .site-header{ background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-bottom:1px solid rgba(255,255,255,0.03); }
+    .site-header{ background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00)); border-bottom:1px solid rgba(255,255,255,0.03); }
     .header-inner{ max-width:1100px; margin:0 auto; padding:18px 20px; display:flex; align-items:center; justify-content:space-between; gap:12px; box-sizing:border-box; }
     .header-left{ display:flex; align-items:center; gap:12px; }
     .site-emblem img{ width:48px; height:48px; display:block; }
@@ -39,21 +29,19 @@
 
     .header-right a.return-command-hub { background: rgba(255,255,255,0.03); padding:8px 12px; border-radius:8px; color:var(--accent); font-weight:700; }
 
-    /* App container */
     .app{ max-width:1100px; margin:18px auto; padding:0 18px 28px; box-sizing:border-box; }
 
     .app-header{ display:flex; align-items:center; margin-bottom:12px; }
     .header-actions{ margin-left:auto; display:flex; gap:8px; align-items:center; }
     input#search{ padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:inherit; min-width:200px; }
 
-    .map-large{ background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00)); border:1px solid rgba(255,255,255,0.03); border-radius:12px; padding:12px; box-shadow: var(--card-shadow); margin-bottom:12px; overflow:hidden; }
+    .map-large{ background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00)); border:1px solid rgba(255,255,255,0.03); border-radius:12px; padding:12px; box-shadow:0 6px 18px rgba(2,6,23,0.6); margin-bottom:12px; overflow:hidden; }
     #mapSvgLarge{ width:100%; height:240px; display:block; }
 
     .status-banner{ padding:8px 12px; margin-bottom:12px; border-radius:8px; background:rgba(0,0,0,0.2); color:var(--muted); }
 
-    /* Main grid layout */
     .grid{ display:grid; grid-template-columns: 240px 1fr 300px; gap:14px; align-items:start; }
-    .panel{ background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00)); padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); box-shadow: var(--card-shadow); }
+    .panel{ background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00)); padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); box-shadow:0 6px 18px rgba(2,6,23,0.6); }
     .panel.systems, .panel.planets, .panel.details{ min-height:120px; }
     .panel.systems h2, .panel.planets h2{ margin:0 0 8px 0; font-size:18px; }
     .panel.details h3{ margin:0 0 8px 0; font-size:16px; }
@@ -68,11 +56,10 @@
     .controls{ display:flex; gap:8px; margin-top:10px; }
     .btn{ background:var(--accent); color:#042023; border:0; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:700; }
 
-    /* Custom location panel */
     .panel.custom input, .panel.custom select { background: transparent; color:inherit; border:1px solid rgba(255,255,255,0.04); padding:8px; border-radius:8px; }
     .panel.custom .small-muted{ color:var(--muted); margin-top:8px; }
 
-    /* Favorites list styles (from earlier change) */
+    /* Favorites styles */
     .fav-list { display:flex; flex-direction:column; gap:8px; margin-top:8px; }
     .fav-item { display:flex; gap:8px; align-items:center; background:rgba(255,255,255,0.02); padding:6px; border-radius:8px; border:1px solid rgba(255,255,255,0.03); }
     .fav-thumb { width:48px; height:48px; border-radius:6px; overflow:hidden; background:#031a2b; display:flex; align-items:center; justify-content:center; flex:0 0 48px; }
@@ -84,7 +71,6 @@
     .fav-actions button { padding:6px 8px; border-radius:6px; border:0; background:rgba(255,255,255,0.03); color:#bfe6ff; cursor:pointer; font-size:12px; }
     .fav-actions button.primary { background:var(--accent); color:#042023; font-weight:700; }
 
-    /* Responsive */
     @media (max-width:980px){
       .grid{ grid-template-columns: 1fr; }
       .header-inner{ padding:14px; }
@@ -184,7 +170,7 @@
     </footer>
   </div>
 
-  <!-- Embedded catalog fallback so the page works when opened via file:// without a server -->
+  <!-- Embedded catalog fallback (expanded with nearby real systems instead of TRAPPIST-1) -->
   <script>
     window.__CATALOG__ = {
       "systems": [
@@ -205,6 +191,7 @@
             { "id": "Sol-09b", "name": "Pluto", "index": 9, "orbitalAU": 39.5, "radiusEarth": 0.186, "massEarth": 0.0022, "type": "Dwarf", "summary": "Dwarf planet in the Kuiper belt (historical interest)." }
           ]
         },
+
         {
           "id": "Kepler-452",
           "name": "Kepler-452",
@@ -216,16 +203,51 @@
             { "id": "Kepler-452-03b", "name": "Kepler-452d", "index": 3, "orbitalAU": 1.8, "radiusEarth": 2.8, "massEarth": 12.0, "type": "Sub-Neptune", "summary": "Volatile-rich world with thick atmosphere." }
           ]
         },
+
+        /* Replaced TRAPPIST-1 with several nearby real systems (confirmed or strong candidates)
+           — these are placed here so the page has familiar nearby targets for quick travel.
+        */
         {
-          "id": "TRAPPIST-1",
-          "name": "TRAPPIST-1",
-          "coords": [320, 140],
-          "star": { "name": "TRAPPIST-1", "class": "M", "luminosityFactor": 0.02 },
+          "id": "Proxima-Centauri",
+          "name": "Proxima Centauri",
+          "coords": [300, 120],
+          "star": { "name": "Proxima Centauri", "class": "M", "luminosityFactor": 0.0017 },
           "planets": [
-            { "id": "TRAPPIST-1b", "name": "TRAPPIST-1b", "index": 1, "orbitalAU": 0.011, "radiusEarth": 1.11, "massEarth": 1.02, "type": "Terrestrial", "summary": "Very close-in rocky world." },
-            { "id": "TRAPPIST-1c", "name": "TRAPPIST-1c", "index": 2, "orbitalAU": 0.015, "radiusEarth": 1.05, "massEarth": 0.9, "type": "Terrestrial", "summary": "Compact orbit, interesting climate models." }
+            { "id": "Proxima-b", "name": "Proxima b", "index": 1, "orbitalAU": 0.0485, "radiusEarth": 1.08, "massEarth": 1.27, "type": "Terrestrial", "summary": "Rocky planet in the habitable zone (tidally locked candidate)." }
+          ]
+        },
+
+        {
+          "id": "Barnards-Star",
+          "name": "Barnard's Star",
+          "coords": [260, 160],
+          "star": { "name": "Barnard's Star", "class": "M", "luminosityFactor": 0.003 },
+          "planets": [
+            { "id": "Barnard-b", "name": "Barnard b", "index": 1, "orbitalAU": 0.4, "radiusEarth": 1.9, "massEarth": 3.2, "type": "Super-Earth", "summary": "Cold super-Earth candidate on a longer orbit (strong radial-velocity detection)." }
+          ]
+        },
+
+        {
+          "id": "Luyten-GJ273",
+          "name": "Luyten (GJ 273)",
+          "coords": [360, 100],
+          "star": { "name": "GJ 273 (Luyten)", "class": "M", "luminosityFactor": 0.005 },
+          "planets": [
+            { "id": "GJ273b", "name": "GJ 273b", "index": 1, "orbitalAU": 0.09, "radiusEarth": 1.2, "massEarth": 2.9, "type": "Terrestrial", "summary": "Close-in world; one of the nearer potentially temperate planets." }
+          ]
+        },
+
+        {
+          "id": "Tau-Ceti",
+          "name": "Tau Ceti",
+          "coords": [420, 140],
+          "star": { "name": "Tau Ceti", "class": "G", "luminosityFactor": 0.8 },
+          "planets": [
+            { "id": "TauCeti-e", "name": "Tau Ceti e", "index": 1, "orbitalAU": 0.55, "radiusEarth": 1.0, "massEarth": 3.9, "type": "Super-Earth", "summary": "Candidate planet in inner system; may lie near the habitable zone." },
+            { "id": "TauCeti-f", "name": "Tau Ceti f", "index": 2, "orbitalAU": 1.35, "radiusEarth": 1.5, "massEarth": 5.7, "type": "Super-Earth", "summary": "Candidate outer planet—cooler but potentially interesting." }
           ]
         }
+
       ]
     };
   </script>
