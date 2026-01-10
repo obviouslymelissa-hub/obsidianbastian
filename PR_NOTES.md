@@ -2,7 +2,7 @@
 
 ## Overview
 
-This PR implements a unified site header and theme across all pages of the Obsidian Bastian site, improving consistency, accessibility, and user experience.
+This PR implements a unified site header and theme across all pages of the Obsidian Bastion site, improving consistency, accessibility, and user experience.
 
 ## Changes Made
 
@@ -18,7 +18,7 @@ This PR implements a unified site header and theme across all pages of the Obsid
 
 **Created a consistent, reusable header** that appears on all pages except `index.html`:
 
-- **Left section**: Emblem/logo + site title ("Obsidian Bastian") + page-specific subtitle
+- **Left section**: Emblem/logo + site title ("Obsidian Bastion") + page-specific subtitle
 - **Right section**: "Return to Command Hub" button linking back to index.html
 - **Styling**: Matches index.html aesthetic with gradient backgrounds, glow effects, and smooth animations
 - **Responsive**: Adapts gracefully to mobile and tablet viewports
@@ -85,7 +85,7 @@ A scaffold page for tracking mission accomplishments:
         <img src="..." alt="Strategic Operations Board">
       </div>
       <div class="header-text">
-        <h1>Obsidian Bastian</h1>
+        <h1>Obsidian Bastion</h1>
         <h2>[Page Name]</h2>
       </div>
     </div>
@@ -192,7 +192,7 @@ To add a new page with the unified header:
    <head>
      <meta charset="utf-8" />
      <meta name="viewport" content="width=device-width,initial-scale=1" />
-     <title>[Page Title] — Obsidian Bastian</title>
+     <title>[Page Title] — Obsidian Bastion</title>
      <link rel="stylesheet" href="app.css">
      <!-- Page-specific styles here -->
    </head>
