@@ -3,386 +3,372 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>TRANSMISSION — Enif (ε Pegasi) — Obsidian Bastian</title>
+  <title>Carter's Star — Enif (ε Pegasi) — Obsidian Bastian</title>
   <link rel="stylesheet" href="app.css">
   <style>
-    /*
-      Transmission theme:
-      - Dark, high-contrast terminal / comms layout
-      - Metadata header, payload card, attachments area
-      - Keeps the star info + inscription content (formatted as a transmitted payload)
-    */
-
-    :root{
-      --bg: #06070a;
-      --panel: #0f1720;
-      --muted: #9bb3b0;
-      --accent: #57f0c9;   /* neon cyan */
-      --accent-2: #ffd77a; /* amber for seals */
-      --glass: rgba(255,255,255,0.03);
-      --glow: 0 6px 28px rgba(87,240,201,0.08);
-      --mono: "SFMono-Regular", "Roboto Mono", "Menlo", "Monaco", monospace;
-      --ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    body {
+      padding-bottom: 48px;
     }
 
-    html,body{height:100%;}
-    body{
-      margin:0;
-      min-height:100%;
-      font-family:var(--ui);
-      background:
-        radial-gradient(1200px 600px at 10% 20%, rgba(87,240,201,0.02), transparent 6%),
-        linear-gradient(180deg, #020203 0%, var(--bg) 100%);
-      color:#dffbf2;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      padding-bottom:48px;
+    .page-content {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 0 18px;
     }
 
-    .container{
-      max-width:1140px;
-      margin:28px auto;
-      padding:18px 20px;
-      box-sizing:border-box;
+    /* Hero section with star name */
+    .star-hero {
+      background: linear-gradient(180deg, rgba(79,209,197,0.04), rgba(255,255,255,0.01));
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.45);
+      text-align: center;
     }
 
-    /* Comm header */
-    .comms-head{
-      display:flex;
-      gap:16px;
-      align-items:center;
-      justify-content:space-between;
-      margin-bottom:18px;
+    .star-hero h1 {
+      margin: 0 0 8px 0;
+      font-size: 2rem;
+      color: var(--accent);
+      font-weight: 800;
+      letter-spacing: 0.5px;
     }
 
-    .comms-left{
-      display:flex;
-      gap:12px;
-      align-items:center;
+    .star-hero .subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0;
     }
 
-    .badge{
-      width:72px;
-      height:72px;
-      border-radius:8px;
-      background:linear-gradient(180deg,#071018,#0b2730);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      border:2px solid rgba(87,240,201,0.12);
-      box-shadow: 0 6px 24px rgba(0,0,0,0.6), 0 0 30px rgba(87,240,201,0.02) inset;
-    }
-    .badge img{ width:56px; height:56px; object-fit:contain; display:block; }
-
-    .comms-title{
-      display:flex;
-      flex-direction:column;
-      gap:4px;
+    .star-hero .dedication {
+      margin-top: 16px;
+      padding: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      border-radius: 8px;
+      border: 1px solid rgba(79,209,197,0.1);
     }
 
-    .trans-label{
-      font-family:var(--mono);
-      font-weight:800;
-      color:var(--accent);
-      letter-spacing:1px;
-      font-size:0.85rem;
+    .star-hero .dedication-text {
+      color: var(--text-main);
+      font-size: 1.05rem;
+      line-height: 1.6;
+      font-style: italic;
+      margin: 0 0 12px 0;
     }
 
-    .trans-sub{
-      font-weight:700;
-      color:var(--muted);
-      font-size:0.95rem;
+    .star-hero .dedication-signature {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-align: right;
     }
 
-    .comms-right{
-      display:flex;
-      gap:8px;
-      align-items:center;
-    }
-
-    .meta-chip{
-      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border:1px solid rgba(255,255,255,0.03);
-      padding:10px 12px;
-      border-radius:8px;
-      font-family:var(--mono);
-      color:var(--muted);
-      font-weight:700;
-      font-size:0.85rem;
-      box-shadow: var(--glow);
-    }
-
-    /* Main grid: left (payload) and right (attachments) */
-    .grid{
-      display:grid;
+    /* Main content grid */
+    .content-grid {
+      display: grid;
       grid-template-columns: 1fr 360px;
-      gap:18px;
-      align-items:start;
+      gap: 24px;
+      align-items: start;
     }
 
-    /* Payload card */
-    .payload{
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border: 1px solid rgba(87,240,201,0.06);
-      border-radius:10px;
-      padding:18px;
-      box-shadow: 0 12px 36px rgba(0,0,0,0.6);
-      overflow:hidden;
+    /* Info panels */
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.35);
+      margin-bottom: 20px;
     }
 
-    .payload-head{
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      align-items:flex-start;
-      margin-bottom:12px;
+    .panel h2 {
+      margin: 0 0 16px 0;
+      color: var(--accent);
+      font-size: 1.2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .payload-meta{
-      font-family:var(--mono);
-      color:var(--accent);
-      font-weight:800;
-      font-size:0.92rem;
-      letter-spacing:0.8px;
+    .panel h3 {
+      margin: 16px 0 10px 0;
+      color: var(--accent-2);
+      font-size: 1rem;
+      font-weight: 700;
     }
 
-    .payload-sub{
-      color:var(--muted);
-      font-weight:700;
-      font-size:0.9rem;
+    /* Info grid for star details */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
     }
 
-    /* Transmission block (styled like fixed-width packet) */
-    .packet{
-      background: linear-gradient(180deg, rgba(2,8,10,0.4), rgba(2,8,10,0.2));
-      border-radius:8px;
-      border:1px solid rgba(255,255,255,0.03);
-      padding:14px;
-      font-family:var(--mono);
-      color:#bfffe9;
-      line-height:1.6;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-      position:relative;
-      overflow:hidden;
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
-    /* subtle scanline overlay */
-    .packet::after{
-      content:"";
-      pointer-events:none;
-      position:absolute;
-      inset:0;
-      background-image:linear-gradient(rgba(255,255,255,0.01) 1px, transparent 1px);
-      background-size:100% 4px;
-      mix-blend-mode:overlay;
-      opacity:0.6;
+    .info-label {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
-    /* make certain lines stand out */
-    .packet .headline{
-      color:var(--accent-2);
-      font-weight:900;
-      letter-spacing:0.8px;
-      margin-bottom:8px;
-      font-size:1rem;
+    .info-value {
+      color: var(--text-main);
+      font-size: 1rem;
+      font-weight: 600;
     }
 
-    .packet .payload-text{
-      font-size:0.95rem;
-      color:#dffbf2;
-      margin-bottom:10px;
-      white-space:pre-wrap;
+    /* Dedication info box */
+    .dedication-box {
+      background: linear-gradient(180deg, rgba(79,209,197,0.02), rgba(255,255,255,0.01));
+      border: 1px solid rgba(79,209,197,0.08);
+      border-radius: 10px;
+      padding: 16px;
+      margin-top: 16px;
     }
 
-    .packet .kv{
-      display:grid;
-      grid-template-columns:180px 1fr;
-      gap:6px 12px;
-      align-items:start;
-      margin-top:8px;
+    .dedication-box .label {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
     }
 
-    .kv .k{ color:var(--muted); font-family:var(--mono); font-weight:800; font-size:0.80rem; text-transform:uppercase; }
-    .kv .v{ color:#bfffe9; font-weight:700; font-size:0.95rem; }
-
-    /* Formal inscription block (styled as official payload within transmission) */
-    .inscription{
-      margin-top:12px;
-      border-radius:6px;
-      padding:12px;
-      background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.0));
-      border:1px dashed rgba(87,240,201,0.06);
+    .dedication-box .value {
+      color: var(--text-main);
+      font-size: 1rem;
+      line-height: 1.5;
     }
 
-    .inscription .quote{
-      font-family:var(--mono);
-      font-weight:800;
-      color:var(--accent-2);
-      font-size:1.05rem;
-      margin-bottom:8px;
-      line-height:1.2;
+    /* Sidebar */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
     }
 
-    .inscription .signed{
-      margin-top:12px;
-      display:flex;
-      justify-content:flex-end;
-      color:var(--muted);
-      font-weight:800;
-      font-family:var(--mono);
+    .image-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.35);
+      overflow: hidden;
     }
 
-    /* Attachments / right column */
-    .attachments{
-      display:flex;
-      flex-direction:column;
-      gap:12px;
+    .image-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+      display: block;
+      margin-bottom: 10px;
     }
 
-    .att-card{
-      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
-      border-radius:10px;
-      padding:12px;
-      border:1px solid rgba(255,255,255,0.03);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      align-items:center;
+    .image-card .caption {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      text-align: center;
+      font-weight: 600;
     }
 
-    .att-card img{ width:100%; height:220px; object-fit:cover; border-radius:8px; display:block; }
-
-    .att-label{ font-family:var(--mono); color:var(--muted); font-weight:800; font-size:0.86rem; }
-
-    /* Combined info moved below certificate (still styled as packet data) */
-    .combined{
-      margin-top:14px;
-      background:linear-gradient(180deg, rgba(2,8,10,0.3), rgba(2,8,10,0.18));
-      border-radius:8px;
-      padding:12px;
-      border:1px solid rgba(255,255,255,0.02);
-      box-shadow:0 8px 20px rgba(0,0,0,0.55);
-      font-family:var(--mono);
-      color:#bfffe9;
+    /* Note box */
+    .note-box {
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+      border: 1px solid rgba(255,255,255,0.03);
+      border-radius: 8px;
+      padding: 12px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      font-style: italic;
     }
 
-    .combined .grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-      gap:10px;
+    /* Responsive */
+    @media (max-width: 980px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .star-hero h1 {
+        font-size: 1.6rem;
+      }
     }
 
-    .combined .item .k{ color:var(--muted); font-weight:800; text-transform:uppercase; font-size:0.78rem; }
-    .combined .item .v{ color:#bfffe9; font-weight:700; font-size:0.95rem; margin-top:6px; }
+    @media (max-width: 600px) {
+      .star-hero {
+        padding: 18px;
+      }
 
-    /* small responsive behaviour */
-    @media (max-width: 980px){
-      .grid{ grid-template-columns: 1fr; }
-      .comms-right { display:none; } /* hide chips on narrow */
-      .att-card img{ height:180px; }
-    }
+      .star-hero h1 {
+        font-size: 1.4rem;
+      }
 
-    @media (max-width:560px){
-      .badge{ width:56px; height:56px; }
-      .badge img{ width:44px; height:44px; }
-      .att-card img{ height:140px; }
+      .info-grid {
+        gap: 10px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container" role="main">
-    <header class="comms-head" role="banner" aria-label="Transmission header">
-      <div class="comms-left">
-        <div class="badge" aria-hidden="true">
-          <!-- Replace with your seal/logo if desired -->
-          <img src="images/ship-seal-placeholder.png" alt="">
+  <!-- Shared site header -->
+  <header class="site-header">
+    <div class="header-inner" role="banner" aria-label="Obsidian Bastian header">
+      <div class="header-left">
+        <div class="site-emblem" aria-hidden="true" title="Obsidian Bastian emblem">
+          <img src="https://obviouslymelissa-hub.github.io/obsidianbastian/images/StrOpBoard.png" alt="Strategic Operations Board">
         </div>
-        <div class="comms-title" aria-hidden="false">
-          <div class="trans-label">TRANSMISSION</div>
-          <div class="trans-sub">Obsidian Bastian — Shipboard Charts</div>
+        <div class="header-text" aria-label="Site title">
+          <h1>Obsidian Bastian</h1>
+          <h2>Carter's Star</h2>
         </div>
       </div>
-
-      <div class="comms-right" aria-hidden="false">
-        <div class="meta-chip">CLASSIFICATION: PERSONAL</div>
-        <div class="meta-chip">STARDATE: —</div>
-        <div class="meta-chip">ORIGIN: OBSIDIAN BASTIAN</div>
+      <div class="header-right">
+        <a href="https://obviouslymelissa-hub.github.io/obsidianbastian/index.html" class="return-command-hub" aria-label="Return to Command Hub">← Return to Command Hub</a>
       </div>
-    </header>
+    </div>
+  </header>
 
-    <section class="grid" aria-label="Transmission payload and attachments">
-      <!-- left: payload -->
-      <article class="payload" role="article" aria-labelledby="payload-title">
-        <div class="payload-head">
-          <div>
-            <div id="payload-title" class="payload-meta">PAYLOAD — STAR INSCRIPTION / CHART ENTRY</div>
-            <div class="payload-sub">Enif (ε Pegasi) — shipboard marking</div>
-          </div>
-          <div class="payload-sub" style="color:var(--muted); font-family:var(--mono);">Packet ID: OB-BAS/ENIF/001</div>
-        </div>
-
-        <div class="packet" aria-label="Transmission packet">
-          <div class="headline">OFFICIAL INSCRIPTION (SHIPBOARD)</div>
-
-          <div class="payload-text">
-UNDER THE AUTHORITY OF THE STRATEGIC OPERATIONS BOARD
-BY ORDER OF THE OBSIDIAN BASTIAN, THIS STAR IS MARKED AND HONORED FOR:
-
-THE BRILLIANCE YOU CARRY, WHICH TRAVELS FARTHER THAN ANY SIGNAL WE SEND.
-          </div>
-
-          <div class="kv" aria-hidden="false" role="list">
-            <div class="k">Honored star</div><div class="v">Enif (Epsilon Pegasi)</div>
-            <div class="k">Location (RA)</div><div class="v">2h 44m 11.6s</div>
-            <div class="k">Location (Dec)</div><div class="v">+09° 52' 30"</div>
-            <div class="k">Apparent brightness</div><div class="v">~+2.4</div>
-            <div class="k">Spectral type</div><div class="v">K2 Ib (orange supergiant)</div>
-            <div class="k">Distance</div><div class="v">~650–700 ly</div>
-            <div class="k">Radius</div><div class="v">~150–185 × R☉</div>
-            <div class="k">Luminosity</div><div class="v">~3,900–12,250 × L☉</div>
-            <div class="k">Surface temp</div><div class="v">~4,100–4,460 K</div>
-          </div>
-
-          <div class="inscription" aria-label="Inscription text">
-            <div class="quote">Inscribed into the Bastian's charts on this stardate, under the seal of the General.</div>
-            <div class="signed">— General Melissa</div>
-          </div>
-        </div>
-
-        <!-- combined info block beneath payload for quick reference -->
-        <div class="combined" aria-label="Combined star information">
-          <div style="font-weight:900; color:var(--accent); margin-bottom:8px;">COMBINED STAR INFORMATION</div>
-          <div class="grid">
-            <div class="item"><div class="k">Named For</div><div class="v"><em>Carter Vinton Kimball</em> (shipboard inscription)</div></div>
-            <div class="item"><div class="k">Dedication Date</div><div class="v">January 22, 2018</div></div>
-            <div class="item"><div class="k">Constellation</div><div class="v">Pegasus</div></div>
-            <div class="item"><div class="k">Catalog (original)</div><div class="v">88607527 (UCAC3)</div></div>
-            <div class="item"><div class="k">Notes</div><div class="v">Private shipboard inscription — not formally registered</div></div>
-          </div>
-        </div>
-      </article>
-
-      <!-- right: attachments area -->
-      <aside class="attachments" role="complementary" aria-label="Attachments / images">
-        <div class="att-card" role="figure" aria-label="Pegasus attachment">
-          <div class="att-label">Attachment: Pegasus constellation</div>
-          <img src="images/pegasus-constellation.jpg" alt="Pegasus constellation (placeholder)">
-          <div style="font-family:var(--mono); color:var(--muted); font-size:0.8rem; margin-top:6px;">images/pegasus-constellation.jpg</div>
-        </div>
-
-        <div class="att-card" role="figure" aria-label="Star map">
-          <div class="att-label">Attachment: Star map</div>
-          <img src="images/star-map.jpg" alt="Star map (placeholder)">
-          <div style="font-family:var(--mono); color:var(--muted); font-size:0.8rem; margin-top:6px;">images/star-map.jpg</div>
-        </div>
-      </aside>
+  <main class="page-content">
+    <!-- Hero section -->
+    <section class="star-hero">
+      <h1>✨ Carter's Star</h1>
+      <p class="subtitle">Enif (Epsilon Pegasi) — A Special Dedication</p>
+      
+      <div class="dedication">
+        <p class="dedication-text">
+          "The brilliance you carry, which travels farther than any signal we send."
+        </p>
+        <p class="dedication-signature">— General Melissa, Strategic Operations Board</p>
+      </div>
     </section>
 
-    <footer style="margin-top:18px; color:var(--muted); font-family:var(--mono); font-size:0.82rem; display:flex; justify-content:space-between; align-items:center;">
-      <div>TRANSMISSION LOG • OB-BAS • LOCAL</div>
-      <div>END OF PACKET</div>
-    </footer>
-  </div>
+    <div class="content-grid">
+      <!-- Main content -->
+      <div>
+        <!-- Star Information -->
+        <div class="panel">
+          <h2>🌟 Star Information</h2>
+          
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-label">Star Name</div>
+              <div class="info-value">Enif (Epsilon Pegasi)</div>
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">Constellation</div>
+              <div class="info-value">Pegasus</div>
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">Spectral Type</div>
+              <div class="info-value">K2 Ib (Orange Supergiant)</div>
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">Brightness</div>
+              <div class="info-value">Magnitude ~+2.4</div>
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">Distance</div>
+              <div class="info-value">~650–700 light years</div>
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">Luminosity</div>
+              <div class="info-value">~3,900–12,250 × Sun</div>
+            </div>
+          </div>
+
+          <h3>📍 Location</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-label">Right Ascension</div>
+              <div class="info-value">21h 44m 11.6s</div>
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">Declination</div>
+              <div class="info-value">+09° 52' 30"</div>
+            </div>
+          </div>
+
+          <h3>🔬 Physical Properties</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-label">Radius</div>
+              <div class="info-value">~150–185 × Solar Radius</div>
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">Surface Temperature</div>
+              <div class="info-value">~4,100–4,460 K</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dedication Information -->
+        <div class="panel">
+          <h2>💫 Dedication Details</h2>
+          
+          <div class="dedication-box">
+            <div class="label">Named For</div>
+            <div class="value"><strong>Carter Vinton Kimball</strong></div>
+          </div>
+
+          <div class="dedication-box">
+            <div class="label">Dedication Date</div>
+            <div class="value">January 22, 2018</div>
+          </div>
+
+          <div class="dedication-box">
+            <div class="label">Inscription Authority</div>
+            <div class="value">Strategic Operations Board, Obsidian Bastian</div>
+          </div>
+
+          <div class="note-box" style="margin-top: 16px;">
+            <strong>Note:</strong> This is a private shipboard inscription maintained in the Obsidian Bastian's star charts. 
+            The original registry catalog number was 88607527 (UCAC3).
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="image-card">
+          <img src="images/pegasus-constellation.jpg" alt="Pegasus constellation" onerror="this.style.display='none'">
+          <div class="caption">Pegasus Constellation</div>
+        </div>
+
+        <div class="image-card">
+          <img src="images/star-map.jpg" alt="Star map" onerror="this.style.display='none'">
+          <div class="caption">Star Map Location</div>
+        </div>
+
+        <div class="panel" style="text-align: center;">
+          <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem; line-height: 1.5;">
+            "Inscribed into the Bastian's charts under the seal of the General."
+          </p>
+        </div>
+      </aside>
+    </div>
+  </main>
 </body>
 </html>
