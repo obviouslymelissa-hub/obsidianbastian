@@ -1,10 +1,10 @@
-# Obsidian Bastian
+# Obsidian Bastion
 
-A comprehensive spaceship management interface system for the Obsidian Bastian vessel. This project provides a web-based control panel for monitoring and managing various ship systems, crew operations, and navigation.
+A comprehensive spaceship management interface system for the Obsidian Bastion vessel. This project provides a web-based control panel for monitoring and managing various ship systems, crew operations, and navigation.
 
 ## Overview
 
-Obsidian Bastian is a fictional spaceship management interface that simulates the operation of a deep-space vessel. The interface includes multiple subsystems for controlling and monitoring different aspects of the ship's operations.
+Obsidian Bastion is a fictional spaceship management interface that simulates the operation of a deep-space vessel. The interface includes multiple subsystems for controlling and monitoring different aspects of the ship's operations.
 
 ## Features
 
@@ -176,7 +176,7 @@ This project is provided as-is for educational and entertainment purposes.
 
 ## Credits
 
-Developed for the Obsidian Bastian spaceship simulation project.
+Developed for the Obsidian Bastion spaceship simulation project.
 
 ---
 
