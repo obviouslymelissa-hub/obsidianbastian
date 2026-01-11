@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Achievements — Obsidian Bastion</title>
+  <title>Honors & Completed Missions — Obsidian Bastion</title>
   <link rel="stylesheet" href="app.css">
   <style>
     body {
@@ -17,58 +17,100 @@
       padding: 2rem 1.5rem;
     }
 
-    .achievements-grid {
+    .page-intro {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: var(--text-muted);
+    }
+
+    .records-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 1.5rem;
       margin-top: 2rem;
     }
 
-    .achievement-card {
+    .record-card {
       background: var(--bg-panel);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 1.5rem;
+      padding: 1.25rem;
       box-shadow: 0 4px 12px rgba(0,0,0,0.4);
       transition: transform .2s ease, box-shadow .2s ease;
     }
 
-    .achievement-card:hover {
+    .record-card:hover {
       transform: translateY(-4px);
       box-shadow: 0 8px 24px rgba(0,0,0,0.5);
     }
 
-    .achievement-icon {
-      font-size: 3rem;
-      margin-bottom: 1rem;
+    .record-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.75rem;
       display: block;
       text-align: center;
     }
 
-    .achievement-title {
-      font-size: 1.2rem;
+    .record-title {
+      font-size: 1.15rem;
       color: var(--accent);
-      margin: 0 0 0.5rem 0;
+      margin: 0 0 0.35rem 0;
       font-weight: 700;
       text-align: center;
     }
 
-    .achievement-description {
-      color: var(--text-muted);
-      font-size: 0.9rem;
+    .record-meta {
       text-align: center;
-      line-height: 1.5;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .record-description {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      text-align: center;
+      line-height: 1.4;
+      margin: 0.5rem 0;
     }
 
     .locked {
-      opacity: 0.5;
+      opacity: 0.6;
       filter: grayscale(1);
     }
 
-    .page-intro {
+    .honor-badge {
+      display: inline-block;
+      background: linear-gradient(90deg,var(--accent) 0%, rgba(0,0,0,0) 100%);
+      color: white;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      vertical-align: middle;
+      margin-left: 0.5rem;
+    }
+
+    .record-actions {
       text-align: center;
-      margin-bottom: 2rem;
+      margin-top: 0.75rem;
+    }
+
+    .record-actions a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .section-heading {
+      font-size: 1.05rem;
+      margin: 0 0 0.5rem 0;
       color: var(--text-muted);
+      font-weight: 700;
+      text-align: left;
+    }
+
+    @media (max-width: 520px) {
+      .page-container { padding: 1.25rem; }
     }
   </style>
 </head>
@@ -82,7 +124,7 @@
         </div>
         <div class="header-text" aria-label="Site title">
           <h1>Obsidian Bastion</h1>
-          <h2>Achievements</h2>
+          <h2>Honors & Completed Missions</h2>
         </div>
       </div>
       <div class="header-right">
@@ -93,57 +135,93 @@
 
   <div class="page-container">
     <div class="page-intro">
-      <h1 style="color: var(--accent); font-size: 2rem; margin: 0 0 1rem 0;">Mission Achievements</h1>
-      <p>Track your progress and accomplishments across the Obsidian Bastion missions.</p>
+      <h1 style="color: var(--accent); font-size: 2rem; margin: 0 0 1rem 0;">Honors, Major Missions & Official Acknowledgements</h1>
+      <p>Official record of significant missions, events, and special acknowledgements recognized by the Strategic Operations Board. This list highlights completed operations and bestowed honors — use it as an archive and a reference for notable achievements across the fleet.</p>
     </div>
 
-    <div class="achievements-grid">
-      <!-- Example achievement - unlocked -->
-      <div class="achievement-card">
-        <div class="achievement-icon">🚀</div>
-        <h3 class="achievement-title">First Launch</h3>
-        <p class="achievement-description">Successfully completed your first mission aboard the Obsidian Bastion.</p>
+    <!-- Completed missions -->
+    <section aria-labelledby="completed-missions">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:0.75rem;">
+        <h3 id="completed-missions" class="section-heading">Completed Missions</h3>
+        <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">Chronological record of finalized operations</p>
       </div>
 
-      <!-- Example achievement - unlocked -->
-      <div class="achievement-card">
-        <div class="achievement-icon">🌟</div>
-        <h3 class="achievement-title">Star Gazer</h3>
-        <p class="achievement-description">Discovered your first star in the navigation console.</p>
+      <div class="records-grid">
+        <article class="record-card" role="article" aria-labelledby="op-nightfall-title">
+          <div class="record-icon" aria-hidden="true">🚀</div>
+          <h4 id="op-nightfall-title" class="record-title">Operation Nightfall</h4>
+          <div class="record-meta">Completed • 2025-09-12</div>
+          <p class="record-description">A coordinated deep-space insertion to secure the Tachyon relay nodes. Operation executed with minimal casualties; debrief and logs archived.</p>
+          <div class="record-actions">
+            <a href="logs/operation-nightfall.html">View mission summary</a>
+          </div>
+        </article>
+
+        <article class="record-card" role="article" aria-labelledby="survey-title">
+          <div class="record-icon" aria-hidden="true">🌌</div>
+          <h4 id="survey-title" class="record-title">Starboard Corridor Survey</h4>
+          <div class="record-meta">Completed • 2025-11-03</div>
+          <p class="record-description">Recon and mapping of previously uncharted micro-clusters in the Starboard Corridor. Data transferred to navigation and exploration divisions.</p>
+          <div class="record-actions">
+            <a href="logs/starboard-survey.html">View mission summary</a>
+          </div>
+        </article>
+
+        <article class="record-card locked" role="article" aria-labelledby="maintenance-title">
+          <div class="record-icon" aria-hidden="true">🔧</div>
+          <h4 id="maintenance-title" class="record-title">Fleetwide Maintenance Cycle</h4>
+          <div class="record-meta">Completed • 2025-06-28</div>
+          <p class="record-description">Major maintenance rollout across allied carriers to improve long-range resilience and power stability.</p>
+          <div class="record-actions">
+            <a href="logs/maintenance-cycle.html">View maintenance report</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Honors & acknowledgements -->
+    <section aria-labelledby="honors" style="margin-top:2.25rem;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:0.75rem;">
+        <h3 id="honors" class="section-heading">Honors & Acknowledgements</h3>
+        <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">Special recognitions handed down by the Strategic Operations Board</p>
       </div>
 
-      <!-- Example achievement - locked -->
-      <div class="achievement-card locked">
-        <div class="achievement-icon">🛰️</div>
-        <h3 class="achievement-title">Communications Expert</h3>
-        <p class="achievement-description">Send 100 messages through ship communications.</p>
-      </div>
+      <div class="records-grid">
+        <article class="record-card" role="article" aria-labelledby="carter-title">
+          <div class="record-icon" aria-hidden="true">🏅</div>
+          <h4 id="carter-title" class="record-title">
+            <a href="carter-star.html" style="color:inherit; text-decoration:none;">Carter's Star</a>
+            <span class="honor-badge" aria-hidden="true">S.O.B. Honor</span>
+          </h4>
+          <div class="record-meta">Bestowed by Strategic Operations Board • 2025-12-01</div>
+          <p class="record-description">Awarded to Carter for exceptional leadership and decisive action during Operation Nightfall. <a href="carter-star.html">Read the full citation and dedication.</a></p>
+        </article>
 
-      <!-- Example achievement - locked -->
-      <div class="achievement-card locked">
-        <div class="achievement-icon">⚡</div>
-        <h3 class="achievement-title">Power Master</h3>
-        <p class="achievement-description">Maintain optimal power levels for 24 hours.</p>
-      </div>
+        <article class="record-card" role="article" aria-labelledby="comm-title">
+          <div class="record-icon" aria-hidden="true">📡</div>
+          <h4 id="comm-title" class="record-title">Strategic Communications Commendation</h4>
+          <div class="record-meta">Acknowledged • 2025-10-19</div>
+          <p class="record-description">Recognizes the communications crew for establishing secure links under hostile conditions, preserving fleet coordination during contested operations.</p>
+          <div class="record-actions">
+            <a href="logs/comm-commendation.html">View citation</a>
+          </div>
+        </article>
 
-      <!-- Example achievement - locked -->
-      <div class="achievement-card locked">
-        <div class="achievement-icon">🔧</div>
-        <h3 class="achievement-title">Master Mechanic</h3>
-        <p class="achievement-description">Order and install 50 ship parts.</p>
+        <article class="record-card locked" role="article" aria-labelledby="citizen-title">
+          <div class="record-icon" aria-hidden="true">🌟</div>
+          <h4 id="citizen-title" class="record-title">Honorary Citizen Recognition</h4>
+          <div class="record-meta">Granted • 2025-03-14</div>
+          <p class="record-description">An acknowledgement of civilians whose actions materially benefited fleet operations. Details available in the archive.</p>
+          <div class="record-actions">
+            <a href="logs/honorary-citizen.html">View archive</a>
+          </div>
+        </article>
       </div>
-
-      <!-- Example achievement - locked -->
-      <div class="achievement-card locked">
-        <div class="achievement-icon">🛡️</div>
-        <h3 class="achievement-title">Defender</h3>
-        <p class="achievement-description">Successfully defend against 10 threats.</p>
-      </div>
-    </div>
+    </section>
 
     <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: var(--bg-panel); border-radius: 12px; border: 1px solid var(--border);">
       <p style="color: var(--text-muted); margin: 0; font-size: 0.95rem;">
-        <em>More achievements coming soon! Keep exploring and completing missions.</em>
+        <em>New entries and official citations will be added as they are ratified by the Strategic Operations Board. If you have an official record to add, submit it to the Board for review.</em>
       </p>
     </div>
   </div>
