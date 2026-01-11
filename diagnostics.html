@@ -52,11 +52,11 @@
     .header-text h2 { margin:0; font-size:0.9rem; color:var(--text-muted); font-weight:400; }
 
     main {
-      max-width: 960px;
+      max-width: 980px;
       margin: 1.75rem auto;
       padding: 1.25rem;
       display: grid;
-      grid-template-columns: 320px 1fr;
+      grid-template-columns: 340px 1fr;
       gap: 1rem;
       align-items: start;
     }
@@ -75,6 +75,9 @@
       flex-direction:column;
       gap:0.55rem;
       margin-bottom: 0.85rem;
+      max-height: calc(100vh - 240px);
+      overflow:auto;
+      padding-right: 6px;
     }
     .diagnostics-select button {
       display:flex;
@@ -243,6 +246,17 @@
         <button data-area="Shields" aria-selected="false"> <span class="btn-icon" style="background: #a0e9ff;"></span> Shields</button>
         <button data-area="Navigation" aria-selected="false"> <span class="btn-icon" style="background: #bdb2ff;"></span> Navigation</button>
         <button data-area="Communications" aria-selected="false"> <span class="btn-icon" style="background: #9be7c6;"></span> Communications</button>
+
+        <!-- New systems added -->
+        <button data-area="Defense Systems" aria-selected="false"> <span class="btn-icon" style="background: #ff9aa2;"></span> Defense Systems</button>
+        <button data-area="Weapons" aria-selected="false"> <span class="btn-icon" style="background: #ffb482;"></span> Weapons</button>
+        <button data-area="Point Defense" aria-selected="false"> <span class="btn-icon" style="background: #ffd166;"></span> Point Defense</button>
+        <button data-area="ECM" aria-selected="false"> <span class="btn-icon" style="background: #c7f9cc;"></span> Electronic Countermeasures (ECM)</button>
+        <button data-area="Sensors" aria-selected="false"> <span class="btn-icon" style="background: #a0e9ff;"></span> Sensors</button>
+        <button data-area="Thermal Control" aria-selected="false"> <span class="btn-icon" style="background: #b2d6ff;"></span> Thermal Control</button>
+        <button data-area="Hull Integrity" aria-selected="false"> <span class="btn-icon" style="background: #d1d1d1;"></span> Hull Integrity</button>
+        <button data-area="Gravity" aria-selected="false"> <span class="btn-icon" style="background: #f4c2c2;"></span> Artificial Gravity</button>
+        <button data-area="Docking" aria-selected="false"> <span class="btn-icon" style="background: #c9f5e1;"></span> Docking</button>
       </div>
 
       <div class="controls-row">
@@ -296,7 +310,7 @@
   <canvas id="confettiCanvas"></canvas>
 
   <script>
-    // Original errors & recommendations objects preserved from the original file
+    // Original errors & recommendations extended with new systems
     const errors = {
       "Life Support": [
         "O2 sensor readings inconsistent.",
@@ -327,9 +341,66 @@
         "Antenna alignment off by 0.3°.",
         "Message queue backlog.",
         "Communications nominal (no issues detected)."
+      ],
+
+      // New systems
+      "Defense Systems": [
+        "Interceptor drone bay offline.",
+        "Countermeasure dispenser malfunctioning.",
+        "Target prioritization anomaly detected.",
+        "Defense systems nominal (no issues detected)."
+      ],
+      "Weapons": [
+        "Primary weapon capacitor charging fault.",
+        "Turret servo misalignment on port side.",
+        "Ammo handling chute jammed.",
+        "Weapons nominal (no issues detected)."
+      ],
+      "Point Defense": [
+        "Point-defense turret jammed.",
+        "Auto-tracking unstable on micrometeoric impacts.",
+        "Short-range targeting sensor fault.",
+        "Point Defense nominal (no issues detected)."
+      ],
+      "ECM": [
+        "ECM suite experiencing high SWR on antenna feed.",
+        "Jamming signature detected from unknown source.",
+        "ECM processing queue overflow.",
+        "ECM nominal (no issues detected)."
+      ],
+      "Sensors": [
+        "Long-range radar returns noisy.",
+        "LIDAR calibration skew detected.",
+        "Passive sensor fusion mismatch.",
+        "Sensors nominal (no issues detected)."
+      ],
+      "Thermal Control": [
+        "Heat exchanger fouling detected.",
+        "Coolant pump RPM outside expected range.",
+        "Local hot-spot detected in engineering bay.",
+        "Thermal Control nominal (no issues detected)."
+      ],
+      "Hull Integrity": [
+        "Micrometeorite puncture detected at sector 4A.",
+        "Composite layer delamination trend.",
+        "Armor plating microfractures detected.",
+        "Hull Integrity nominal (no issues detected)."
+      ],
+      "Gravity": [
+        "Gravity field variance detected in deck C.",
+        "Artificial gravity emitters out of phase.",
+        "Local micro-gravity pocket reported.",
+        "Artificial Gravity nominal (no issues detected)."
+      ],
+      "Docking": [
+        "Dock clamp sensors reporting misalignment.",
+        "Airlock pressure equalization slow.",
+        "Docking computer timeout on handshake.",
+        "Docking nominal (no issues detected)."
       ]
     };
 
+    // Mapping from error messages to recommended actions (extended)
     const recommendations = {
       // Life Support
       "O2 sensor readings inconsistent.": [
@@ -434,6 +505,172 @@
         "If backlog persists, increase processing resources or throttle low-priority traffic."
       ],
       "Communications nominal (no issues detected).": [
+        "No action required — subsystem nominal. Continue routine monitoring."
+      ],
+
+      // Defense Systems
+      "Interceptor drone bay offline.": [
+        "Check drone bay power feed and interlocks.",
+        "Attempt remote reboot of drone bay controllers.",
+        "Verify drone launch rails are unobstructed.",
+        "If hardware failure suspected, schedule engineering inspection."
+      ],
+      "Countermeasure dispenser malfunctioning.": [
+        "Run dispenser cycle test and clear any jams.",
+        "Check dispenser cartridge levels and replace if empty.",
+        "Verify firing control signals and safety interlocks."
+      ],
+      "Target prioritization anomaly detected.": [
+        "Reset target prioritization table and reinitialize the targeting service.",
+        "Check sensor fusion inputs for corrupted data.",
+        "Escalate to weapons officer if behavior continues."
+      ],
+      "Defense systems nominal (no issues detected).": [
+        "No action required — subsystem nominal. Continue routine monitoring."
+      ],
+
+      // Weapons
+      "Primary weapon capacitor charging fault.": [
+        "Check capacitor bank voltages and charge controller logs.",
+        "Isolate the affected bank and attempt a controlled recharge.",
+        "Schedule replacement of degraded capacitor modules."
+      ],
+      "Turret servo misalignment on port side.": [
+        "Run turret alignment routine and recalibrate servos.",
+        "Inspect servo linkages for mechanical wear or damage.",
+        "If alignment cannot be corrected, lock turret and notify maintenance."
+      ],
+      "Ammo handling chute jammed.": [
+        "Cease firing operations and power down feed system.",
+        "Attempt manual clearing procedure following safety protocols.",
+        "Inspect for foreign objects or deformities in the chute."
+      ],
+      "Weapons nominal (no issues detected).": [
+        "No action required — subsystem nominal. Continue routine monitoring."
+      ],
+
+      // Point Defense
+      "Point-defense turret jammed.": [
+        "Run turret unjam routine and monitor thermal load.",
+        "Check turret motor currents and replace worn bearings.",
+        "If persistent, bring the turret offline until repaired."
+      ],
+      "Auto-tracking unstable on micrometeoric impacts.": [
+        "Adjust tracking filters to compensate for high-noise environment.",
+        "Enable secondary filters and increase sample rate temporarily."
+      ],
+      "Short-range targeting sensor fault.": [
+        "Reinitialize short-range sensor modules and test returns.",
+        "Cross-check with nearby sensor arrays for confirmation."
+      ],
+      "Point Defense nominal (no issues detected).": [
+        "No action required — subsystem nominal. Continue routine monitoring."
+      ],
+
+      // ECM
+      "ECM suite experiencing high SWR on antenna feed.": [
+        "Inspect antenna feed lines for damage and standing wave reflections.",
+        "Reduce transmitter power and attempt tune.",
+        "Schedule antenna maintenance if SWR remains high."
+      ],
+      "Jamming signature detected from unknown source.": [
+        "Log jamming frequencies and attempt triangulation.",
+        "Raise alert level and coordinate with navigation for evasive maneuvers.",
+        "Attempt active counter-jamming if authorized."
+      ],
+      "ECM processing queue overflow.": [
+        "Restart ECM processors in a controlled fashion.",
+        "Increase processing priority or offload tasks to backup systems."
+      ],
+      "ECM nominal (no issues detected).": [
+        "No action required — subsystem nominal. Continue routine monitoring."
+      ],
+
+      // Sensors
+      "Long-range radar returns noisy.": [
+        "Run radar self-test and inspect antenna surface.",
+        "Increase gain and run adaptive noise filtering.",
+        "Cross-check returns with passive sensors for validation."
+      ],
+      "LIDAR calibration skew detected.": [
+        "Run LIDAR calibration routine and confirm range gates.",
+        "Inspect LIDAR optics for contamination and clean if required."
+      ],
+      "Passive sensor fusion mismatch.": [
+        "Reconcile sensor timestamps and resync clocks.",
+        "Restart the sensor fusion service and review sensor confidences."
+      ],
+      "Sensors nominal (no issues detected).": [
+        "No action required — subsystem nominal. Continue routine monitoring."
+      ],
+
+      // Thermal Control
+      "Heat exchanger fouling detected.": [
+        "Increase blowdown temporarily and schedule cleaning of heat exchangers.",
+        "Check inlet/outlet temperature deltas and log for trends."
+      ],
+      "Coolant pump RPM outside expected range.": [
+        "Run pump calibration and check drive electronics.",
+        "If pump fails calibration, switch to redundant pump and mark for replacement."
+      ],
+      "Local hot-spot detected in engineering bay.": [
+        "Isolate the affected zone and increase local cooling.",
+        "Inspect for blocked vents or coolant line restrictions."
+      ],
+      "Thermal Control nominal (no issues detected).": [
+        "No action required — subsystem nominal. Continue routine monitoring."
+      ],
+
+      // Hull Integrity
+      "Micrometeorite puncture detected at sector 4A.": [
+        "Log location and monitor pressure differential.",
+        "Apply emergency patch if available and announce to crew.",
+        "Schedule EVA or remote repair depending on severity."
+      ],
+      "Composite layer delamination trend.": [
+        "Reduce stress loads in affected area and plan inspection.",
+        "Schedule detailed structural analysis."
+      ],
+      "Armor plating microfractures detected.": [
+        "Localize and reinforce plating; avoid high-load maneuvers.",
+        "Plan replacement during next maintenance window."
+      ],
+      "Hull Integrity nominal (no issues detected).": [
+        "No action required — subsystem nominal. Continue routine monitoring."
+      ],
+
+      // Gravity
+      "Gravity field variance detected in deck C.": [
+        "Run gravity emitter recalibration routine for deck C.",
+        "Check emitter phasing and synchronization signals.",
+        "If variance persists, restrict heavy operations in the affected area."
+      ],
+      "Artificial gravity emitters out of phase.": [
+        "Resync emitter clocks and monitor phase error correction.",
+        "Schedule emitter maintenance if resync fails."
+      ],
+      "Local micro-gravity pocket reported.": [
+        "Mark affected region and caution crew.",
+        "Investigate for local field perturbations or hardware faults."
+      ],
+      "Artificial Gravity nominal (no issues detected).": [
+        "No action required — subsystem nominal. Continue routine monitoring."
+      ],
+
+      // Docking
+      "Dock clamp sensors reporting misalignment.": [
+        "Run auto-alignment routine and reattempt clamp.",
+        "If auto-align fails, conduct manual alignment with visual telemetry."
+      ],
+      "Airlock pressure equalization slow.": [
+        "Check valves and vent control actuators for response.",
+        "Run pressure equalization diagnostic and inspect filter elements."
+      ],
+      "Docking computer timeout on handshake.": [
+        "Restart docking services and check network health between ships.",
+        "Confirm compatible handshake versions with connecting vessel."
+      ],
+      "Docking nominal (no issues detected).": [
         "No action required — subsystem nominal. Continue routine monitoring."
       ]
     };
@@ -661,7 +898,7 @@
         statusLed.style.background = 'linear-gradient(180deg, var(--success), #2f9c61)';
         statusLed.style.boxShadow = '0 0 8px rgba(74,222,128,0.18)';
         statusLabel.textContent = 'Nominal';
-      } else if (text.match(/(minor|backlog|intermittent|fluctuating|drift|attenuation)/i)) {
+      } else if (text.match(/(minor|backlog|intermittent|fluctuating|drift|attenuation|noisy|skew|micro)/i)) {
         statusLed.style.background = 'linear-gradient(180deg, var(--warning), #d9b600)';
         statusLed.style.boxShadow = '0 0 8px rgba(246,201,77,0.15)';
         statusLabel.textContent = 'Degraded';
@@ -808,7 +1045,7 @@
         // fun feedback: confetti + success beep
         triggerConfetti();
         beep(220, 660, 'sine', 0.04);
-        appendLog('Issue resolved.');
+        appendLog('Issue resolved — confetti triggered.');
 
         pushHistory({
           area: selectedArea,
